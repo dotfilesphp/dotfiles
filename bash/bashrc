@@ -1,0 +1,5 @@
+### BEGIN DOTFILES MOD ###
+PATH="$PATH:$HOME/dotfiles/bin"
+export EDITOR=/usr/bin/vim
+export VISUAL=/usr/bin/vim
+### END DOTFILES MOD ###
