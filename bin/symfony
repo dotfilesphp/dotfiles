@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CMD="app/console"
+if [ -e "bin/console" ]; then
+    CMD="bin/console"
+fi
+
+$CMD $*
