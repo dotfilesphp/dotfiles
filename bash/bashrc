@@ -1,5 +1,12 @@
 ### BEGIN DOTFILES MOD ###
-PATH="$PATH:$HOME/dotfiles/bin"
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+if [ -d "$HOME/bin" ]
+	export PATH="$HOME/bin:$PATH"
+fi
+
+export PATH="$PATH:$HOME/dotfiles/bin"
 export EDITOR=/usr/bin/vim
 export VISUAL=/usr/bin/vim
 ### END DOTFILES MOD ###
