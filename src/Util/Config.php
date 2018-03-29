@@ -16,7 +16,7 @@ use Symfony\Component\Console\Exception\RuntimeException;
 /**
  * Class Config
  */
-class Config
+class Config implements \ArrayAccess
 {
     private $config = [
         'dotfiles' => [],
@@ -37,6 +37,27 @@ class Config
             $instance = new self();
         }
         return $instance;
+    }
+
+    public function offsetExists($offset)
+    {
+        print_r($this->config);
+        return isset($this->config[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->config[$offset];
+    }
+
+    public function offsetSet($offset,$value)
+    {
+        $this->config[$offset] = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->config[$offset]);
     }
 
     public function getSection($section,$default = array())

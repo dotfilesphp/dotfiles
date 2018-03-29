@@ -23,6 +23,8 @@ use Toni\Dotfiles\Util\Config;
 
 class BashCommand extends Command implements CommandInterface
 {
+    private $exports = [];
+
     public function configure()
     {
         $this->setName('install:bash');
@@ -74,37 +76,76 @@ class BashCommand extends Command implements CommandInterface
         ];
     }
 
+    /**
+     * Generate install_dir/bashrc file
+     */
     private function doGenerateBashConfig(OutputInterface $output,$targetFile)
     {
-        $targetDir = getenv('TARGET_DIR');
-        $env = $this->parseEnv();
-        $config = $env['BASH'];
-        $exports = ['### START_DOTFILES ###'];
-        $exports[] = "unset MAILCHECK";
-        $exports[] = "export PATH=\"${targetDir}/bin:\$PATH\"";
-        $exports[] = "export BASH_IT=\"${targetDir}/vendor/bash-it\"";
-        $escape = ['BASH_IT_INSTALL'];
-        foreach($config as $name=>$value){
-            if(in_array($name,$escape)){
+        $config = Config::create();
+        $targetDir = $config['dotfiles']['install_dir'];
+        $exports = $config['bash_exports'];
+        $contents = [];
+        if($config->get('bash-it','install')){
+            $exports = array_merge_recursive($exports,$config['bash-it']);
+            $contents[] = "unset MAILCHECK";
+        }
+        $ignores = ['install'];
+        foreach($exports as $key => $value){
+            if(in_array($key,$ignores)){
                 continue;
             }
             if(is_bool($value)){
-                $value = (string)$value;
+                $value = $value ? 'true':'false';
             }
             if(is_string($value)){
-              $value = '"'.$value.'"';
+                $value = '"'.$value.'"';
             }
-            $exports[] = 'export '.$name.'='.$value;
-        }
-        $exports[] = 'source "$BASH_IT"/bash_it.sh';
-        $exports[] = "### END_DOTFILES ###\n";
-        $contents = implode(PHP_EOL,$exports);
-        file_put_contents($targetFile, $contents,LOCK_EX);
-        $output->writeln("Bash dotfiles configured in: <comment>${targetFile}</comment>");
 
-        // patching .bashrc
-        $bashrcFile = getenv('HOME').DIRECTORY_SEPARATOR.'/.bashrc';
-        $bashrc = file_get_contents($bashrcFile);
+            $contents[] = "export ${key}=${value}";
+        }
+        $contents[] = "export PATH=\"${targetDir}/bin:\$PATH\"";
+        $contenst[] = "export BASH_IT=${targetDir}/vendor/bash-it";
+        $contents[] = 'source "$BASH_IT"/bash_it.sh';
+
+        $contents = implode(PHP_EOL, $contents);
+        $contents = <<<EOC
+
+### START_DOTFILES ###
+$contents
+### END_DOTFILES ###
+
+EOC;
+        file_put_contents($targetFile, $contents,LOCK_EX);
+
+        $this->doPatchBashRCFile($output,$targetFile);
+    }
+
+    private function doPatchBashRCFile(OutputInterface $output,$targetFile)
+    {
+        $homeDir = getenv('HOME');
+        $osType = getenv('OSTYPE');
+        $patch = <<<EOC
+### START_DOTFILES ###
+source ${targetFile}
+### END_DOTFILES ###
+EOC;
+        $patch = str_replace(getenv("HOME"),'"$HOME"',$patch);
+        if($osType=='darwin'){
+            $bashrcFile = $homeDir.DIRECTORY_SEPARATOR.'.bash_profile';
+        }else{
+            $bashrcFile = $homeDir.DIRECTORY_SEPARATOR.'.bashrc';
+        }
+        $bashrcContents = file_get_contents($bashrcFile);
+        $pattern = '/###\sSTART_DOTFILES\s###(.*)###\sEND_DOTFILES\s###/is';
+        if(!preg_match($pattern, $bashrcContents,$match)){
+            $bashrcContents .= $patch;
+        }else{
+            $bashrcContents = str_replace($match[0],$patch,$bashrcContents);
+        }
+        if(false===strpos($bashrcContents, "\n",-1)){
+            $bashrcContents .= "\n ";
+        }
+        file_put_contents($bashrcFile,$bashrcContents,LOCK_EX);
     }
 
     private function doInstallBashIt(InputInterface $input, OutputInterface $output)
