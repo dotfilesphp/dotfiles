@@ -4,8 +4,19 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe974fc83bf2bf1b459a07e485c7b555",
+    "content-hash": "fe56662ca78bd9854a7051026aa187b7",
     "packages": [
+        {
+            "name": "bash-it/bash-it",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://codeload.github.com/Bash-it/bash-it/zip/master",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
+        },
         {
             "name": "symfony/console",
             "version": "v4.0.6",

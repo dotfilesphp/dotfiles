@@ -20,12 +20,24 @@
 		    "type": "zip"
 		}
 	    }
-	}
+	},
+	{
+            "type": "package",
+            "package": {
+                "name": "bash-it/bash-it",
+                "version": "1.0.0",
+                "dist": {
+                    "url": "https://codeload.github.com/Bash-it/bash-it/zip/master",
+                    "type": "zip"
+                }
+            }
+        }
     ],
     "minimum-stability": "stable",
     "require": {
         "symfony/finder": "^4.0",
         "symfony/console": "^4.0",
-	"vim/vundle": "0.10.2"
+	"vim/vundle": "0.10.2",
+	"bash-it/bash-it": "^1.0"
     }
 }
