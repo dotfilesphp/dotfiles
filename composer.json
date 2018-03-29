@@ -1,0 +1,31 @@
+{
+    "name": "toni/dotfiles",
+    "description": "Dotfiles Installer",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anthonius Munthi",
+            "email": "me@itstoni.com"
+        }
+    ],
+    "repositories": [
+        {
+	    "type": "package",
+	    "package": {
+	        "name": "vim/vundle",
+		"version": "0.10.2",
+		"dist": {
+		    "url": "https://github.com/VundleVim/Vundle.vim/archive/v0.10.2.zip",
+		    "type": "zip"
+		}
+	    }
+	}
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "symfony/finder": "^4.0",
+        "symfony/console": "^4.0",
+	"vim/vundle": "0.10.2"
+    }
+}

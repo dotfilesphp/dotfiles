@@ -226,3 +226,4 @@ endif
 " wrap lines when in diff mode
 au VimEnter * if &diff | execute 'windo set wrap' | endif
 
+set clipboard=vim-clipboard

@@ -1,2 +1,5 @@
-#vim/bundle
+vim/bundle
 !.gitkeep
+bin/composer
+
+/vendor/

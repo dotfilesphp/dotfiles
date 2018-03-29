@@ -26,16 +26,16 @@ if (is_command "vim"); then
 fi
 
 # zsh
-if (is_command "zsh" ); then
-    cp ~/dotfiles/zsh/zshrc ~/.zshrc
-    echo '.zshrc added'
-fi
+#if (is_command "zsh" ); then
+#    cp ~/dotfiles/zsh/zshrc ~/.zshrc
+#    echo '.zshrc added'
+#fi
 
 # bash
-if (is_command "bash"); then
-    cp ~/dotfiles/bash/bashrc ~/.bashrc
-    echo '.bashrc added'
-fi
+#if (is_command "bash"); then
+#    cp ~/dotfiles/bash/bashrc ~/.bashrc
+#    echo '.bashrc added'
+#fi
 
 # wget
 if (is_command "wget"); then
