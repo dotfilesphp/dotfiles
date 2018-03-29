@@ -18,8 +18,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Toni\Dotfiles\Command\CommandInterface;
 use Toni\Dotfiles\Util\Downloader;
+use Toni\Dotfiles\Util\Config;
 
-class InstallComposerCommand extends Command implements CommandInterface
+class ComposerCommand extends Command implements CommandInterface
 {
     /**
      * @var ProgressBar
@@ -33,9 +34,11 @@ class InstallComposerCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $targetDir = getenv('TARGET_DIR').'/bin';
+        $config = Config::create();
+        $installDir = $config->get('dotfiles','install_dir');
+        $targetDir = $config->get('dotfiles','install_dir').'/bin';
         $force = $input->getOption('force');
-        $installFileName = $targetDir.DIRECTORY_SEPARATOR.getenv('COMPOSER_BIN_NAME');
+        $installFileName = $targetDir.DIRECTORY_SEPARATOR.$config->get('composer','filename');
         if(is_file($installFileName) && !$force){
             $output->writeln(sprintf('Composer already installed in <comment>%s</comment>',$installFileName));
             return 0;
@@ -45,7 +48,7 @@ class InstallComposerCommand extends Command implements CommandInterface
             mkdir($dir,0755,true);
         }
 
-        $target = $dir.'/composer.php';
+        $target = $dir.DIRECTORY_SEPARATOR.'composer.php';
         if(!is_file($target) || $force){
             try{
                 $url = "https://getcomposer.org/installer";
@@ -63,7 +66,7 @@ class InstallComposerCommand extends Command implements CommandInterface
             'php',
             $target,
             '--install-dir='.$targetDir,
-            '--filename='.getenv('COMPOSER_BIN_NAME'),
+            '--filename='.$config->get('composer','filename'),
             '--ansi'
         ];
         $cmd = implode(' ',$cmd);

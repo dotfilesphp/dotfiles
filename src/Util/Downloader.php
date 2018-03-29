@@ -57,23 +57,33 @@ class Downloader
         $this->output->writeln(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
         $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);
         $this->contents = @file_get_contents($url, false, $context);
+        file_put_contents($targetFile, $this->contents, LOCK_EX);
+        $this->output->writeln("");
         $this->output->writeln('Download <comment>finished</comment>');
     }
 
     public function handleNotification($notificationCode, $severity, $message, $messageCode, $bytesTransferred, $bytesMax)
     {
-        if (STREAM_NOTIFY_REDIRECTED === $notificationCode) {
-            $this->createProgressBar();
-            return;
-        }
-        if (STREAM_NOTIFY_FILE_SIZE_IS === $notificationCode) {
-            $this->progressBar->start($bytesMax);
-        }
-        if (STREAM_NOTIFY_PROGRESS === $notificationCode) {
-            $this->progressBar->setProgress($bytesTransferred);
-        }
-        if (STREAM_NOTIFY_COMPLETED === $notificationCode) {
-            $this->progressBar->finish($bytesTransferred);
+        switch($notificationCode){
+            case STREAM_NOTIFY_RESOLVE:
+            case STREAM_NOTIFY_AUTH_REQUIRED:
+            case STREAM_NOTIFY_FAILURE:
+            case STREAM_NOTIFY_AUTH_RESULT:
+                // handle error here
+                break;
+            case STREAM_NOTIFY_REDIRECTED:
+                $this->createProgressBar();
+                break;
+            case STREAM_NOTIFY_FILE_SIZE_IS:
+                $this->progressBar->start($bytesMax);
+                break;
+            case STREAM_NOTIFY_PROGRESS:
+                $this->progressBar->setProgress($bytesTransferred);
+                break;
+            case STREAM_NOTIFY_COMPLETED:
+                $this->progressBar->setProgress($bytesTransferred);
+                $this->progressBar->finish();
+                break;
         }
     }
 

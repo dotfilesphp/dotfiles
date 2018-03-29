@@ -1,7 +1,7 @@
 version: "2"
 services:
     php:
-        container_name: bash.php
+        container_name: dotfiles_php
         build:
             context: docker
         volumes:

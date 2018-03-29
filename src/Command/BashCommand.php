@@ -104,7 +104,7 @@ class BashCommand extends Command implements CommandInterface
             $contents[] = "export ${key}=${value}";
         }
         $contents[] = "export PATH=\"${targetDir}/bin:\$PATH\"";
-        $contenst[] = "export BASH_IT=${targetDir}/vendor/bash-it";
+        $contents[] = "export BASH_IT=${targetDir}/vendor/bash-it";
         $contents[] = 'source "$BASH_IT"/bash_it.sh';
 
         $contents = implode(PHP_EOL, $contents);
@@ -134,6 +134,9 @@ EOC;
             $bashrcFile = $homeDir.DIRECTORY_SEPARATOR.'.bash_profile';
         }else{
             $bashrcFile = $homeDir.DIRECTORY_SEPARATOR.'.bashrc';
+        }
+        if(!is_file($bashrcFile)){
+            touch($bashrcFile);
         }
         $bashrcContents = file_get_contents($bashrcFile);
         $pattern = '/###\sSTART_DOTFILES\s###(.*)###\sEND_DOTFILES\s###/is';
