@@ -25,7 +25,6 @@ class Application extends BaseApplication
     public function __construct()
     {
         parent::__construct('dotfiles', '1.0.0');
-        $this->loadDotEnv();
         $this->buildCommands();
     }
 
@@ -55,27 +54,5 @@ class Application extends BaseApplication
         $this->getDefinition()->addOption(
           new InputOption('reload', '-r', InputOption::VALUE_NONE, 'Only reload configuration')
         );
-    }
-
-    private function loadDotEnv()
-    {
-        $dotenv = new Dotenv();
-
-        $files = array(realpath(__DIR__.'/../.env.dist'));
-
-        if(is_file($file = realpath(__DIR__.'/../.env'))){
-            $files[] = $file;
-        }
-        if(is_file($file = realpath(getenv('HOME').'.dotfiles.rc'))){
-            $files[] = $file;
-        }
-        foreach($files as $file){
-            $dotenv->load($file);
-        }
-    }
-
-    private function decorateCommand(Command $command)
-    {
-
     }
 }

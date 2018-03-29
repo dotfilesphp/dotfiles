@@ -88,7 +88,7 @@ class Config implements \ArrayAccess
     private function loadConfig()
     {
         $files = [
-            realpath(__DIR__.'/../Resources/default.ini'),
+            __DIR__.'/../Resources/default.ini',
             realpath(getenv('HOME').'/.dotfiles.ini'),
         ];
 

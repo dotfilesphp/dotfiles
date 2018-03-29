@@ -32,13 +32,25 @@ class BashCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $targetFile = getenv('TARGET_DIR').DIRECTORY_SEPARATOR.'bashrc';
+        $config = Config::create();
+        $installDir = $config->get('dotfiles','install_dir');
         $force = $input->getOption('force');
-        if(is_file($targetFile) && !$force){
-            $output->writeln("Bash dotfiles already configured in: <comment>${targetFile}</comment>");
+        if(
+            !$force
+            && is_dir($dir=$installDir.'/vendor/bash-it'))
+        {
+            $output->writeln("Bash-It already installed in: <comment>${dir}</comment>");
+        }else{
+            $this->doInstallBashIt($input,$output);
         }
-        $this->doInstallBashIt($input,$output);
-        $this->doGenerateBashConfig($output,$targetFile);
+
+        // start generate bashrc
+        $targetFile = $installDir.DIRECTORY_SEPARATOR.'bashrc';
+        if(is_file($targetFile) && !$force){
+            $output->writeln("Bash already configured in: <comment>${targetFile}</comment>");
+        }else{
+            $this->doGenerateBashConfig($output,$targetFile);
+        }
     }
 
     public function parseEnv()
@@ -149,12 +161,13 @@ EOC;
             $bashrcContents .= "\n ";
         }
         file_put_contents($bashrcFile,$bashrcContents,LOCK_EX);
+        $output->writeln('Bash config generated in: <comment>'.$bashrcFile.'</comment>');
     }
 
     private function doInstallBashIt(InputInterface $input, OutputInterface $output)
     {
         $config = Config::create();
-        $src = realpath(__DIR__.'/../../vendor/bash-it/bash-it');
+        $src = __DIR__.'/../../vendor/bash-it/bash-it';
         $target = $config->get('dotfiles','install_dir').'/vendor/bash-it';
         $output->writeln("Copy bash-it to: <comment>${target}</comment>");
         $options['override'] = true;
@@ -163,6 +176,9 @@ EOC;
 
         $info = [];
         $error = [];
+        if(!is_executable($test=$target.'/install.sh')){
+            chmod($test,0777);
+        }
         $cmd = $target.'/install.sh --silent --no-modify-config';
         $output->writeln("Installing bash-it...");
         $process = new Process($cmd);
