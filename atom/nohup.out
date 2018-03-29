@@ -1,0 +1,6 @@
+Gtk-Message: 16:01:33.898: GtkDialog mapped without a transient parent. This is discouraged.
+Gtk-Message: 16:03:07.924: GtkDialog mapped without a transient parent. This is discouraged.
+Couldn't retain /home/toni/.atom/recovery/config-fed2f0.cson. Code: ENOENT. Message: ENOENT: no such file or directory, open '/home/toni/.atom/recovery/config-fed2f0.cson'
+Attempting to call a function in a renderer window that has been closed or released.
+Function provided here: worker.js:71:22
+Remote event names: destroyed, crashed
