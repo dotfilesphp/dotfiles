@@ -1,0 +1,51 @@
+variants:
+    doyolabs:
+        fpm:
+        opcache:
+        bz2:
+        calendar:
+        ipc:
+        pcntl:
+        pcre:
+        phar:
+        posix:
+        readline:
+        sockets:
+        tokenizer:
+        curl:
+        openssl:
+        zip:
+        mysql:
+        pgsql:
+        pdo:
+        intl:
+        bcmath:
+        bz2:
+        calendar:
+        cli:
+        ctype:
+        dom:
+        fileinfo:
+        filter:
+        ipc:
+        json:
+        mbregex:
+        mbstring:
+        mhash:
+        mcrypt:
+        sqlite:
+        iconv:
+        gd:
+          - --with-libdir=lib/x86_64-linux-gnu
+          - --with-gd=/usr
+          - --with-jpeg-dir=/usr
+          - --enable-gd-natf
+          - --with-jpeg-dir=/usr
+          - --with-png-dir=/usr
+          - --enable-gd-native-ttf
+          - --with-xpm-dir=/usr
+          - --with-freetype-dir=/usr/include/freetype2/
+extensions:
+    doyolabs:
+        xhprof: latest
+        xdebug: stable

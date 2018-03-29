@@ -1,26 +1,26 @@
 [user]
-    name = Anthonius Munthi
-    email = me@itstoni.com
+name = Anthonius Munthi
+email = me@itstoni.com
 
 [color]
-    diff = auto
-    status = auto
-    branch = auto
-    ui = auto
+diff = auto
+status = auto
+branch = auto
+ui = auto
 
 [core]
-    editor = vim
-    pager = less -R
-    excludesfile = ~/.gitignore
+editor = vim
+pager = less -R
+excludesfile = ~/.gitignore
 
 [push]
-    default = matching
+default = matching
 
 [diff]
-    tool = vimdiff
+tool = vimdiff
 
 [difftool]
-    prompt = false
+prompt = false
 
 [credential]
-    helper = cache
+helper = cache
