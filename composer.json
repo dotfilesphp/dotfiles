@@ -11,17 +11,17 @@
     ],
     "repositories": [
         {
-	    "type": "package",
-	    "package": {
-	        "name": "vim/vundle",
-		"version": "0.10.2",
-		"dist": {
-		    "url": "https://github.com/VundleVim/Vundle.vim/archive/v0.10.2.zip",
-		    "type": "zip"
-		}
-	    }
-	},
-	{
+            "type": "package",
+            "package": {
+                "name": "vim/vundle",
+                "version": "0.10.2",
+                "dist": {
+                    "url": "https://github.com/VundleVim/Vundle.vim/archive/v0.10.2.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        {
             "type": "package",
             "package": {
                 "name": "bash-it/bash-it",
@@ -37,7 +37,10 @@
     "require": {
         "symfony/finder": "^4.0",
         "symfony/console": "^4.0",
-	"vim/vundle": "0.10.2",
-	"bash-it/bash-it": "^1.0"
+        "vim/vundle": "0.10.2",
+        "bash-it/bash-it": "^1.0"
+    },
+    "autoload": {
+        "psr-4": { "Toni\\Dotfiles": "src" }
     }
 }
