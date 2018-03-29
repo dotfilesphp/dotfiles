@@ -1,6 +1,6 @@
 vim/bundle
 !.gitkeep
 bin/composer
-
+bin/phpbrew
 /vendor/
 .env

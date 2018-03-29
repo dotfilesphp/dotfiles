@@ -1,4 +1,4 @@
-3<?php
+<?php
 
 /*
  * This file is part of the dotfiles project.
@@ -9,12 +9,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Tests\Unit\Toni\Dotfiles;
+namespace Toni\Dotfiles\Command;
 
-use Toni\Dotfiles\Application;
-use PHPUnit\Framework\TestCase;
-
-class ApplicationTest extends TestCase
+interface CommandInterface
 {
-
 }

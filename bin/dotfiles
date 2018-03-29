@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+umask(0000);
+
 require __DIR__.'/../vendor/autoload.php';
 
 use Toni\Dotfiles\Application;
