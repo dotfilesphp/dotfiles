@@ -86,9 +86,10 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $current = \Phar::running(false);
         $output->writeln($current);
         if(is_file($current)){
+            $override = ['override' => true];
             $backup = $cacheDir.'/dotfiles_old.phar';
-            $fs->copy($current,$backup);
-            $fs->copy($this->pharFile,$current,['override'=>true]);
+            $fs->copy($current,$backup,$override);
+            $fs->copy($this->pharFile,$current,$override);
             $output->writeln('Your <comment>dotfiles.phar</comment> is updated.');
         }
 
