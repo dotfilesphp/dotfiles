@@ -189,11 +189,11 @@ EOF;
             $content = "\n".$content."\n";
         }
 
-        //if ($path === 'src/Composer/Composer.php') {
-        //    $content = str_replace('@package_version@', $this->version, $content);
-        //    $content = str_replace('@package_branch_alias_version@', $this->branchAliasVersion, $content);
-        //    $content = str_replace('@release_date@', $this->versionDate->format('Y-m-d H:i:s'), $content);
-        //}
+        if ($path === 'src/Application.php') {
+            $content = str_replace('@package_version@', $this->version, $content);
+            $content = str_replace('@package_branch_alias_version@', $this->branchAliasVersion, $content);
+            $content = str_replace('@release_date@', $this->versionDate->format('Y-m-d H:i:s'), $content);
+        }
         $phar->addFromString($path, $content);
     }
 

@@ -22,9 +22,13 @@ use Toni\Dotfiles\Command\CommandInterface;
 
 class Application extends BaseApplication
 {
+    const VERSION = '@package_version@';
+    const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
+    const RELEASE_DATE = '@release_date@';
+
     public function __construct()
     {
-        parent::__construct('dotfiles', '1.0.0');
+        parent::__construct('dotfiles', static::VERSION);
         $this->buildCommands();
     }
 
