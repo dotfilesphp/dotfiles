@@ -1,4 +1,4 @@
-3<?php
+<?php
 
 /*
  * This file is part of the dotfiles project.
@@ -9,12 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Tests\Unit\Toni\Dotfiles;
+namespace Tests\Toni\Dotfiles\Unit;
 
 use Toni\Dotfiles\Application;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
 {
-
+    public function testEnv()
+    {
+        $app = new Application();
+        $this->assertEquals('@package_version@',$app->getVersion());
+        $expected = implode(' ',[
+            Application::VERSION,
+            Application::BRANCH_ALIAS_VERSION,
+            Application::RELEASE_DATE
+        ]);
+        $this->assertEquals($expected,$app->getLongVersion());
+    }
 }

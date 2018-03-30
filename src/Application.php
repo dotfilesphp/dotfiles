@@ -59,4 +59,13 @@ class Application extends BaseApplication
           new InputOption('reload', '-r', InputOption::VALUE_NONE, 'Only reload configuration')
         );
     }
+
+    public function getLongVersion()
+    {
+        return implode(' ',[
+            static::VERSION,
+            static::BRANCH_ALIAS_VERSION,
+            static::RELEASE_DATE
+        ]);
+    }
 }
