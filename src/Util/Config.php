@@ -60,12 +60,38 @@ class Config implements \ArrayAccess
         unset($this->config[$offset]);
     }
 
+    public function getCacheDir()
+    {
+        $cacheDir = getcwd().'/var/cache';
+        if(!is_dir($cacheDir)){
+            mkdir($cacheDir,0775,true);
+        }
+        return $cacheDir;
+    }
+
+    public function getTempDir($suffix = null)
+    {
+        $dir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'dotfiles';
+        if($suffix){
+            $dir = $dir.DIRECTORY_SEPARATOR.$suffix;
+        }
+        if(!is_dir($dir)){
+            mkdir($dir,0755,true);
+        }
+        return $dir;
+    }
+
     public function getSection($section,$default = array())
     {
         if(!isset($this->config[$section])){
             throw new RuntimeException("Invalid config section name ${section}");
         }
         return isset($this->config[$section]) ? $this->config[$section]:$default;
+    }
+
+    public function getDotfiles($key)
+    {
+        return $this->get('dotfiles',$key);
     }
 
     public function get($section=null,$key=null, $default=null)

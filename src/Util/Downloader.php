@@ -36,6 +36,13 @@ class Downloader
      */
     private $targetFile;
 
+    /**
+     * @var int
+     */
+    private $bytesMax;
+
+    private $hasError = false;
+
     public function __construct(OutputInterface $output,$url,$targetFile)
     {
           $this->output = $output;
@@ -51,15 +58,28 @@ class Downloader
 
     public function run()
     {
+        $this->hasError = false;
         $this->createProgressBar();
         $url = $this->url;
         $targetFile = $this->targetFile;
         $this->output->writeln(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
+        $this->output->writeln("");
         $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);
-        $this->contents = @file_get_contents($url, false, $context);
+        set_error_handler([$this,'handleError']);
+        $this->contents = file_get_contents($url, false, $context);
+        restore_error_handler();
+        if($this->hasError){
+            throw new \RuntimeException('Failed to download '.$url);
+        }
         file_put_contents($targetFile, $this->contents, LOCK_EX);
         $this->output->writeln("");
         $this->output->writeln('Download <comment>finished</comment>');
+    }
+
+    public function handleError($bar,$message)
+    {
+        $this->hasError = true;
+        $this->output->writeln("<comment>Error:</comment>\n<info>${message}</info>\n");
     }
 
     public function handleNotification($notificationCode, $severity, $message, $messageCode, $bytesTransferred, $bytesMax)
@@ -76,13 +96,14 @@ class Downloader
                 break;
             case STREAM_NOTIFY_FILE_SIZE_IS:
                 $this->progressBar->start($bytesMax);
+                $this->$bytesMax = $bytesMax;
                 break;
             case STREAM_NOTIFY_PROGRESS:
                 $this->progressBar->setProgress($bytesTransferred);
                 break;
             case STREAM_NOTIFY_COMPLETED:
-                $this->progressBar->setProgress($bytesTransferred);
-                $this->progressBar->finish();
+                $this->progressBar->setProgress($bytesMax);
+                $this->progressBar->clear();
                 break;
         }
     }
