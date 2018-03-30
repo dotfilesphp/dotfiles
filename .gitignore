@@ -5,3 +5,4 @@ bin/phpbrew
 /vendor/
 .env
 /dotfiles.phar
+/var

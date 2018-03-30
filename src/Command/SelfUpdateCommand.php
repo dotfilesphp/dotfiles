@@ -61,6 +61,8 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $this->date = $exp[2];
         if(Application::VERSION !== $this->version){
             $this->doUpdate($input,$output);
+        }else{
+            $output->writeln('You already have latest <comment>dotfiles</comment> version');
         }
     }
 
