@@ -102,23 +102,6 @@ class Compiler
             $this->addFile($phar, $file);
         }
 
-        $finder = new Finder();
-        $finder->files()
-          ->ignoreVCS(true)
-          ->exclude('Tests')
-          ->exclude('tests')
-          ->exclude('test')
-          ->exclude('test_lib')
-          ->exclude('docs')
-          ->in(__DIR__.'/../vendor/bash-it')
-          ->in(__DIR__.'/../vendor/vim')
-          ->sort($finderSort)
-        ;
-
-        foreach ($finder as $file) {
-            $this->addFile($phar, $file);
-        }
-
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../vendor/autoload.php'));
         $this->addDotfilesBin($phar);
         $phar->setStub($this->getStub());
@@ -238,10 +221,9 @@ EOF;
     private function getRelativeFilePath($file)
     {
         $realPath = $file->getRealPath();
-        $pathPrefix = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR;
+	$pathPrefix = dirname(dirname(__DIR__.'/../')).DIRECTORY_SEPARATOR;
         $pos = strpos($realPath, $pathPrefix);
         $relativePath = ($pos !== false) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
-        $relativePath = str_replace('dotfiles'.DIRECTORY_SEPARATOR,'',$relativePath);
-        return strtr($relativePath, '\\', '/');
+	return strtr($relativePath, '\\', '/');
     }
 }

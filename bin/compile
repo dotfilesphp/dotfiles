@@ -4,15 +4,24 @@
 require __DIR__.'/../vendor/autoload.php';
 
 $cwd = getcwd();
-chdir(__DIR__.'/../');
+chdir(dirname(__DIR__));
 
 use Toni\Dotfiles\Compiler;
 
+$target = isset($argv[1]) ? realpath($argv[1]):false;
 try {
     $compiler = new Compiler();
     $compiler->compile();
     chmod('dotfiles.phar',0755);
+    if($target){
+	copy('dotfiles.phar',$target.'/dotfiles.phar');
+	chmod($target.'/dotfiles.phar',0755);  
+	$version= shell_exec('php dotfiles.phar --version');
+	file_put_contents($target.'/VERSION',$version,LOCK_EX);
+    }
+    chdir($cwd);
 }catch(\Exception $e){
     echo 'Failed to compile phar: ['.get_class($e).'] '.$e->getMessage().' at '.$e->getFile().':'.$e->getLine().PHP_EOL;
+    chdir($cwd);
     exit(1);
 }

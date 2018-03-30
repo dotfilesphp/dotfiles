@@ -50,8 +50,8 @@
     "autoload": {
         "psr-4": {
             "Toni\\Dotfiles\\": "src/",
-            "Tests\\Toni\\Dotfiles\\Unit": "tests/unit",
-            "Tests\\Toni\\Dotfiles\\Functional": "tests/functional"
+            "Tests\\Toni\\Dotfiles\\Unit\\": "tests/unit",
+            "Tests\\Toni\\Dotfiles\\Functional\\": "tests/functional"
         }
     },
     "extra": {
