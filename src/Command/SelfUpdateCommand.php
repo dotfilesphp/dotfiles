@@ -81,7 +81,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $this->pharFile = $targetFile;
         $cacheDir = $config->getCacheDir();
         // copy current phar into new dir
-        $current = Phar::running(false);
+        $current = \Phar::running(false);
         $output->writeln($current);
         if(is_file($current)){
             $backup = $cacheDir.'/dotfiles_old.phar';
@@ -89,5 +89,6 @@ class SelfUpdateCommand extends Command implements CommandInterface
             $fs->copy($this->pharFile,$current,['override'=>true]);
             $output->writeln('Your <comment>dotfiles.phar</comment> is updated.');
         }
+
     }
 }

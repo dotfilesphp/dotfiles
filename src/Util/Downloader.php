@@ -56,7 +56,7 @@ class Downloader
           $this->createProgressBar();
     }
 
-    public function run()
+    public function run($url=null,$targetFile=null)
     {
         $this->hasError = false;
         $this->createProgressBar();
