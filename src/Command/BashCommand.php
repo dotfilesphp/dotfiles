@@ -108,8 +108,7 @@ class BashCommand extends Command implements CommandInterface
             }
             if(is_bool($value)){
                 $value = $value ? 'true':'false';
-            }
-            if(is_string($value)){
+            }elseif(is_string($value)){
                 $value = '"'.$value.'"';
             }
 

@@ -97,7 +97,8 @@ class Config implements \ArrayAccess
             if(!is_file($file)){
                 continue;
             }
-            $config = array_merge_recursive($config, parse_ini_file($file,true));
+            $parsed = parse_ini_file($file,true,INI_SCANNER_TYPED);
+            $config = array_merge_recursive($config, $parsed);
         }
         $this->config = array_merge_recursive($this->config,$this->normalizeConfig($config));
     }
