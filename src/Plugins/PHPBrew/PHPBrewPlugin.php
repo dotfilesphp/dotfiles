@@ -2,10 +2,10 @@
 
 namespace Dotfiles\Plugins\PHPBrew;
 
-use Toni\Dotfiles\PluginInterface;
-use Toni\Dotfiles\Emitter;
-use Toni\Dotfiles\Events\ReloadBashConfigEvent;
-use Toni\Dotfiles\Util\Config;
+use Dotfiles\Core\PluginInterface;
+use Dotfiles\Core\Emitter;
+use Dotfiles\Core\Events\ReloadBashConfigEvent;
+use Dotfiles\Core\Util\Config;
 
 class PHPBrewPlugin implements PluginInterface
 {

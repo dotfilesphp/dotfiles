@@ -3,8 +3,8 @@
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
 use Dotfiles\Plugins\PHPBrew\PHPBrewPlugin;
-use Toni\Dotfiles\Emitter;
-use Toni\Dotfiles\Events\ReloadBashConfigEvent;
+use Dotfiles\Core\Emitter;
+use Dotfiles\Core\Events\ReloadBashConfigEvent;
 use PHPUnit\Framework\TestCase;
 
 class PHPBrewPluginTest extends TestCase

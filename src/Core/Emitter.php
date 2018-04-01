@@ -9,12 +9,12 @@
  * file that was disstributed with this source code.
  */
 
-namespace Toni\Dotfiles;
+namespace Dotfiles\Core;
 
 use League\Event\Emitter as BaseEmitter;
-use Toni\Dotfiles\Util\LoggerInterface;
-use Toni\Dotfiles\Util\Logger;
-use Toni\Dotfiles\Events\AbstractEvent;
+use Dotfiles\Core\Util\LoggerInterface;
+use Dotfiles\Core\Util\Logger;
+use Dotfiles\Core\Events\AbstractEvent;
 
 class Emitter extends BaseEmitter
 {

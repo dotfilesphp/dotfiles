@@ -6,8 +6,8 @@ require __DIR__.'/../vendor/autoload.php';
 $cwd = getcwd();
 chdir(dirname(__DIR__));
 
-use Toni\Dotfiles\Compiler;
-use Toni\Dotfiles\Application;
+use Dotfiles\Core\Compiler;
+use Dotfiles\Core\Application;
 use Symfony\Component\Process\Process;
 
 $target = isset($argv[1]) ? realpath($argv[1]):false;

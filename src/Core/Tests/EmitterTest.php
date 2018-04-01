@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Toni\Dotfiles\Unit;
+namespace Dotfiles\Core\Tests;
 
-use Toni\Dotfiles\Emitter;
-use Toni\Dotfiles\Util\LoggerInterface;
+use Dotfiles\Core\Emitter;
+use Dotfiles\Core\Util\LoggerInterface;
 
 use PHPUnit\Framework\TestCase;
 

@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Toni\Dotfiles\Util;
+namespace Dotfiles\Core\Util;
 
-class Logger implements LoggerInterface
+interface LoggerInterface
 {
     /**
      * @param string $message Message to log
      * @return self
      */
-    public function debug($message){}
+    public function debug($message);
 }

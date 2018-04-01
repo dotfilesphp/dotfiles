@@ -1,6 +1,6 @@
 <?php
 
-namespace Toni\Dotfiles\Events;
+namespace Dotfiles\Core\Events;
 
 class ReloadBashConfigEvent extends AbstractEvent
 {

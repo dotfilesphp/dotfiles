@@ -57,7 +57,7 @@
     "autoload": {
         "psr-4": {
             "Dotfiles\\Plugins\\": "plugins/",
-            "Toni\\Dotfiles\\": "src/",
+            "Dotfiles\\": "src/",
             "Tests\\Toni\\Dotfiles\\Unit\\": "tests/unit",
             "Tests\\Toni\\Dotfiles\\Functional\\": "tests/functional"
         }

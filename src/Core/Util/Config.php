@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Toni\Dotfiles\Util;
+namespace Dotfiles\Core\Util;
 
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Finder\Finder;
@@ -125,11 +125,11 @@ class Config implements \ArrayAccess
     private function loadDefaultConfig()
     {
         $files = [
-            __DIR__.'/../Resources/default.ini',
+            __DIR__ . '/../Resources/default.ini',
             realpath(getenv('HOME').'/.dotfiles.ini'),
         ];
         $finder = Finder::create()
-            ->in(__DIR__.'/../../plugins/*/Resources')
+            ->in(__DIR__ . '/../../Plugins/*/Resources')
             ->name('default.ini')
             ->files()
             ;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Toni\Dotfiles;
+namespace Dotfiles\Core;
 
 interface PluginInterface
 {

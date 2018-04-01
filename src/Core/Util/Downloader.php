@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Toni\Dotfiles\Util;
+namespace Dotfiles\Core\Util;
 
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Toni\Dotfiles\Command;
+namespace Dotfiles\Core\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Toni\Dotfiles\Command\CommandInterface;
-use Toni\Dotfiles\Util\Downloader;
-use Toni\Dotfiles\Util\Config;
+use Dotfiles\Core\Command\CommandInterface;
+use Dotfiles\Core\Util\Downloader;
+use Dotfiles\Core\Util\Config;
 
 class ComposerCommand extends Command implements CommandInterface
 {

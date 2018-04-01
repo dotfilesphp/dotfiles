@@ -1,10 +1,10 @@
 <?php
 
-namespace Test\Toni\Dotfiles\Unit\Events;
+namespace Dotfiles\Core\Tests\Events;
 
-use Toni\Dotfiles\Events\ReloadBashConfigEvent;
-use Toni\Dotfiles\Emitter;
-use Toni\Dotfiles\Util\LoggerInterface;
+use Dotfiles\Core\Events\ReloadBashConfigEvent;
+use Dotfiles\Core\Emitter;
+use Dotfiles\Core\Util\LoggerInterface;
 
 use PHPUnit\Framework\TestCase;
 

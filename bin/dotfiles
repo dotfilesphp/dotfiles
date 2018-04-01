@@ -5,7 +5,7 @@ umask(0000);
 
 require __DIR__.'/../vendor/autoload.php';
 
-use Toni\Dotfiles\Application;
+use Dotfiles\Core\Application;
 
 $app = new Application();
 try{

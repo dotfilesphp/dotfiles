@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Tests\Toni\Dotfiles\Unit;
+namespace Dotfiles\Core\Tests;
 
-use Toni\Dotfiles\Application;
+use Dotfiles\Core\Application;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase

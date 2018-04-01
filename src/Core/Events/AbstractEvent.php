@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Toni\Dotfiles\Events;
+namespace Dotfiles\Core\Events;
 
 use League\Event\AbstractEvent as BaseAbstractEvent;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Toni\Dotfiles\Util\LoggerInterface;
+use Dotfiles\Core\Util\LoggerInterface;
 
 class AbstractEvent extends BaseAbstractEvent
 {

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Toni\Dotfiles\Command;
+namespace Dotfiles\Core\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,8 +18,8 @@ use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
-use Toni\Dotfiles\Command\CommandInterface;
-use Toni\Dotfiles\Util\Config;
+use Dotfiles\Core\Command\CommandInterface;
+use Dotfiles\Core\Util\Config;
 
 class BashCommand extends Command implements CommandInterface
 {
@@ -166,7 +166,7 @@ EOC;
     private function doInstallBashIt(InputInterface $input, OutputInterface $output)
     {
         $config = Config::create();
-        $src = __DIR__.'/../../vendor/bash-it/bash-it';
+        $src = __DIR__ . '/../../vendor/bash-it/bash-it';
         $target = $config->get('dotfiles','install_dir').'/vendor/bash-it';
         $output->writeln("Copy bash-it to: <comment>${target}</comment>");
         $options['override'] = true;

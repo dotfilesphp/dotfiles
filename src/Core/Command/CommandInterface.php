@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Toni\Dotfiles\Command;
+namespace Dotfiles\Core\Command;
 
 interface CommandInterface
 {
