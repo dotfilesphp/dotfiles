@@ -25,6 +25,8 @@ class ApplicationTest extends TestCase
             Application::BRANCH_ALIAS_VERSION,
             Application::RELEASE_DATE
         ]);
+
         $this->assertEquals($expected,$app->getLongVersion());
     }
 }
+

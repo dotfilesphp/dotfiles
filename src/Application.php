@@ -37,18 +37,28 @@ class Application extends BaseApplication
         $commands = array();
         $files = Finder::create()
           ->in(__DIR__.'/Command')
+          //->in(__DIR__.'/../plugins/*/Command')
           ->name('*Command.php')
           ->files()
         ;
 
         foreach($files as $file){
-            $class = 'Toni\\Dotfiles\\Command\\'.str_replace('.php','',$file->getFileName());
+            $relpath = realpath(__DIR__.'/../plugins').DIRECTORY_SEPARATOR;
+            $path = str_replace($relpath,"",$file->getRealPath());
+            $class = strtr($path,[
+                '/' => '\\',
+                '.php' => ''
+            ]);
+            $class = 'Dotfiles\\Plugins\\'.$class;
+            if(!class_exists($class)){
+                $class = 'Toni\\Dotfiles\\Command\\'.str_replace('.php','',$file->getFileName());
+            }
             if(class_exists($class)){
-              $r = new \ReflectionClass($class);
-              if($r->implementsInterface(CommandInterface::class)){
-                  $command = new $class();
-                  $commands[] = $command;
-              }
+                $r = new \ReflectionClass($class);
+                if($r->implementsInterface(CommandInterface::class)){
+                    $command = new $class();
+                    $commands[] = $command;
+                }
             }
         }
         $this->addCommands($commands);

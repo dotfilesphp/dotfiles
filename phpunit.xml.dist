@@ -14,14 +14,18 @@
     <testsuites>
         <testsuite name="Paroki Test Suite">
             <directory>tests/</directory>
+            <directory>plugins/*/Tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
             <directory>./src/</directory>
+            <directory>./plugins/</directory>
             <exclude>
                 <directory>./src/Resources</directory>
+                <directory>./plugins/*/Tests</directory>
+                <directory>./plugins/*/Resources</directory>
             </exclude>
         </whitelist>
     </filter>

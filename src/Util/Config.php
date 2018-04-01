@@ -12,6 +12,7 @@
 namespace Toni\Dotfiles\Util;
 
 use Symfony\Component\Console\Exception\RuntimeException;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class Config
@@ -27,7 +28,7 @@ class Config implements \ArrayAccess
 
     final public function __construct()
     {
-        $this->loadConfig();
+        $this->loadDefaultConfig();
     }
 
     final static public function create()
@@ -41,7 +42,6 @@ class Config implements \ArrayAccess
 
     public function offsetExists($offset)
     {
-        print_r($this->config);
         return isset($this->config[$offset]);
     }
 
@@ -91,32 +91,25 @@ class Config implements \ArrayAccess
 
     public function getDotfiles($key)
     {
-        return $this->get('dotfiles',$key);
+        return $this->get('dotfiles.',$key);
     }
 
-    public function get($section=null,$key=null, $default=null)
+    public function get($name=null)
     {
-        if(is_null($section) && is_null($key)){
-            return $this->config;
+        $exp        = explode('.',$name);
+        $section    = $exp[0];
+        $key        = $exp[1];
+        if(!isset($this->config[$section][$key])){
+            throw new RuntimeException("Can't find config with this ${name} name.");
         }
-
-        if(!is_null($section) && is_null($key)){
-            return $this->getSection($section);
-        }
-
-        $sections = $this->getSection($section);
-        if(!isset($sections[$key])){
-            throw new RuntimeException("${section} section doesn't have ${key} key.");
-        }
-        return $sections[$key];
+        return $this->config[$section][$key];
     }
 
-    private function loadConfig()
+    public function loadFromFiles($files)
     {
-        $files = [
-            __DIR__.'/../Resources/default.ini',
-            realpath(getenv('HOME').'/.dotfiles.ini'),
-        ];
+        if(!is_array($files)){
+            $files = [$files];
+        }
 
         $config = [];
         foreach($files as $file){
@@ -127,6 +120,23 @@ class Config implements \ArrayAccess
             $config = array_merge_recursive($config, $parsed);
         }
         $this->config = array_merge_recursive($this->config,$this->normalizeConfig($config));
+    }
+
+    private function loadDefaultConfig()
+    {
+        $files = [
+            __DIR__.'/../Resources/default.ini',
+            realpath(getenv('HOME').'/.dotfiles.ini'),
+        ];
+        $finder = Finder::create()
+            ->in(__DIR__.'/../../plugins/*/Resources')
+            ->name('default.ini')
+            ->files()
+            ;
+        foreach($finder->files() as $file){
+            $files[] = $file;
+        }
+        $this->loadFromFiles($files);
     }
 
     private function normalizeConfig($config)

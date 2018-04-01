@@ -7,6 +7,8 @@ $cwd = getcwd();
 chdir(dirname(__DIR__));
 
 use Toni\Dotfiles\Compiler;
+use Toni\Dotfiles\Application;
+use Symfony\Component\Process\Process;
 
 $target = isset($argv[1]) ? realpath($argv[1]):false;
 try {
@@ -14,14 +16,38 @@ try {
     $compiler->compile();
     chmod('dotfiles.phar',0755);
     if($target){
-	copy('dotfiles.phar',$target.'/dotfiles.phar');
-	chmod($target.'/dotfiles.phar',0755);  
-	$version= shell_exec('php dotfiles.phar --version');
-	file_put_contents($target.'/VERSION',$version,LOCK_EX);
+        return generateTarget($target);
     }
     chdir($cwd);
 }catch(\Exception $e){
     echo 'Failed to compile phar: ['.get_class($e).'] '.$e->getMessage().' at '.$e->getFile().':'.$e->getLine().PHP_EOL;
     chdir($cwd);
     exit(1);
+}
+
+function generateTarget($targetDir)
+{
+    copy('dotfiles.phar',$targetDir.'/dotfiles.phar');
+    chmod($targetDir.'/dotfiles.phar',0755);
+
+    // parse version
+    $output = shell_exec('php dotfiles.phar --version');
+    $exp = explode(' ',$output);
+    $version = $exp[0];
+    $branchAlias = $exp[1];
+    $date = $exp[2];
+    $sha256 = shell_exec('sha256sum dotfiles.phar');
+
+    $contents = <<<EOC
+{
+    version: "${version}",
+    branch: "${branchAlias}",
+    date: "${date}",
+    sha256: "${sha256}"
+}
+
+EOC;
+
+    file_put_contents($targetDir.'/dotfiles.phar.json',$contents,LOCK_EX);
+
 }
