@@ -56,10 +56,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Dotfiles\\Plugins\\": "plugins/",
-            "Dotfiles\\": "src/",
-            "Tests\\Toni\\Dotfiles\\Unit\\": "tests/unit",
-            "Tests\\Toni\\Dotfiles\\Functional\\": "tests/functional"
+            "Dotfiles\\": "src/"
         }
     },
     "extra": {

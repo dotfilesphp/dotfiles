@@ -27,7 +27,7 @@ class AbstractEvent extends BaseAbstractEvent
         $this->logger = $logger;
     }
 
-    public function getLogger():?LoggerInterface
+    public function getLogger():LoggerInterface
     {
         return $this->logger;
     }
