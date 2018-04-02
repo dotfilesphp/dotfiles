@@ -1,0 +1,4 @@
+phpbrew:
+    machines:
+        hello: ~
+        world: ~

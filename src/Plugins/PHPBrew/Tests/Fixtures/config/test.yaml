@@ -1,0 +1,10 @@
+phpbrew:
+    set_prompt: true
+    rc_enable: true
+    machines:
+        foo:
+            set_prompt: false
+            rc_enable: true
+        bar:
+            set_prompt: true
+            rc_enable: true

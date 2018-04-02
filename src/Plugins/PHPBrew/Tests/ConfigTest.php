@@ -2,34 +2,25 @@
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
+use Dotfiles\Core\Config\Config as Builder;
+
 use Dotfiles\Plugins\PHPBrew\Config;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Config\Definition\Processor;
 
 class ConfigTest extends TestCase
 {
     public function testProcess()
     {
-        $contents = <<<EOC
-phpbrew:
-    set_prompt: true
-    rc_enable: true
-    machines:
-        athena:
-            set_prompt: false
-            rc_enable: true
-        zeus:
-            set_prompt: true
-            rc_enable: true
-EOC;
-        $parsed = Yaml::parse($contents);
-        $processor = new Processor();
-        $config = new Config();
+        $cwd = getcwd();
+        chdir(__DIR__.'/Fixtures');
+        $config = new Builder();
+        $config->addConfigDefinition(new Config());
+        $config->loadConfiguration();
+        $processed = $config->get();
+        chdir($cwd);
 
-        $processed = $processor->processConfiguration($config,$parsed);
-        $this->assertTrue($processed['set_prompt']);
-        $this->assertArrayHasKey('machines',$processed);
+        $this->assertTrue($processed['phpbrew']['set_prompt']);
+        $this->assertArrayHasKey('machines',$processed['phpbrew']);
     }
 
 }

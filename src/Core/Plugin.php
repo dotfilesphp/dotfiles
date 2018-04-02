@@ -9,10 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Config;
+namespace Dotfiles\Core;
 
-use Symfony\Component\Config\Definition\ConfigurationInterface as BaseConfigInterface;
 
-interface ConfigInterface extends BaseConfigInterface
+abstract class Plugin implements PluginInterface
 {
+    public function registerListeners(Emitter $emitter){}
+
+    public function addConfigDefinition(){}
 }
