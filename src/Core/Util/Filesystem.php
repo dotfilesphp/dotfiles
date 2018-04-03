@@ -16,8 +16,9 @@ class Filesystem extends BaseFileSystem
         }
         $prefix = "### > dotfiles-patch ###";
         $suffix = "### < dotfiles-patch ###";
-        $patch = "${prefix}\n${patch}\n${suffix}";
-        $regex = '/'.$prefix.'.*'.$suffix.'/is';
+        $patch = "\n${prefix}\n${patch}\n${suffix}\n";
+        $regex = '/\\n'.$prefix.'.*'.$suffix.'\\n/is';
+
 
         $contents = file_get_contents($file);
         if(preg_match($regex,$contents,$matches)){
