@@ -4,7 +4,7 @@ namespace Dotfiles\Plugins\PHPBrew\Tests;
 
 use Dotfiles\Plugins\PHPBrew\PHPBrewPlugin;
 use Dotfiles\Core\Emitter;
-use Dotfiles\Plugins\Bash\Events\ReloadBashConfigEvent;
+use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
 
 use PHPUnit\Framework\TestCase;

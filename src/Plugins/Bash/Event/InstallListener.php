@@ -1,8 +1,9 @@
 <?php
 
-namespace Dotfiles\Plugins\Bash\Events;
+namespace Dotfiles\Plugins\Bash\Event;
 
-use Dotfiles\Core\Events\AbstractListener;
+use Dotfiles\Core\Event\AbstractListener;
+use Dotfiles\Core\Util\Filesystem;
 use League\Event\EventInterface;
 
 class InstallListener extends AbstractListener
@@ -11,11 +12,12 @@ class InstallListener extends AbstractListener
     {
         $reloadEvent = new ReloadBashConfigEvent();
         $event->getEmitter()->emit($reloadEvent);
+        $this->generateDotfilesConfig($event,$reloadEvent->getBashConfig());
+        $this->patchHomeConfig($event);
+    }
 
-        $bashConfig = $reloadEvent->getBashConfig();
-
-        $prefix = "### BEGIN_DOTFILES_PATCH ###";
-        $suffix = "### END_DOTFILES_PATCH ###";
+    private function generateDotfilesConfig(EventInterface $event,$bashConfig)
+    {
         $event->getConfig()->get('dotfiles.install_dir');
 
         $uname = php_uname();
@@ -38,17 +40,19 @@ $bashConfig
 
 EOC;
 
-        file_put_contents($installDir.DIRECTORY_SEPARATOR.$fileName,$bashConfig, LOCK_EX);
+        file_put_contents($installDir.DIRECTORY_SEPARATOR.$fileName,$contents, LOCK_EX);
 
-        // write bash config patch into home location
-        $contents = [
-            $prefix,
-            "source = \"${installDir}/${fileName}\"",
-            $suffix
-        ];
-        $contents = implode(PHP_EOL,$contents);
-        $target = getenv('HOME').DIRECTORY_SEPARATOR.'.'.$fileName;
-        file_put_contents($target,$contents,LOCK_EX);
+    }
+
+    private function patchHomeConfig(EventInterface $event)
+    {
+        $installDir = $event->getConfig()->get('dotfiles.install_dir');
+        $fs = new Filesystem();
+        $contents = <<<EOC
+source "\$HOME/${installDir}/bashrc"
+EOC;
+
+        $fs->patch(getenv('HOME').DIRECTORY_SEPARATOR.'/.bashrc',$contents);
     }
 }
 

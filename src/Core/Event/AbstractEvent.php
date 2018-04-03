@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Events;
+namespace Dotfiles\Core\Event;
 
 use Dotfiles\Core\Emitter;
 use League\Event\AbstractEvent as BaseAbstractEvent;

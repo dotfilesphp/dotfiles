@@ -1,6 +1,5 @@
 
 export FOO="BAR"
-
 ### > dotfiles-patch ###
 
 export HELLO="WORLD"

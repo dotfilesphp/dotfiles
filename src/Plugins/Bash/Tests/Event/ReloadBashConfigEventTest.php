@@ -1,8 +1,8 @@
 <?php
 
-namespace Dotfiles\Core\Tests\Events;
+namespace Dotfiles\Plugins\Bash\Tests\Event;
 
-use Dotfiles\Plugins\Bash\Events\ReloadBashConfigEvent;
+use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Emitter;
 use Dotfiles\Core\Util\LoggerInterface;
 use DOtfiles\Core\Config\Config;
@@ -33,8 +33,6 @@ class ReloadBashConfigEventTest extends TestCase
     public function testEmit()
     {
         $logger = $this->createMock(LoggerInterface::class);
-		#$r = new \ReflectionObject($logger);
-		#print_r($r->getMethods());
         $logger->expects($this->once())
             ->method('debug')
             ->with("Added bash config",['contents' => 'dispatched'])

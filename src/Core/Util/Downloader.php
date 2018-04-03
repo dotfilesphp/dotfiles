@@ -43,25 +43,21 @@ class Downloader
 
     private $hasError = false;
 
-    public function __construct(OutputInterface $output,$url,$targetFile)
+    private $contents;
+
+    public function __construct(OutputInterface $output)
     {
           $this->output = $output;
-          $this->url    = $url;
-          $this->targetFile = $targetFile;
-
-          if(!is_dir($dir = dirname($targetFile))){
-              mkdir($dir,0755,true);
-          }
-
-          $this->createProgressBar();
     }
 
-    public function run($url=null,$targetFile=null)
+    public function run($url,$targetFile)
     {
-        $this->hasError = false;
+        if(!is_dir($dir = dirname($targetFile))){
+            mkdir($dir,0755,true);
+        }
+
         $this->createProgressBar();
-        $url = $this->url;
-        $targetFile = $this->targetFile;
+        $this->hasError = false;
         $this->output->writeln(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
         $this->output->writeln("");
         $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);

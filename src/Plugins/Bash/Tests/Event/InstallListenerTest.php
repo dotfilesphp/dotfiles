@@ -1,12 +1,12 @@
 <?php
 
-namespace Dotfiles\Plugins\Bash\Tests\Events;
+namespace Dotfiles\Plugins\Bash\Tests\Event;
 
-use Dotfiles\Plugins\Bash\Events\InstallListener;
+use Dotfiles\Plugins\Bash\Event\InstallListener;
 use Dotfiles\Core\Emitter;
-use Dotfiles\Core\Events\EventInterface;
+use Dotfiles\Core\Event\EventInterface;
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Plugins\Bash\Events\ReloadBashConfigEvent;
+use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use PHPUnit\Framework\TestCase;
 
 class InstallListenerTest extends TestCase
@@ -32,7 +32,7 @@ class InstallListenerTest extends TestCase
         $emitter->expects($this->once())
             ->method('emit')
             ->with(new ReloadBashConfigEvent())
-            ;
+        ;
         $config->expects($this->any())
             ->method('get')
             ->with('dotfiles.install_dir')
@@ -43,5 +43,7 @@ class InstallListenerTest extends TestCase
 
         $this->assertFileExists($dir.'/bashrc');
         $this->assertFileExists(getenv('HOME').'/.bashrc');
+
+
     }
 }

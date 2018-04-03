@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotfiles\Core\Events;
+namespace Dotfiles\Core\Event;
 
 class InstallEvent extends AbstractEvent
 {

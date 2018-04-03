@@ -15,7 +15,6 @@ use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Console\Input\InputOption;
 use Dotfiles\Core\Command\CommandInterface;
-use Dotfiles\Core\PluginInterface;
 use Dotfiles\Core\Config\Config;
 
 class Application extends BaseApplication
@@ -60,6 +59,35 @@ class Application extends BaseApplication
     public function getEmitter()
     {
         return $this->emitter;
+    }
+
+    /**
+     * @param Emitter $emitter
+     * @return Application
+     */
+    public function setEmitter(Emitter $emitter): Application
+    {
+        $this->emitter = $emitter;
+        return $this;
+    }
+
+    /**
+     * @return Config
+     */
+    public function getConfig(): Config
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param Config $config
+     * @return Application
+     */
+    public function setConfig(Config $config): Application
+    {
+        $this->config = $config;
+        $this->getEmitter()->setConfig($config);
+        return $this;
     }
 
     public function buildCommands()
@@ -113,13 +141,13 @@ class Application extends BaseApplication
             $className = $namespace.'\\'.str_replace('.php','',$file->getFileName());
             if(class_exists($className)){
                 $plugin = new $className();
-                $this->initPlugin($plugin);
+                $this->addPlugin($plugin);
                 $this->plugins[$plugin->getName()] = $plugin;
             }
         }
     }
 
-    private function initPlugin(PluginInterface $plugin)
+    public function addPlugin(PluginInterface $plugin)
     {
         $plugin->registerListeners($this->emitter);
         $plugin->setupConfiguration(Config::factory());

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotfiles\Core\Events;
+namespace Dotfiles\Core\Event;
 
 use League\Event\ListenerInterface as BaseListenerInterface;
 

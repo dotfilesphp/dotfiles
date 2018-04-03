@@ -14,7 +14,7 @@ namespace Dotfiles\Core;
 use League\Event\Emitter as BaseEmitter;
 use Dotfiles\Core\Util\LoggerInterface;
 use Dotfiles\Core\Util\Logger;
-use Dotfiles\Core\Events\AbstractEvent;
+use Dotfiles\Core\Event\AbstractEvent;
 use Dotfiles\Core\Config\Config;
 
 class Emitter extends BaseEmitter

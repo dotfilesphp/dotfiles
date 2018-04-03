@@ -114,8 +114,11 @@ class Config implements \ArrayAccess
         $this->configs = $generated;
     }
 
-    public function get()
+    public function get($name=null)
     {
-        return $this->configs;
+        if(is_null($name)){
+            return $this->configs;
+        }
+        $exp = explode('.',$name);
     }
 }

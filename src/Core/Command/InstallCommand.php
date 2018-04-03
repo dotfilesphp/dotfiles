@@ -15,7 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Dotfiles\Core\Command\CommandInterface;
-use Dotfiles\Core\Events\InstallEvent;
+use Dotfiles\Core\Event\InstallEvent;
 
 class InstallCommand extends Command implements CommandInterface
 {
@@ -28,7 +28,7 @@ class InstallCommand extends Command implements CommandInterface
     {
         $output->writeln(getenv('HOME'));
 
-        $output->writeln('<comment>Begin installing dotfiles</comment>');
+        $output->writeln('Begin installing <comment>dotfiles</comment>');
         $emitter = $this->getApplication()->getEmitter();
         $event = new InstallEvent();
         $emitter->emit($event);

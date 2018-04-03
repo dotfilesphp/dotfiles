@@ -4,4 +4,3 @@ export FOO="BAR"
 ### > dotfiles-patch ###
 EXISTING
 ### < dotfiles-patch ###
-

@@ -6,7 +6,8 @@ use Dotfiles\Core\Config\Config;
 use Dotfiles\Plugins\Bash\Config\Definition;
 use Dotfiles\Core\Plugin;
 use Dotfiles\Core\Emitter;
-use Dotfiles\Plugins\Bash\Events\InstallListener;
+use Dotfiles\Plugins\Bash\Event\InstallListener;
+use Dotfiles\Core\Event\InstallEvent;
 
 class BashPlugin extends Plugin
 {
@@ -17,7 +18,7 @@ class BashPlugin extends Plugin
 
     public function registerListeners(Emitter $emitter)
     {
-        $emitter->addListener('dotfiles.install',new InstallListener());
+        $emitter->addListener(InstallEvent::EVENT_NAME,new InstallListener());
     }
 
     public function setupConfiguration(Config $config)

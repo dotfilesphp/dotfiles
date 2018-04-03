@@ -4,7 +4,7 @@ namespace Dotfiles\Plugins\PHPBrew;
 
 use Dotfiles\Core\PluginInterface;
 use Dotfiles\Core\Emitter;
-use Dotfiles\Plugins\Bash\Events\ReloadBashConfigEvent;
+use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Plugins\PHPBrew\Config\Definition;
 

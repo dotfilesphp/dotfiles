@@ -1,8 +1,8 @@
 <?php
 
-namespace Dotfiles\Plugins\Bash\Events;
+namespace Dotfiles\Plugins\Bash\Event;
 
-use Dotfiles\Core\Events\AbstractEvent;
+use Dotfiles\Core\Event\AbstractEvent;
 
 class ReloadBashConfigEvent extends AbstractEvent
 {

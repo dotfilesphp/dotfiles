@@ -11,13 +11,6 @@ class FilesystemTest extends TestCase
     public function testPatch()
     {
         $fs = new Filesystem();
-        $deleted = <<<EOC
-
-### > dotfiles-patch ###
-export DELETED="LINES"
-### < dotfiles-patch ###
-
-EOC;
         $current = <<<EOC
 
 export FOO="BAR"
