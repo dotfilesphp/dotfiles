@@ -8,21 +8,27 @@ use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Application;
 use Dotfiles\Core\Config\Config;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 
 class BuilderTest extends TestCase
 {
     public function testCompile()
     {
-        $cb = $this->createMock(ContainerBuilder::class);
+        $definition = $this->createMock(Definition::class);
 
+        $cb = $this->createMock(ContainerBuilder::class);
+        $definition->expects($this->any())
+            ->method('setPublic')
+            ->will($this->returnSelf())
+        ;
         $cb->expects($this->exactly(3))
             ->method('register')
-            ->withConsecutive([
-                [Dispatcher::class, null],
-                [Config::class, null],
-                [Application::class, null]
-            ])
-            ->willReturn($cb)
+            ->willReturn($definition)
+            ->withConsecutive(
+                [Dispatcher::class],
+                [Config::class],
+                [Application::class]
+            )
         ;
         $builder = new Builder();
         $builder->setContainerBuilder($cb);
