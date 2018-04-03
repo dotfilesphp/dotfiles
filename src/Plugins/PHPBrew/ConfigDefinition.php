@@ -5,7 +5,7 @@ namespace Dotfiles\Plugins\PHPBrew;
 use Dotfiles\Core\Config\ConfigInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class Config implements ConfigInterface
+class ConfigDefinition implements ConfigInterface
 {
     public function getConfigTreeBuilder()
     {

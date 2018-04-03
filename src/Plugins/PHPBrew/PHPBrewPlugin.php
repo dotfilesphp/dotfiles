@@ -4,8 +4,8 @@ namespace Dotfiles\Plugins\PHPBrew;
 
 use Dotfiles\Core\PluginInterface;
 use Dotfiles\Core\Emitter;
-use Dotfiles\Core\Events\ReloadBashConfigEvent;
-use Dotfiles\Core\Util\Config;
+use Dotfiles\Plugins\Bash\Events\ReloadBashConfigEvent;
+use Dotfiles\Core\Config\Config;
 
 class PHPBrewPlugin implements PluginInterface
 {
@@ -19,17 +19,20 @@ class PHPBrewPlugin implements PluginInterface
         $emitter->addListener(ReloadBashConfigEvent::EVENT_NAME,[$this,'handleBashConfig']);
     }
 
+    public function setupConfiguration(Config $config)
+    {
+        $config->addDefinition(new ConfigDefinition());
+    }
+
     public function handleBashConfig(ReloadBashConfigEvent $event)
     {
-        $config = Config::create();
-
+        $config = $event->getConfig();
         if($config->get('phpbrew.set_prompt')){
-            $bashrc[] = 'export PHPBREW_SET_PROMPT=1';
+            $event->addHeaderConfig('export PHPBREW_SET_PROMPT=1');
         }
         if($config->get('phpbrew.rc_enable')){
-            $bashrc[] = 'export PHPBREW_RC_ENABLE=1';
+            $event->addHeaderConfig('export PHPBREW_RC_ENABLE=1');
         }
-        $bashrc[] = 'source $HOME/.phpbrew/bashrc';
-        $event->addBashConfig($bashrc);
+        $event->addFooterConfig('source $HOME/.phpbrew/bashrc');
     }
 }

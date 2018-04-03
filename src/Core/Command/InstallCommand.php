@@ -15,6 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Dotfiles\Core\Command\CommandInterface;
+use Dotfiles\Core\Events\InstallEvent;
 
 class InstallCommand extends Command implements CommandInterface
 {
@@ -27,12 +28,9 @@ class InstallCommand extends Command implements CommandInterface
     {
         $output->writeln(getenv('HOME'));
 
-        $output->writeln('<comment>Begin install dotfiles</comment>');
-
-    }
-
-    private function doInstallPhpBrew(OutputInterface $output)
-    {
-
+        $output->writeln('<comment>Begin installing dotfiles</comment>');
+        $emitter = $this->getApplication()->getEmitter();
+        $event = new InstallEvent();
+        $emitter->emit($event);
     }
 }

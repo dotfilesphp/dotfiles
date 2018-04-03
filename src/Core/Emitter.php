@@ -15,6 +15,7 @@ use League\Event\Emitter as BaseEmitter;
 use Dotfiles\Core\Util\LoggerInterface;
 use Dotfiles\Core\Util\Logger;
 use Dotfiles\Core\Events\AbstractEvent;
+use Dotfiles\Core\Config\Config;
 
 class Emitter extends BaseEmitter
 {
@@ -22,6 +23,11 @@ class Emitter extends BaseEmitter
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var Config
+     */
+    private $config;
 
     /**
      *  Get emitter instance
@@ -64,9 +70,21 @@ class Emitter extends BaseEmitter
     public function emit($event)
     {
         if($event instanceof AbstractEvent){
-            $event->setLogger($this->logger);
+            $event->setLogger($this->getLogger());
+            $event->setConfig($this->config);
         }
         return parent::emit($event);
+    }
+
+    /**
+     * @var Config $config Config object
+     * @return self
+     */
+    public function setConfig(Config $config)
+    {
+        $this->config = $config;
+
+        return $this;
     }
 
 }

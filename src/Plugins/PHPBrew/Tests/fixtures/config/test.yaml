@@ -8,3 +8,6 @@ phpbrew:
         bar:
             set_prompt: true
             rc_enable: true
+
+other:
+    other_config: bar

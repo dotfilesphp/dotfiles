@@ -25,6 +25,8 @@ class Config implements \ArrayAccess
 
     private $configs = array();
 
+    private $configDirs = array();
+
     /**
      * @return Config
      */
@@ -58,23 +60,35 @@ class Config implements \ArrayAccess
     }
 
 
-    public function addConfigDefinition(ConfigInterface $config)
+    public function addDefinition(ConfigInterface $config)
     {
         $builder = $config->getConfigTreeBuilder();
         $name = $builder->buildTree()->getName();
         $this->definitions[$name] = $config;
     }
 
+
+    public function addConfigDir($directory)
+    {
+        if(!is_dir($directory)){
+            throw new \InvalidArgumentException("Directory ${directory} not exists");
+        }
+        if(!in_array($directory,$this->configDirs)){
+            $this->configDirs[] = $directory;
+        }
+    }
+
     public function loadConfiguration()
     {
-        $files = Finder::create()
+        $finder = Finder::create()
             ->name('*.yaml')
             ->name('*.yml')
-            ->in(getcwd().'/config')
-            ->files()
         ;
+        foreach($this->configDirs as $dir){
+            $finder->in($dir);
+        }
         $configs = array();
-        foreach($files as $file){
+        foreach($finder->files() as $file){
             $parsed = Yaml::parseFile($file);
             if(is_array($parsed)){
                 $configs = array_merge_recursive($configs,$parsed);
@@ -98,7 +112,6 @@ class Config implements \ArrayAccess
         }
 
         $this->configs = $generated;
-
     }
 
     public function get()

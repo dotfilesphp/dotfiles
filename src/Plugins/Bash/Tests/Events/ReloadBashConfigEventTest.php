@@ -2,9 +2,10 @@
 
 namespace Dotfiles\Core\Tests\Events;
 
-use Dotfiles\Core\Events\ReloadBashConfigEvent;
+use Dotfiles\Plugins\Bash\Events\ReloadBashConfigEvent;
 use Dotfiles\Core\Emitter;
 use Dotfiles\Core\Util\LoggerInterface;
+use DOtfiles\Core\Config\Config;
 
 use PHPUnit\Framework\TestCase;
 
@@ -16,13 +17,14 @@ class ReloadBashConfigEventTest extends TestCase
         $this->assertEquals(ReloadBashConfigEvent::EVENT_NAME,$event->getName());
     }
 
-    public function testAddBashConfig()
+    public function testAddHeaderConfig()
     {
         $event = new ReloadBashConfigEvent();
 		$event->setEmitter(new Emitter);
-        $event->addBashConfig(['foo']);
-        $event->addBashConfig(['bar']);
-
+        $event->addHeaderConfig(['foo']);
+        $event->addHeaderConfig('bar');
+        $event->addFooterConfig(['hello']);
+        $event->addFooterConfig('world');
         $output = $event->getBashConfig();
         $this->assertContains('foo',$output);
         $this->assertContains('bar',$output);
@@ -41,12 +43,14 @@ class ReloadBashConfigEventTest extends TestCase
             ->with("Added bash config:\ndispatched")
         ;
 
+        $config = $this->createMock(Config::class);
         $event = new ReloadBashConfigEvent();
         $emitter = new Emitter();
         $emitter->setLogger($logger);
+        $emitter->setConfig($config);
 
         $emitter->addListener(ReloadBashConfigEvent::EVENT_NAME,function($event){
-            $event->addBashConfig(['dispatched']);
+            $event->addHeaderConfig(['dispatched']);
         });
 
         $emitter->emit($event);

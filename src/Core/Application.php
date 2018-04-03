@@ -15,6 +15,8 @@ use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Console\Input\InputOption;
 use Dotfiles\Core\Command\CommandInterface;
+use Dotfiles\Core\PluginInterface;
+use Dotfiles\Core\Config\Config;
 
 class Application extends BaseApplication
 {
@@ -22,10 +24,42 @@ class Application extends BaseApplication
     const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
     const RELEASE_DATE = '@release_date@';
 
+    /**
+     * @var Emitter
+     */
+    private $emitter;
+
+    /**
+     * @var Config
+     */
+    private $config;
+
     public function __construct()
     {
         parent::__construct('dotfiles', static::VERSION);
+        $this->config = new Config();
+        $this->emitter = new Emitter();
+        $this->emitter->setConfig($this->config);
+
+        $this->loadPlugins();
         $this->buildCommands();
+    }
+
+    public function getLongVersion()
+    {
+        return implode(' ',[
+            static::VERSION,
+            static::BRANCH_ALIAS_VERSION,
+            static::RELEASE_DATE
+        ]);
+    }
+
+    /**
+     * @return Emitter
+     */
+    public function getEmitter()
+    {
+        return $this->emitter;
     }
 
     public function buildCommands()
@@ -37,7 +71,6 @@ class Application extends BaseApplication
           ->name('*Command.php')
           ->files()
         ;
-
         foreach($files as $file){
             $relpath = realpath(__DIR__ . '/../Plugins').DIRECTORY_SEPARATOR;
             $path = str_replace($relpath,"",$file->getRealPath());
@@ -66,12 +99,29 @@ class Application extends BaseApplication
         );
     }
 
-    public function getLongVersion()
+    private function loadPlugins()
     {
-        return implode(' ',[
-            static::VERSION,
-            static::BRANCH_ALIAS_VERSION,
-            static::RELEASE_DATE
-        ]);
+        $finder = Finder::create();
+        $finder
+            ->in(__DIR__.'/../Plugins')
+            ->name('*Plugin.php')
+        ;
+
+        foreach($finder->files() as $file)
+        {
+            $namespace = 'Dotfiles\\Plugins\\'.str_replace('Plugin.php','',$file->getFileName());
+            $className = $namespace.'\\'.str_replace('.php','',$file->getFileName());
+            if(class_exists($className)){
+                $plugin = new $className();
+                $this->initPlugin($plugin);
+                $this->plugins[$plugin->getName()] = $plugin;
+            }
+        }
+    }
+
+    private function initPlugin(PluginInterface $plugin)
+    {
+        $plugin->registerListeners($this->emitter);
+        $plugin->setupConfiguration(Config::factory());
     }
 }

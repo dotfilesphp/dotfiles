@@ -11,10 +11,11 @@
 
 namespace Dotfiles\Core;
 
+use Dotfiles\Core\Config\Config;
 
 abstract class Plugin implements PluginInterface
 {
     public function registerListeners(Emitter $emitter){}
 
-    public function addConfigDefinition(){}
+    public function setupConfiguration(Config $config){}
 }

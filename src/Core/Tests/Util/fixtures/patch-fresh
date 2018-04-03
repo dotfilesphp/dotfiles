@@ -1,0 +1,8 @@
+
+export FOO="BAR"
+
+### > dotfiles-patch ###
+
+export HELLO="WORLD"
+
+### < dotfiles-patch ###

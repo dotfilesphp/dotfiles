@@ -2,22 +2,20 @@
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
-use Dotfiles\Core\Config\Config as Builder;
+use Dotfiles\Core\Config\Config;
 
-use Dotfiles\Plugins\PHPBrew\Config;
+use Dotfiles\Plugins\PHPBrew\ConfigDefinition;
 use PHPUnit\Framework\TestCase;
 
-class ConfigTest extends TestCase
+class ConfigDefinitionTest extends TestCase
 {
     public function testProcess()
     {
-        $cwd = getcwd();
-        chdir(__DIR__.'/Fixtures');
-        $config = new Builder();
-        $config->addConfigDefinition(new Config());
+        $config = new Config();
+        $config->addDefinition(new ConfigDefinition());
+        $config->addConfigDir(__DIR__.'/fixtures');
         $config->loadConfiguration();
         $processed = $config->get();
-        chdir($cwd);
 
         $this->assertTrue($processed['phpbrew']['set_prompt']);
         $this->assertArrayHasKey('machines',$processed['phpbrew']);

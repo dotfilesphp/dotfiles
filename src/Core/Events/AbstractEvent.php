@@ -14,6 +14,7 @@ namespace Dotfiles\Core\Events;
 use League\Event\AbstractEvent as BaseAbstractEvent;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Dotfiles\Core\Util\LoggerInterface;
+use Dotfiles\Core\Config\Config;
 
 class AbstractEvent extends BaseAbstractEvent
 {
@@ -21,6 +22,11 @@ class AbstractEvent extends BaseAbstractEvent
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var Config
+     */
+    private $config;
 
     public function setLogger(LoggerInterface $logger)
     {
@@ -30,5 +36,24 @@ class AbstractEvent extends BaseAbstractEvent
     public function getLogger():LoggerInterface
     {
         return $this->logger;
+    }
+
+    /**
+     * @param Config $config
+     * @return self
+     */
+    public function setConfig(Config $config)
+    {
+        $this->config = $config;
+
+        return $this;
+    }
+
+    /**
+     * @return Config
+     */
+    public function getConfig()
+    {
+      return $this->config;
     }
 }
