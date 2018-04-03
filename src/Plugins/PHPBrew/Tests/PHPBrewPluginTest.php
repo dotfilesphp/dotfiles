@@ -3,7 +3,7 @@
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
 use Dotfiles\Plugins\PHPBrew\PHPBrewPlugin;
-use Dotfiles\Core\Emitter;
+use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
 
@@ -15,22 +15,6 @@ class PHPBrewPluginTest extends TestCase
     {
         $phpbrew = new PHPBrewPlugin();
         $this->assertEquals('PHPBrew',$phpbrew->getName());
-    }
-
-    public function testRegisterListeners()
-    {
-        $phpbrew = new PHPBrewPlugin();
-
-        $emitter = $this->getMockBuilder(Emitter::class)
-            ->setMethods(['addListener'])
-            ->getMock()
-        ;
-        $emitter->expects($this->once())
-            ->method('addListener')
-            ->with(ReloadBashConfigEvent::EVENT_NAME,[$phpbrew,'handleBashConfig'])
-        ;
-
-        $phpbrew->registerListeners($emitter);
     }
 
     public function testHandleBashConfig()

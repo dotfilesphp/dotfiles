@@ -14,19 +14,22 @@ namespace Dotfiles\Core;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+
+use Dotfiles\Core\Event\Dispatcher;
+use Dotfiles\Core\Event\DispatcherPass;
 use Dotfiles\Core\Command\CommandInterface;
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Container;
+use Dotfiles\Core\DI\ListenerPass;
+use Dotfiles\Core\DI\CommandPass;
 
 class Application extends BaseApplication
 {
     const VERSION = '@package_version@';
     const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
     const RELEASE_DATE = '@release_date@';
-
-    /**
-     * @var Emitter
-     */
-    private $emitter;
 
     /**
      * @var Config
@@ -41,13 +44,8 @@ class Application extends BaseApplication
     public function __construct()
     {
         parent::__construct('dotfiles', static::VERSION);
-        $this->config = new Config();
-        $this->emitter = new Emitter();
-        $this->emitter->setConfig($this->config);
-        $this->container = new Container();
-
         $this->loadPlugins();
-        $this->buildCommands();
+        $this->compileContainer();
     }
 
     public function getLongVersion()
@@ -57,43 +55,6 @@ class Application extends BaseApplication
             static::BRANCH_ALIAS_VERSION,
             static::RELEASE_DATE
         ]);
-    }
-
-    /**
-     * @return Emitter
-     */
-    public function getEmitter()
-    {
-        return $this->emitter;
-    }
-
-    /**
-     * @param Emitter $emitter
-     * @return Application
-     */
-    public function setEmitter(Emitter $emitter): Application
-    {
-        $this->emitter = $emitter;
-        return $this;
-    }
-
-    /**
-     * @return Config
-     */
-    public function getConfig(): Config
-    {
-        return $this->config;
-    }
-
-    /**
-     * @param Config $config
-     * @return Application
-     */
-    public function setConfig(Config $config): Application
-    {
-        $this->config = $config;
-        $this->getEmitter()->setConfig($config);
-        return $this;
     }
 
     /**
@@ -112,43 +73,6 @@ class Application extends BaseApplication
     {
         $this->container = $container;
         return $this;
-    }
-
-    public function buildCommands()
-    {
-        $commands = array();
-        $files = Finder::create()
-          ->in(__DIR__ . '/Command')
-          //->in(__DIR__.'/../Plugins/*/Command')
-          ->name('*Command.php')
-          ->files()
-        ;
-        foreach($files as $file){
-            $relpath = realpath(__DIR__ . '/../Plugins').DIRECTORY_SEPARATOR;
-            $path = str_replace($relpath,"",$file->getRealPath());
-            $class = strtr($path,[
-                '/' => '\\',
-                '.php' => ''
-            ]);
-            $class = 'Dotfiles\\Plugins\\'.$class;
-            if(!class_exists($class)){
-                $class = 'Dotfiles\\Core\\Command\\'.str_replace('.php','',$file->getFileName());
-            }
-            if(class_exists($class)){
-                $r = new \ReflectionClass($class);
-                if($r->implementsInterface(CommandInterface::class)){
-                    $command = new $class();
-                    $commands[] = $command;
-                }
-            }
-        }
-        $this->addCommands($commands);
-        $this->getDefinition()->addOption(
-          new InputOption('force', '-f', InputOption::VALUE_NONE, 'Force command to be executed')
-        );
-        $this->getDefinition()->addOption(
-          new InputOption('reload', '-r', InputOption::VALUE_NONE, 'Only reload configuration')
-        );
     }
 
     private function loadPlugins()
@@ -173,7 +97,52 @@ class Application extends BaseApplication
 
     public function addPlugin(PluginInterface $plugin)
     {
-        $plugin->registerListeners($this->emitter);
         $plugin->setupConfiguration(Config::factory());
+    }
+
+    private function compileContainer()
+    {
+        $builder = new ContainerBuilder();
+        $builder->register(Dispatcher::class)
+            ->setPublic(true)
+        ;
+        $builder->register(Config::class)
+            ->setPublic(true)
+            ;
+        $builder->set(Application::class,$this);
+        $builder->register(Application::class)
+            ->setPublic(true)
+            ->setSynthetic(true)
+        ;
+        #$builder->register('Dotfiles\\Core\\Command\\')
+        #    ->resource(__DIR__.'/Command')
+        #;
+
+        $builder->addCompilerPass(new ListenerPass());
+        $builder->addCompilerPass(new CommandPass());
+
+        foreach($this->plugins as $plugin){
+            $plugin->configureContainer($builder);
+        }
+
+        $builder->compile();
+
+        $dumper = new PhpDumper($builder);
+        $target = getcwd().'/var/cache/container.php';
+        if(!is_dir($dir = dirname($target))){
+            mkdir($dir,0755,true);
+        }
+        file_put_contents($target,$dumper->dump(['class'=>'CachedContainer']));
+
+        require_once($target);
+        $container = new \CachedContainer();
+        $this->container = $container;
+
+        $this->initListeners();
+    }
+
+    private function initListeners()
+    {
+        $container = $this->container;
     }
 }

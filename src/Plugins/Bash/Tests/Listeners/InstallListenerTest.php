@@ -1,10 +1,10 @@
 <?php
 
-namespace Dotfiles\Plugins\Bash\Tests\Event;
+namespace Dotfiles\Plugins\Bash\Tests\Listeners;
 
-use Dotfiles\Plugins\Bash\Event\InstallListener;
-use Dotfiles\Core\Emitter;
-use Dotfiles\Core\Event\EventInterface;
+use Dotfiles\Plugins\Bash\Listeners\InstallListener;
+use Dotfiles\Core\Event\Dispatcher;
+use Dotfiles\Core\Event\InstallEvent;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use PHPUnit\Framework\TestCase;
@@ -17,33 +17,27 @@ class InstallListenerTest extends TestCase
             mkdir($dir,0755,true);
         }
 
-        $emitter = $this->createMock(Emitter::class);
-        $event = $this->createMock(EventInterface::class);
+        $dispatcher = $this->createMock(Dispatcher::class);
+        $event = $this->createMock(InstallEvent::class);
         $config = $this->createMock(Config::class);
-        $event->expects($this->any())
-            ->method('getEmitter')
-            ->willReturn($emitter)
-        ;
         $event->expects($this->any())
             ->method('getConfig')
             ->willReturn($config)
         ;
 
-        $emitter->expects($this->once())
-            ->method('emit')
-            ->with(new ReloadBashConfigEvent())
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with(ReloadBashConfigEvent::NAME,new ReloadBashConfigEvent())
         ;
         $config->expects($this->any())
             ->method('get')
             ->with('dotfiles.install_dir')
             ->willReturn($dir)
         ;
-        $listener = new InstallListener();
-        $listener->handle($event);
+        $listener = new InstallListener($dispatcher,$config);
+        $listener->onInstallEvent($event);
 
         $this->assertFileExists($dir.'/bashrc');
         $this->assertFileExists(getenv('HOME').'/.bashrc');
-
-
     }
 }

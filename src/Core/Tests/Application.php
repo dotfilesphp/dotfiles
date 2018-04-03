@@ -13,7 +13,6 @@ namespace Dotfiles\Core\Tests;
 
 use Dotfiles\Core\Application as BaseApplication;
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Emitter;
 
 class Application extends BaseApplication
 {
@@ -22,7 +21,5 @@ class Application extends BaseApplication
      */
     public function __construct()
     {
-        $this->setEmitter(new Emitter());
-        $this->setConfig(new Config());
     }
 }

@@ -3,6 +3,7 @@
 namespace Dotfiles\Core;
 
 use Dotfiles\Core\Config\Config;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 interface PluginInterface
 {
@@ -25,5 +26,5 @@ interface PluginInterface
      */
     public function setupConfiguration(Config $config);
 
-    public function configureContainer(ContainerInterface $container);
+    public function configureContainer(ContainerBuilder $container);
 }

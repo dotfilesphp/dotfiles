@@ -2,22 +2,16 @@
 
 namespace Dotfiles\Plugins\PHPBrew;
 
-use Dotfiles\Core\PluginInterface;
-use Dotfiles\Core\Emitter;
+use Dotfiles\Core\Plugin;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Plugins\PHPBrew\Config\Definition;
 
-class PHPBrewPlugin implements PluginInterface
+class PHPBrewPlugin extends Plugin
 {
     public function getName()
     {
         return "PHPBrew";
-    }
-
-    public function registerListeners(Emitter $emitter)
-    {
-        $emitter->addListener(ReloadBashConfigEvent::EVENT_NAME,[$this,'handleBashConfig']);
     }
 
     public function setupConfiguration(Config $config)

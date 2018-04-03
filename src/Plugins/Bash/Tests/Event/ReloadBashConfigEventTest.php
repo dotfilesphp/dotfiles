@@ -3,7 +3,7 @@
 namespace Dotfiles\Plugins\Bash\Tests\Event;
 
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
-use Dotfiles\Core\Emitter;
+use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Util\LoggerInterface;
 use DOtfiles\Core\Config\Config;
 
@@ -11,16 +11,11 @@ use PHPUnit\Framework\TestCase;
 
 class ReloadBashConfigEventTest extends TestCase
 {
-    public function testGetName()
-    {
-        $event = new ReloadBashConfigEvent();
-        $this->assertEquals(ReloadBashConfigEvent::EVENT_NAME,$event->getName());
-    }
-
     public function testAddHeaderConfig()
     {
+        $logger = $this->createMock(LoggerInterface::class);
         $event = new ReloadBashConfigEvent();
-		$event->setEmitter(new Emitter);
+		$event->setLogger($logger);
         $event->addHeaderConfig(['foo']);
         $event->addHeaderConfig('bar');
         $event->addFooterConfig(['hello']);
@@ -30,7 +25,7 @@ class ReloadBashConfigEventTest extends TestCase
         $this->assertContains('bar',$output);
     }
 
-    public function testEmit()
+    public function testDispatch()
     {
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
@@ -40,15 +35,12 @@ class ReloadBashConfigEventTest extends TestCase
 
         $config = $this->createMock(Config::class);
         $event = new ReloadBashConfigEvent();
-        $emitter = new Emitter();
-        $emitter->setLogger($logger);
-        $emitter->setConfig($config);
-
-        $emitter->addListener(ReloadBashConfigEvent::EVENT_NAME,function($event){
-            $event->addHeaderConfig(['dispatched']);
+        $event->setLogger($logger);
+        $dispatcher = new Dispatcher();
+        $dispatcher->addListener(ReloadBashConfigEvent::NAME,function($event){
+            $event->addHeaderConfig('dispatched');
         });
-
-        $emitter->emit($event);
+        $dispatcher->dispatch(ReloadBashConfigEvent::NAME,$event);
 
         $this->assertContains('dispatched',$event->getBashConfig());
     }

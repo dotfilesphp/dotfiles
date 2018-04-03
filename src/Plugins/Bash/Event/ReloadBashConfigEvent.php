@@ -6,15 +6,11 @@ use Dotfiles\Core\Event\AbstractEvent;
 
 class ReloadBashConfigEvent extends AbstractEvent
 {
-    const EVENT_NAME = 'bash.reload_config';
+    const NAME = 'bash.reload_config';
 
     private $header = [];
-    private $footer = [];
 
-    public function getName()
-    {
-        return static::EVENT_NAME;
-    }
+    private $footer = [];
 
     public function addHeaderConfig($contents)
     {
@@ -22,7 +18,7 @@ class ReloadBashConfigEvent extends AbstractEvent
             $contents = array($contents);
         }
         $this->header = array_merge($this->header,$contents);
-        $this->getEmitter()->getLogger()->debug(
+        $this->getLogger()->debug(
             "Added bash config",
             ['contents' => implode(PHP_EOL,$contents)]
         );

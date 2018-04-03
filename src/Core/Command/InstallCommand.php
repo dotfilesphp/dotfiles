@@ -16,9 +16,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Dotfiles\Core\Command\CommandInterface;
 use Dotfiles\Core\Event\InstallEvent;
+use Dotfiles\Core\Event\Dispatcher;
 
 class InstallCommand extends Command implements CommandInterface
 {
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
+
+    public function setDispatcher(Dispatcher $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
     public function configure()
     {
         $this->setName('install');
@@ -29,8 +40,7 @@ class InstallCommand extends Command implements CommandInterface
         $output->writeln(getenv('HOME'));
 
         $output->writeln('Begin installing <comment>dotfiles</comment>');
-        $emitter = $this->getApplication()->getEmitter();
         $event = new InstallEvent();
-        $emitter->emit($event);
+        $this->dispatcher->dispatch($event);
     }
 }

@@ -15,13 +15,17 @@ namespace Dotfiles\Core\Tests\Command;
 use Dotfiles\Core\Command\InstallCommand;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Tests\CommandTester;
+use Dotfiles\Core\Event\Dispatcher;
 
 class InstallCommandTest extends CommandTestCase
 {
     public function testExecute()
     {
+        $dispatcher = $this->createMock(Dispatcher::class);
+        $command = new InstallCommand();
+        $command->setDispatcher($dispatcher);
         $app = $this->getApplication();
-        $app->add(new InstallCommand());
+        $app->add($command);
         $command = $app->find('install');
         $tester = new CommandTester($command);
         $tester->execute([]);

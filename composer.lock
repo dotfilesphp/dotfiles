@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "18f218e1fbbd8d5940a598fe89c6e940",
+    "content-hash": "4e007b9f5e5ddf2157b33e29023b6c02",
     "packages": [
         {
             "name": "bash-it/bash-it",
@@ -819,6 +819,17 @@
             "dist": {
                 "type": "zip",
                 "url": "https://github.com/VundleVim/Vundle.vim/archive/v0.10.2.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "zsh/oh-my-zsh",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://codeload.github.com/robbyrussell/oh-my-zsh/zip/master",
                 "reference": null,
                 "shasum": null
             },
