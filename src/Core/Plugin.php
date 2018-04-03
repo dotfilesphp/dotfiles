@@ -18,4 +18,8 @@ abstract class Plugin implements PluginInterface
     public function registerListeners(Emitter $emitter){}
 
     public function setupConfiguration(Config $config){}
+
+    public function configureContainer(ContainerInterface $container)
+    {
+    }
 }

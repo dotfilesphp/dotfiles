@@ -24,4 +24,6 @@ interface PluginInterface
      * @return mixed
      */
     public function setupConfiguration(Config $config);
+
+    public function configureContainer(ContainerInterface $container);
 }

@@ -3,6 +3,7 @@
 namespace Dotfiles\Plugins\Bash;
 
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\ContainerInterface;
 use Dotfiles\Plugins\Bash\Config\Definition;
 use Dotfiles\Core\Plugin;
 use Dotfiles\Core\Emitter;
@@ -24,6 +25,11 @@ class BashPlugin extends Plugin
     public function setupConfiguration(Config $config)
     {
         $config->addDefinition(new Definition);
+    }
+
+    public function configureContainer(ContainerInterface $container)
+    {
+        $container->set('bash.listeners.install',new InstallListener());
     }
 }
 

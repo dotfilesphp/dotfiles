@@ -33,12 +33,18 @@ class Application extends BaseApplication
      */
     private $config;
 
+    /**
+     * @var Container
+     */
+    private $container;
+
     public function __construct()
     {
         parent::__construct('dotfiles', static::VERSION);
         $this->config = new Config();
         $this->emitter = new Emitter();
         $this->emitter->setConfig($this->config);
+        $this->container = new Container();
 
         $this->loadPlugins();
         $this->buildCommands();
@@ -87,6 +93,24 @@ class Application extends BaseApplication
     {
         $this->config = $config;
         $this->getEmitter()->setConfig($config);
+        return $this;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
+    }
+
+    /**
+     * @param Container $container
+     * @return Application
+     */
+    public function setContainer(Container $container): Application
+    {
+        $this->container = $container;
         return $this;
     }
 
