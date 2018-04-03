@@ -11,11 +11,8 @@
 
 namespace Dotfiles\Core\Util;
 
-interface LoggerInterface
+use Psr\Log\LoggerInterface as BaseLoggerInterface;
+
+interface LoggerInterface extends BaseLoggerInterface
 {
-    /**
-     * @param string $message Message to log
-     * @return self
-     */
-    public function debug($message);
 }

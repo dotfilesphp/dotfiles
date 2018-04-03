@@ -9,13 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Util;
+namespace Dotfiles\Core\Config;
 
-interface LoggerInterface
+use Symfony\Component\Config\Definition\ConfigurationInterface as BaseConfigInterface;
+
+interface DefinitionInterface extends BaseConfigInterface
 {
-    /**
-     * @param string $message Message to log
-     * @return self
-     */
-    public function debug($message);
 }

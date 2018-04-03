@@ -28,11 +28,8 @@ class EmitterTest extends TestCase
 
     public function testLogger()
     {
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-            ->setMethods(['debug'])
-            ->getMock()
-        ;
-        $emitter = Emitter::factory();
+        $logger = $this->createMock(LoggerInterface::class);
+        $emitter = new Emitter();
         $emitter->setLogger($logger);
         $this->assertEquals($logger,$emitter->getLogger());
     }

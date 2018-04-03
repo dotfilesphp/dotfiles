@@ -6,6 +6,7 @@ use Dotfiles\Core\PluginInterface;
 use Dotfiles\Core\Emitter;
 use Dotfiles\Plugins\Bash\Events\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Plugins\PHPBrew\Config\Definition;
 
 class PHPBrewPlugin implements PluginInterface
 {
@@ -21,7 +22,7 @@ class PHPBrewPlugin implements PluginInterface
 
     public function setupConfiguration(Config $config)
     {
-        $config->addDefinition(new ConfigDefinition());
+        $config->addDefinition(new Definition());
     }
 
     public function handleBashConfig(ReloadBashConfigEvent $event)

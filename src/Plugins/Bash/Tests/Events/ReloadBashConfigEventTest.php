@@ -32,15 +32,12 @@ class ReloadBashConfigEventTest extends TestCase
 
     public function testEmit()
     {
-        $logger = $this->getMockBuilder(LoggerInterface::class)
-            ->setMethods(['debug'])
-            ->getMock()
-        ;
+        $logger = $this->createMock(LoggerInterface::class);
 		#$r = new \ReflectionObject($logger);
 		#print_r($r->getMethods());
         $logger->expects($this->once())
             ->method('debug')
-            ->with("Added bash config:\ndispatched")
+            ->with("Added bash config",['contents' => 'dispatched'])
         ;
 
         $config = $this->createMock(Config::class);

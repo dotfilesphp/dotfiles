@@ -19,7 +19,7 @@ use Symfony\Component\Yaml\Yaml;
 class Config implements \ArrayAccess
 {
     /**
-     * @var ConfigInterface[]
+     * @var DefinitionInterface[]
      */
     private $definitions = array();
 
@@ -60,7 +60,7 @@ class Config implements \ArrayAccess
     }
 
 
-    public function addDefinition(ConfigInterface $config)
+    public function addDefinition(DefinitionInterface $config)
     {
         $builder = $config->getConfigTreeBuilder();
         $name = $builder->buildTree()->getName();

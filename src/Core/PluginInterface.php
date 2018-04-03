@@ -2,6 +2,8 @@
 
 namespace Dotfiles\Core;
 
+use Dotfiles\Core\Config\Config;
+
 interface PluginInterface
 {
     /**
@@ -16,4 +18,10 @@ interface PluginInterface
      * @param Emitter $emitter
      */
     public function registerListeners(Emitter $emitter);
+
+    /**
+     * @param Config $config
+     * @return mixed
+     */
+    public function setupConfiguration(Config $config);
 }

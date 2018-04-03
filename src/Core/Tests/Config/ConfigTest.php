@@ -4,7 +4,7 @@ namespace Dotfiles\Core\Tests\Config;
 
 use PHPUnit\Framework\TestCase;
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Config\ConfigInterface;
+use Dotfiles\Core\Config\DefinitionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\NodeInterface;
 
@@ -24,7 +24,7 @@ class ConfigTest extends TestCase
             ->method('buildTree')
             ->willReturn($node)
         ;
-        $definition = $this->createMock(ConfigInterface::class)
+        $definition = $this->createMock(DefinitionInterface::class)
         ;
         $definition->expects($this->once())
             ->method('getConfigTreeBuilder')
@@ -51,7 +51,7 @@ class ConfigTest extends TestCase
             ->method('buildTree')
             ->willReturn($node)
         ;
-        $definition = $this->createMock(ConfigInterface::class);
+        $definition = $this->createMock(DefinitionInterface::class);
         $definition->expects($this->any())
             ->method('getConfigTreeBuilder')
             ->willReturn($tree)

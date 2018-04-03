@@ -44,6 +44,7 @@ class Emitter extends BaseEmitter
     }
 
     /**
+     * @param LoggerInterface $logger
      * @return self
      */
     public function setLogger(LoggerInterface $logger):self
@@ -66,6 +67,8 @@ class Emitter extends BaseEmitter
 
     /**
      * @var AbstractEvent $event
+     *
+     * @return \League\Event\EventInterface|mixed|string
      */
     public function emit($event)
     {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dotfiles\Plugins\PHPBrew;
+namespace Dotfiles\Plugins\PHPBrew\Config;
 
-use Dotfiles\Core\Config\ConfigInterface;
+use Dotfiles\Core\Config\DefinitionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class ConfigDefinition implements ConfigInterface
+class Definition implements DefinitionInterface
 {
     public function getConfigTreeBuilder()
     {

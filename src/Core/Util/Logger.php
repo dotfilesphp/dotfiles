@@ -11,11 +11,18 @@
 
 namespace Dotfiles\Core\Util;
 
-class Logger implements LoggerInterface
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger as BaseLogger;
+
+class Logger extends BaseLogger implements LoggerInterface
 {
-    /**
-     * @param string $message Message to log
-     * @return self
-     */
-    public function debug($message){}
+    public function __construct($handlers = array(), $processors = array())
+    {
+        if(!is_dir($dir = getcwd().'/var/log')){
+            mkdir($dir,0755, true);
+        }
+        $handler = new StreamHandler($dir.DIRECTORY_SEPARATOR.'dotfiles.log');
+        parent::__construct('dotfiles', [$handler], $processors);
+    }
+
 }

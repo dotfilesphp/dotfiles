@@ -22,7 +22,10 @@ class ReloadBashConfigEvent extends AbstractEvent
             $contents = array($contents);
         }
         $this->header = array_merge($this->header,$contents);
-        $this->getEmitter()->getLogger()->debug("Added bash config:\n".implode(PHP_EOL,$contents));
+        $this->getEmitter()->getLogger()->debug(
+            "Added bash config",
+            ['contents' => implode(PHP_EOL,$contents)]
+        );
     }
 
     public function addFooterConfig($contents)

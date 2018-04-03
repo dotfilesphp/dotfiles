@@ -1,18 +1,18 @@
 <?php
 
-namespace Dotfiles\Plugins\PHPBrew\Tests;
+namespace Dotfiles\Plugins\PHPBrew\Tests\Config;
 
 use Dotfiles\Core\Config\Config;
 
-use Dotfiles\Plugins\PHPBrew\ConfigDefinition;
+use Dotfiles\Plugins\PHPBrew\Config\Definition;
 use PHPUnit\Framework\TestCase;
 
-class ConfigDefinitionTest extends TestCase
+class DefinitionTest extends TestCase
 {
     public function testProcess()
     {
         $config = new Config();
-        $config->addDefinition(new ConfigDefinition());
+        $config->addDefinition(new Definition());
         $config->addConfigDir(__DIR__.'/fixtures');
         $config->loadConfiguration();
         $processed = $config->get();
