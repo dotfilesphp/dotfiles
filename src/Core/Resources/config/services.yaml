@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+        
+    Dotfiles\Core\Application: ~
+    Dotfiles\Core\Config\Config: ~
+    Dotfiles\Core\Event\Dispatcher: ~
+    Dotfiles\Core\Command\:
+        resource: '../../Command/*Command.php'
+        tags:
+            - { name: "dotfiles.command" }
+            
+    dotfiles.app:
+        alias: Dotfiles\Core\Application

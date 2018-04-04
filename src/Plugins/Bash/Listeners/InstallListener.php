@@ -5,7 +5,6 @@ namespace Dotfiles\Plugins\Bash\Listeners;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Dotfiles\Core\Event\InstallEvent;
-use Dotfiles\Core\Event\AbstractListener;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;

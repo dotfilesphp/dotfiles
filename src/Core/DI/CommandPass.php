@@ -2,6 +2,7 @@
 
 namespace Dotfiles\Core\DI;
 
+use Dotfiles\Core\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
@@ -18,10 +19,10 @@ class CommandPass implements CompilerPassInterface
         $definition = $container->findDefinition(Application::class);
 
         // find all service IDs with the app.mail_transport tag
-        $taggedServices = $container->findTaggedServiceIds('dotfile.command');
+        $taggedServices = $container->findTaggedServiceIds('dotfiles.command');
 
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addCommand', array(new Reference($id)));
+            $definition->addMethodCall('add', [new Reference($id)]);
         }
     }
 }

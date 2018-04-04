@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core;
+namespace Dotfiles\Core\DI;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as BaseContainerInterface;
 

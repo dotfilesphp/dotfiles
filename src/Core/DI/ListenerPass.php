@@ -2,6 +2,7 @@
 
 namespace Dotfiles\Core\DI;
 
+use Dotfiles\Core\Event\Dispatcher;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;

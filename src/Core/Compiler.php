@@ -51,9 +51,7 @@ class Compiler
             $this->version = trim($process->getOutput());
         } else {
             // get branch-alias defined in composer.json for dev-master (if any)
-            $localConfig = __DIR__ . '/../composer.json';
-            $json = json_decode($localConfig);
-            $localConfig = __DIR__ . '/../composer.json';
+            $localConfig = __DIR__ . '/../../composer.json';
             $contents = file_get_contents($localConfig);
             $json = json_decode($contents,true);
             if (isset($json['extra']['branch-alias']['dev-master'])) {
@@ -92,9 +90,10 @@ class Compiler
             ->exclude('Tests')
             ->exclude('tests')
             ->exclude('docs')
-            ->in(__DIR__ . '/../vendor/symfony')
-            ->in(__DIR__ . '/../vendor/composer')
-            ->in(__DIR__ . '/../vendor/myclabs')
+            ->in(__DIR__ . '/../../vendor/symfony')
+            ->in(__DIR__ . '/../../vendor/composer')
+            ->in(__DIR__ . '/../../vendor/myclabs')
+            ->in(__DIR__ . '/../../vendor/psr')
             ->sort($finderSort)
         ;
 
@@ -102,7 +101,23 @@ class Compiler
             $this->addFile($phar, $file);
         }
 
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../vendor/autoload.php'));
+        $finder->files()
+            ->ignoreVCS(true)
+            ->exclude('Tests')
+            ->exclude('tests')
+            ->exclude('docs')
+            ->name('*.yaml')
+            ->name('*.yml')
+            ->name('*.php')
+            ->in(__DIR__ . '/../Plugins')
+            ->sort($finderSort)
+        ;
+
+        foreach ($finder as $file) {
+            $this->addFile($phar, $file);
+        }
+
+        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/autoload.php'));
         $this->addDotfilesBin($phar);
         $phar->setStub($this->getStub());
         $phar->stopBuffering();
@@ -157,7 +172,7 @@ EOF;
 
     private function addDotfilesBin($phar)
     {
-        $content = file_get_contents(__DIR__ . '/../bin/dotfiles');
+        $content = file_get_contents(__DIR__ . '/../../bin/dotfiles');
         $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
         $phar->addFromString('bin/dotfiles', $content);
     }
@@ -172,7 +187,7 @@ EOF;
             $content = "\n".$content."\n";
         }
 
-        if ($path === 'src/Application.php') {
+        if ($path === 'src/Core/Application.php') {
             $content = str_replace('@package_version@', $this->version, $content);
             $content = str_replace('@package_branch_alias_version@', $this->branchAliasVersion, $content);
             $content = str_replace('@release_date@', $this->versionDate->format('Y-m-d H:i:s'), $content);
@@ -221,9 +236,9 @@ EOF;
     private function getRelativeFilePath($file)
     {
         $realPath = $file->getRealPath();
-	$pathPrefix = dirname(dirname(__DIR__ . '/dotfiles/')).DIRECTORY_SEPARATOR;
+        $pathPrefix = dirname(dirname(__DIR__ )).DIRECTORY_SEPARATOR;
         $pos = strpos($realPath, $pathPrefix);
         $relativePath = ($pos !== false) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
-	return strtr($relativePath, '\\', '/');
+	    return strtr($relativePath, '\\', '/');
     }
 }
