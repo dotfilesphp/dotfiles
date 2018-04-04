@@ -77,6 +77,9 @@ class Compiler
             ->name('*.php')
             ->name('*.yaml')
             ->name('*.yml')
+            ->exclude([
+                'Tests'
+            ])
             ->notName('Compiler.php')
             ->in(__DIR__)
             ->sort($finderSort)

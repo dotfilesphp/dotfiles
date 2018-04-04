@@ -105,6 +105,11 @@ class Builder
     public function compile()
     {
         $builder = $this->getContainerBuilder();
+        $baseDir = realpath(dirname(__DIR__.'/../../../src'));
+        if(false !== strpos($dir = \Phar::running(),'phar:///')){
+            $baseDir = 'phar://dotfiles.phar';
+        }
+        $builder->setParameter('dotfiles.base_dir',$baseDir);
 
         $this->configureCoreServices($builder);
         $builder->addCompilerPass(new ListenerPass());
