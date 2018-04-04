@@ -74,6 +74,9 @@ class Compiler
         $finder = new Finder();
         $finder->files()
             ->ignoreVCS(true)
+            ->name('*.php')
+            ->name('*.yaml')
+            ->name('*.yml')
             ->notName('Compiler.php')
             ->in(__DIR__)
             ->sort($finderSort)
