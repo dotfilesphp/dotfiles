@@ -22,7 +22,7 @@ class BashPlugin extends Plugin
         $config->addDefinition(new Definition);
     }
 
-    public function configureContainer(ContainerBuilder $container)
+    public function configureContainer(ContainerBuilder $container, Config $config)
     {
         $locator = new FileLocator(__DIR__.'/Resources');
         $loader = new YamlFileLoader($container,$locator);

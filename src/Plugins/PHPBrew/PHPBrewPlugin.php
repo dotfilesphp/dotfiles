@@ -6,6 +6,7 @@ use Dotfiles\Core\Plugin;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Plugins\PHPBrew\Config\Definition;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class PHPBrewPlugin extends Plugin
 {
@@ -30,4 +31,12 @@ class PHPBrewPlugin extends Plugin
         }
         $event->addFooterConfig('source $HOME/.phpbrew/bashrc');
     }
+
+    public function configureContainer(ContainerBuilder $container, Config $config)
+    {
+        $container->setParameter('phpbrew.set_prompt',$config['phpbrew']['set_prompt']);
+        $container->setParameter('phpbrew.rc_enable',$config['phpbrew']['rc_enable']);
+    }
+
+
 }

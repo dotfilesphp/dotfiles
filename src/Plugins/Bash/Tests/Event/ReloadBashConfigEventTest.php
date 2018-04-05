@@ -32,8 +32,6 @@ class ReloadBashConfigEventTest extends TestCase
             ->method('debug')
             ->with("Added bash config",['contents' => 'dispatched'])
         ;
-
-        $config = $this->createMock(Config::class);
         $event = new ReloadBashConfigEvent();
         $event->setLogger($logger);
         $dispatcher = new Dispatcher();

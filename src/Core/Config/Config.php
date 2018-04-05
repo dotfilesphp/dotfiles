@@ -25,19 +25,9 @@ class Config implements \ArrayAccess
 
     private $configs = array();
 
-    private $configDirs = array();
+    private $defaults = array();
 
-    /**
-     * @return Config
-     */
-    static public function factory()
-    {
-        static $instance;
-        if(!$instance instanceof self){
-            $instance = new self();
-        }
-        return $instance;
-    }
+    private $configDirs = array();
 
     public function offsetExists($offset)
     {
@@ -65,6 +55,7 @@ class Config implements \ArrayAccess
         $builder = $config->getConfigTreeBuilder();
         $name = $builder->buildTree()->getName();
         $this->definitions[$name] = $config;
+        $this->defaults[$name] = [];
     }
 
 
@@ -80,23 +71,8 @@ class Config implements \ArrayAccess
 
     public function loadConfiguration()
     {
-        $finder = Finder::create()
-            ->name('*.yaml')
-            ->name('*.yml')
-        ;
-        foreach($this->configDirs as $dir){
-            $finder->in($dir);
-        }
-        $configs = array();
-        foreach($finder->files() as $file){
-            $parsed = Yaml::parseFile($file);
-            if(is_array($parsed)){
-                $configs = array_merge_recursive($configs,$parsed);
-            }
-        }
-
+        $configs = $this->processFiles();
         $processor = new Processor();
-
         $generated = [];
         foreach($configs as $rootKey => $values){
             if(!isset($this->definitions[$rootKey])){
@@ -120,5 +96,29 @@ class Config implements \ArrayAccess
             return $this->configs;
         }
         $exp = explode('.',$name);
+    }
+
+    private function processFiles()
+    {
+        $configs = $this->defaults;
+        if(!count($this->configDirs) > 0){
+            return $configs;
+        }
+
+        $finder = Finder::create()
+            ->name('*.yaml')
+            ->name('*.yml')
+        ;
+        foreach($this->configDirs as $dir){
+            $finder->in($dir);
+        }
+        $configs = array();
+        foreach($finder->files() as $file){
+            $parsed = Yaml::parseFile($file);
+            if(is_array($parsed)){
+                $configs = array_merge_recursive($configs,$parsed);
+            }
+        }
+        return $configs;
     }
 }

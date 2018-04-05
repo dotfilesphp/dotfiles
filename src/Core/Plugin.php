@@ -21,7 +21,7 @@ abstract class Plugin implements PluginInterface
 
     public function setupConfiguration(Config $config){}
 
-    public function configureContainer(ContainerBuilder $container)
+    public function configureContainer(ContainerBuilder $container, Config $config)
     {
     }
 }

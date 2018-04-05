@@ -25,8 +25,9 @@ class InstallCommand extends Command implements CommandInterface
      */
     private $dispatcher;
 
-    public function setDispatcher(Dispatcher $dispatcher)
+    public function __construct(?string $name = null, Dispatcher $dispatcher)
     {
+        parent::__construct($name);
         $this->dispatcher = $dispatcher;
     }
 
@@ -41,6 +42,6 @@ class InstallCommand extends Command implements CommandInterface
 
         $output->writeln('Begin installing <comment>dotfiles</comment>');
         $event = new InstallEvent();
-        $this->dispatcher->dispatch($event);
+        $this->dispatcher->dispatch(InstallEvent::NAME,$event);
     }
 }

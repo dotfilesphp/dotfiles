@@ -11,8 +11,10 @@
 
 namespace Dotfiles\Core;
 
+use Dotfiles\Core\Config\Definition;
 use Dotfiles\Core\DI\Builder;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Finder\Finder;
 use Dotfiles\Core\Config\Config;
 
@@ -44,14 +46,25 @@ class ApplicationFactory
 
     private function compileContainer()
     {
-        $builder = new Builder();
-
+        $config = new Config();
+        $config->addDefinition(new Definition());
         foreach($this->plugins as $plugin){
-            $plugin->configureContainer($builder->getContainerBuilder());
+            $plugin->setupConfiguration($config);
         }
+        $config->loadConfiguration();
 
+        $builder = new Builder();
+        $this->processCoreConfig($builder->getContainerBuilder(),$config);
+        foreach($this->plugins as $plugin){
+            $plugin->configureContainer($builder->getContainerBuilder(),$config);
+        }
         $builder->compile();
         $this->container = $builder->getContainer();
+    }
+
+    private function processCoreConfig(ContainerBuilder $builder, Config $config)
+    {
+        $builder->setParameter('dotfiles.install_dir',$config['dotfiles']['install_dir']);
     }
 
     private function loadPlugins()
@@ -68,14 +81,8 @@ class ApplicationFactory
             $className = $namespace.'\\'.str_replace('.php','',$file->getFileName());
             if(class_exists($className)){
                 $plugin = new $className();
-                $this->addPlugin($plugin);
                 $this->plugins[$plugin->getName()] = $plugin;
             }
         }
-    }
-
-    public function addPlugin(PluginInterface $plugin)
-    {
-        $plugin->setupConfiguration(Config::factory());
     }
 }

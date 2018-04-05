@@ -12,7 +12,15 @@ use Dotfiles\Core\Config\Config;
 
 class InstallListener implements EventSubscriberInterface
 {
+    /**
+     * @var Dispatcher
+     */
     private $dispatcher;
+
+    /**
+     * @var Config
+     */
+    private $config;
 
     public function __construct(Dispatcher $dispatcher, Config $config)
     {

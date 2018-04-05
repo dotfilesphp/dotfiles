@@ -15,16 +15,10 @@ interface PluginInterface
     public function getName();
 
     /**
-     * Register event listeners
-     * @param Emitter $emitter
-     */
-    public function registerListeners(Emitter $emitter);
-
-    /**
      * @param Config $config
      * @return mixed
      */
     public function setupConfiguration(Config $config);
 
-    public function configureContainer(ContainerBuilder $container);
+    public function configureContainer(ContainerBuilder $container, Config $config);
 }
