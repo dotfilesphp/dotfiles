@@ -13,6 +13,8 @@ namespace Dotfiles\Core;
 
 use Dotfiles\Core\Config\Definition;
 use Dotfiles\Core\DI\Builder;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Finder\Finder;

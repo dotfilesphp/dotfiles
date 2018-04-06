@@ -11,18 +11,14 @@
 
 namespace Dotfiles\Core\Util;
 
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger as BaseLogger;
+use Psr\Log\LoggerInterface;
 
 class Logger extends BaseLogger implements LoggerInterface
 {
     public function __construct($handlers = array(), $processors = array())
     {
-        if(!is_dir($dir = getcwd().'/var/log')){
-            mkdir($dir,0755, true);
-        }
-        $handler = new StreamHandler($dir.DIRECTORY_SEPARATOR.'dotfiles.log');
-        parent::__construct('dotfiles', [$handler], $processors);
+        parent::__construct('dotfiles');
     }
 
 }

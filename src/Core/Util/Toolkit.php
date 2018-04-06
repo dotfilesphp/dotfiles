@@ -63,4 +63,16 @@ class Toolkit
             }
         }
     }
+
+    /**
+     * Ensure that directory exists
+     *
+     * @param string $file
+     */
+    public static function ensureDir($file)
+    {
+        if(!is_dir($dir = dirname($file))){
+            mkdir($dir,0755,true);
+        }
+    }
 }

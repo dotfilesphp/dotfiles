@@ -3,17 +3,34 @@ services:
         autowire: true
         autoconfigure: true
         public: true
-    Dotfiles\Core\Application: ~
     Dotfiles\Core\Event\Dispatcher: ~
     Dotfiles\Core\Config\Config:
         synthetic: true
         calls:
             - [setCachePath, ['%dotfiles.cache_dir%']]
-    Dotfiles\Core\Command\InstallCommand:
-        tags: { name: dotfiles.command }
+    Dotfiles\Core\Command\InstallCommand: ~
     Dotfiles\Core\Command\SelfUpdateCommand:
-        tags: { name: dotfiles.command }
+        calls:
+            - [setDownloader,['@dotfiles.downloader']]
+            - [setTempDir,['%dotfiles.temp_dir%']]
+            - [setCacheDir,['%dotfiles.cache_dir%']]
+    Dotfiles\Core\Application: ~
+    
+    # aliasses
+    
+    Psr\Log\LoggerInterface:
+        alias: dotfiles.logger
+    
     dotfiles.app:
         alias: Dotfiles\Core\Application
     dotfiles.config:
         alias: Dotfiles\Core\Config\Config
+    dotfiles.input:
+        class: Symfony\Component\Console\Input\ArgvInput
+    dotfiles.output:
+        class: Symfony\Component\Console\Output\ConsoleOutput
+    dotfiles.logger:
+        class: Dotfiles\Core\Util\Logger
+    dotfiles.downloader:
+        class: Dotfiles\Core\Util\Downloader
+        arguments: ['@dotfiles.output','@dotfiles.logger']

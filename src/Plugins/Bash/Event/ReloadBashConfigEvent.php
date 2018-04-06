@@ -3,6 +3,7 @@
 namespace Dotfiles\Plugins\Bash\Event;
 
 use Dotfiles\Core\Event\AbstractEvent;
+use Psr\Log\LoggerInterface;
 
 class ReloadBashConfigEvent extends AbstractEvent
 {
@@ -12,13 +13,23 @@ class ReloadBashConfigEvent extends AbstractEvent
 
     private $footer = [];
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     public function addHeaderConfig($contents)
     {
         if(!is_array($contents)){
             $contents = array($contents);
         }
         $this->header = array_merge($this->header,$contents);
-        $this->getLogger()->debug(
+        $this->logger->debug(
             "Added bash config",
             ['contents' => implode(PHP_EOL,$contents)]
         );

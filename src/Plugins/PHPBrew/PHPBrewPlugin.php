@@ -34,7 +34,6 @@ class PHPBrewPlugin extends Plugin
 
     public function configureContainer(ContainerBuilder $container, Config $config)
     {
-        $container->setParameter('phpbrew.set_prompt',$config->get('phpbrew.set_prompt'));
-        $container->setParameter('phpbrew.rc_enable',$config->get('phpbrew.rc_enable'));
+
     }
 }

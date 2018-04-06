@@ -2,6 +2,7 @@
 
 namespace Dotfiles\Plugins\Bash\Listeners;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Dotfiles\Core\Event\InstallEvent;
@@ -24,10 +25,13 @@ class InstallListener implements EventSubscriberInterface
 
     private $installDir;
 
-    public function __construct(Dispatcher $dispatcher, Config $config)
+    private $logger;
+
+    public function __construct(Dispatcher $dispatcher, Config $config, LoggerInterface $logger)
     {
         $this->dispatcher = $dispatcher;
         $this->config = $config;
+        $this->logger = $logger;
     }
 
     /**
@@ -47,7 +51,7 @@ class InstallListener implements EventSubscriberInterface
 
     public function onInstallEvent(InstallEvent $event)
     {
-        $reloadEvent = new ReloadBashConfigEvent();
+        $reloadEvent = new ReloadBashConfigEvent($this->logger);
         $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME,$reloadEvent);
         $this->generateDotfilesConfig($reloadEvent->getBashConfig());
         $this->patchHomeConfig();

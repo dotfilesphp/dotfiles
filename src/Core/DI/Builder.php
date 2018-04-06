@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\DI;
 
+use Dotfiles\Core\DI\Compiler\CommandPass;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -112,8 +113,8 @@ class Builder
         $builder->setParameter('dotfiles.base_dir',$baseDir);
 
         $this->configureCoreServices($builder);
-        $builder->addCompilerPass(new ListenerPass());
         $builder->addCompilerPass(new CommandPass());
+        $builder->addCompilerPass(new ListenerPass());
         $builder->compile();
 
         $dumper = $this->getDumper();

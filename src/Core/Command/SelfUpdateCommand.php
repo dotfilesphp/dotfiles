@@ -14,12 +14,9 @@ namespace Dotfiles\Core\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Process;
 
-use Dotfiles\Core\Command\CommandInterface;
-use Dotfiles\Core\Util\Config;
+use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Application;
 use Dotfiles\Core\Util\Downloader;
 
@@ -37,19 +34,67 @@ class SelfUpdateCommand extends Command implements CommandInterface
 
     private $pharFile;
 
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var Downloader
+     */
+    private $downloader;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    /**
+     * @var string
+     */
+    private $cacheDir;
+
     public function configure()
     {
         $this->setName('self-update');
     }
 
+    /**
+     * @param string $tempDir
+     * @return SelfUpdateCommand
+     */
+    public function setTempDir(string $tempDir): SelfUpdateCommand
+    {
+        $this->tempDir = $tempDir;
+        return $this;
+    }
+
+    /**
+     * @param string $cacheDir
+     * @return SelfUpdateCommand
+     */
+    public function setCacheDir(string $cacheDir): SelfUpdateCommand
+    {
+        $this->cacheDir = $cacheDir;
+        return $this;
+    }
+
+    /**
+     * @param Downloader $downloader
+     */
+    public function setDownloader(Downloader $downloader): void
+    {
+        $this->downloader = $downloader;
+    }
+
+
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = Config::create();
+        $output->writeln("Start checking new version");
         $url = static::BASE_URL.'/VERSION';
-        $tempDir = $config->getTempDir('update');
-        $versionFile = $tempDir.'/VERSION';
-        $downloader = new Downloader($output,$url,$versionFile);
-        $downloader->run();
+        $versionFile = $this->tempDir.'/update/VERSION';
+        $downloader = $this->downloader;
+        $downloader->run($url,$versionFile);
         $contents = file_get_contents($versionFile);
         if(trim($contents)===""){
             throw new \Exception('Can not parse VERSION file');
@@ -59,29 +104,31 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $this->version = $exp[0];
         $this->branchAlias = $exp[1];
         $this->date = $exp[2];
+
         if(Application::VERSION !== $this->version){
-            $this->doUpdate($input,$output);
+            $output->writeln("Begin update into <comment>$this->version</comment>");
+            $this->doUpdate($output);
         }else{
             $output->writeln('You already have latest <comment>dotfiles</comment> version');
         }
     }
 
-    private function doUpdate(InputInterface $input, OutputInterface $output)
+    private function doUpdate(OutputInterface $output)
     {
         $fs = new Filesystem();
-        $config = Config::create();
-        $tempDir = $config->getTempDir('update'.DIRECTORY_SEPARATOR.$this->version);
+        $tempDir = $this->tempDir.'/update/'.DIRECTORY_SEPARATOR.$this->version;
         $fs->copy($this->versionFile,$tempDir.DIRECTORY_SEPARATOR.'VERSION');
 
         $targetFile = $tempDir.DIRECTORY_SEPARATOR.'dotfiles.phar';
         if(!is_file($targetFile)){
             $url = static::BASE_URL.'/dotfiles.phar';
-            $downloader = new Downloader($output,$url,$targetFile);
-            $downloader->run();
+            $downloader = $this->downloader;
+            $downloader->getProgressBar()->setFormat("Download <comment>dotfiles.phar</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
+            $downloader->run($url,$targetFile);
         }
 
         $this->pharFile = $targetFile;
-        $cacheDir = $config->getCacheDir();
+        $cacheDir = $this->cacheDir;
         // copy current phar into new dir
         $current = \Phar::running(false);
         $output->writeln($current);

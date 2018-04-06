@@ -100,6 +100,7 @@ class Compiler
             ->in(__DIR__ . '/../../vendor/composer')
             ->in(__DIR__ . '/../../vendor/myclabs')
             ->in(__DIR__ . '/../../vendor/psr')
+            ->in(__DIR__ . '/../../vendor/monolog')
             ->sort($finderSort)
         ;
 
@@ -119,9 +120,20 @@ class Compiler
             ->sort($finderSort)
         ;
 
-        foreach ($finder as $file) {
-            $this->addFile($phar, $file);
-        }
+        $this->doAddFile($phar,$finder);
+
+        // bash-it
+        $finder->files()
+            ->ignoreVCS(true)
+            ->exclude('test')
+            ->exclude('test_lib')
+            ->name('*.bash')
+            ->name('*.sh')
+            ->name('LICENSE')
+            ->in(__DIR__.'/../../vendor/bash-it')
+            ->sort($finderSort)
+        ;
+        $this->doAddFile($phar,$finder);
 
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/autoload.php'));
         $this->addDotfilesBin($phar);
@@ -133,6 +145,13 @@ class Compiler
         $util = new Timestamps($pharFile);
         $util->updateTimestamps($this->versionDate);
         $util->save($pharFile, \Phar::SHA1);
+    }
+
+    private function doAddFile($phar,$finder)
+    {
+        foreach ($finder as $file) {
+            $this->addFile($phar, $file);
+        }
     }
 
     private function getStub()

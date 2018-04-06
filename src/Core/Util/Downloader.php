@@ -11,6 +11,8 @@
 
 namespace Dotfiles\Core\Util;
 
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -22,19 +24,9 @@ class Downloader
     private $progressBar;
 
     /**
-     * @var string
-     */
-    private $url;
-
-    /**
      * @var OutputInterface
      */
     private $output;
-
-    /**
-     * @var string
-     */
-    private $targetFile;
 
     /**
      * @var int
@@ -45,21 +37,31 @@ class Downloader
 
     private $contents;
 
-    public function __construct(OutputInterface $output)
+    private $logger;
+
+    public function __construct(OutputInterface $output, LoggerInterface $logger)
     {
           $this->output = $output;
+          $this->logger = $logger;
+          $this->progressBar = new ProgressBar($output);
+    }
+
+    /**
+     * @return ProgressBar
+     */
+    public function getProgressBar():ProgressBar
+    {
+        return $this->progressBar;
     }
 
     public function run($url,$targetFile)
     {
-        if(!is_dir($dir = dirname($targetFile))){
-            mkdir($dir,0755,true);
-        }
+        $fullName = basename($targetFile);
+        $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
 
-        $this->createProgressBar();
+        Toolkit::ensureDir($targetFile);
         $this->hasError = false;
-        $this->output->writeln(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
-        $this->output->writeln("");
+        $this->logger->debug(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
         $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);
         set_error_handler([$this,'handleError']);
         $this->contents = file_get_contents($url, false, $context);
@@ -68,8 +70,7 @@ class Downloader
             throw new \RuntimeException('Failed to download '.$url);
         }
         file_put_contents($targetFile, $this->contents, LOCK_EX);
-        $this->output->writeln("");
-        $this->output->writeln('Download <comment>finished</comment>');
+        $this->logger->debug('Download <comment>finished</comment>');
     }
 
     public function handleError($bar,$message)
@@ -88,11 +89,11 @@ class Downloader
                 // handle error here
                 break;
             case STREAM_NOTIFY_REDIRECTED:
-                $this->createProgressBar();
+                $this->progressBar->clear();
                 break;
             case STREAM_NOTIFY_FILE_SIZE_IS:
                 $this->progressBar->start($bytesMax);
-                $this->$bytesMax = $bytesMax;
+                $this->bytesMax = $bytesMax;
                 break;
             case STREAM_NOTIFY_PROGRESS:
                 $this->progressBar->setProgress($bytesTransferred);
@@ -102,11 +103,5 @@ class Downloader
                 $this->progressBar->clear();
                 break;
         }
-    }
-
-    private function createProgressBar()
-    {
-        $this->progressBar = new ProgressBar($this->output);
-        $this->progressBar->setFormat("Progress: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
     }
 }

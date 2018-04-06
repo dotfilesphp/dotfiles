@@ -9,10 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Util;
+namespace Dotfiles\Core\Console;
 
-use Psr\Log\LoggerInterface as BaseLoggerInterface;
 
-interface LoggerInterface extends BaseLoggerInterface
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+class Output extends ConsoleOutput
 {
+
 }
