@@ -49,6 +49,10 @@ class ApplicationFactory
     private function compileContainer()
     {
         $config = new Config();
+        $phar = \Phar::running(false);
+        if(is_file($phar) && is_dir($dir=dirname($phar).'/config')){
+            $config->addConfigDir($dir);
+        }
         $config->addDefinition(new Definition());
         foreach($this->plugins as $plugin){
             $plugin->setupConfiguration($config);

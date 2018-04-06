@@ -15,12 +15,10 @@ services:
             - [setTempDir,['%dotfiles.temp_dir%']]
             - [setCacheDir,['%dotfiles.cache_dir%']]
     Dotfiles\Core\Application: ~
-    
+
     # aliasses
-    
     Psr\Log\LoggerInterface:
         alias: dotfiles.logger
-    
     dotfiles.app:
         alias: Dotfiles\Core\Application
     dotfiles.config:
@@ -30,7 +28,8 @@ services:
     dotfiles.output:
         class: Symfony\Component\Console\Output\ConsoleOutput
     dotfiles.logger:
-        class: Dotfiles\Core\Util\Logger
+        class: Symfony\Component\Console\Logger\ConsoleLogger
+        arguments: ['@dotfiles.output']
     dotfiles.downloader:
         class: Dotfiles\Core\Util\Downloader
         arguments: ['@dotfiles.output','@dotfiles.logger']

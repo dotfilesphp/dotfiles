@@ -14,6 +14,7 @@ namespace Dotfiles\Core\Config;
 
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
@@ -119,6 +120,7 @@ class Config implements \ArrayAccess
                 if(!isset($this->definitions[$rootKey])){
                     continue;
                 }
+                $temp = [];
                 $config = $this->definitions[$rootKey];
                 $temp[$rootKey] = $values;
                 $processed = $processor->processConfiguration($config,$temp);
@@ -166,7 +168,6 @@ EOC;
         if(!count($this->configDirs) > 0){
             return $configs;
         }
-
         $finder = Finder::create()
             ->name('*.yaml')
             ->name('*.yml')
@@ -174,14 +175,13 @@ EOC;
         foreach($this->configDirs as $dir){
             $finder->in($dir);
         }
-        $configs = array();
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach($finder->files() as $file){
             $parsed = Yaml::parseFile($file);
             if(is_array($parsed)){
                 $configs = array_merge_recursive($configs,$parsed);
             }
-            $this->files[] = $file->getRealPath();
+            $this->files[] = new FileResource($file);
         }
         return $configs;
     }
