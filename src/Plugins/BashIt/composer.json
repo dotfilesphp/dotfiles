@@ -1,0 +1,27 @@
+{
+    "name": "dotfiles/bash-it",
+    "description": "Dotfiles Bash-It Plugin",
+    "type": "dotfiles-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anthonius Munthi",
+            "email": "me@itstoni.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "repositories":{
+        {
+            "type": "package",
+            "package": {
+                "name": "bash-it/bash-it",
+                "version": "1.0.0",
+                "dist": {
+                    "url": "https://codeload.github.com/Bash-it/bash-it/zip/master",
+                    "type": "zip"
+                }
+            }
+        }
+    },
+    "require": {}
+}
