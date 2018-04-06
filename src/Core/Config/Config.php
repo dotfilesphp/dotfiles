@@ -12,6 +12,8 @@
 namespace Dotfiles\Core\Config;
 
 
+use Dotfiles\Core\Util\Toolkit;
+use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
@@ -25,9 +27,18 @@ class Config implements \ArrayAccess
 
     private $configs = array();
 
+    private $flattened = array();
+
     private $defaults = array();
 
     private $configDirs = array();
+
+    private $files = array();
+
+    /**
+     * @var null|string
+     */
+    private $cachePath = null;
 
     public function offsetExists($offset)
     {
@@ -69,25 +80,65 @@ class Config implements \ArrayAccess
         }
     }
 
+    /**
+     * @return null|string
+     */
+    public function getCachePath(): ?string
+    {
+        if(is_null($this->cachePath)){
+            $this->cachePath = getcwd().'/var/cache/config.php';
+        }
+        return $this->cachePath;
+    }
+
+    /**
+     * @param string $cachePath
+     * @return Config
+     */
+    public function setCachePath(string $cachePath): Config
+    {
+        if(!is_dir($dir = dirname($cachePath))){
+            mkdir($dir,0755,true);
+        }
+        $this->cachePath = $cachePath;
+
+        return $this;
+    }
+
     public function loadConfiguration()
     {
-        $configs = $this->processFiles();
-        $processor = new Processor();
-        $generated = [];
-        foreach($configs as $rootKey => $values){
-            if(!isset($this->definitions[$rootKey])){
-                continue;
-            }
-            $config = $this->definitions[$rootKey];
-            $temp[$rootKey] = $values;
-            $processed = $processor->processConfiguration($config,$temp);
-            if(!isset($generated[$rootKey])){
-                $generated[$rootKey] = [];
-            }
-            $generated[$rootKey] = array_merge_recursive($generated[$rootKey],$processed);
-        }
+        $cachePath = $this->getCachePath();
+        $cache = new ConfigCache($cachePath,true);
 
-        $this->configs = $generated;
+        if(!$cache->isFresh()){
+            $processor = new Processor();
+            $configs = $this->processFiles();
+            $generated = [];
+            foreach($configs as $rootKey => $values)
+            {
+                if(!isset($this->definitions[$rootKey])){
+                    continue;
+                }
+                $config = $this->definitions[$rootKey];
+                $temp[$rootKey] = $values;
+                $processed = $processor->processConfiguration($config,$temp);
+                if(!isset($generated[$rootKey])){
+                    $generated[$rootKey] = [];
+                }
+                $generated[$rootKey] = array_merge_recursive($generated[$rootKey],$processed);
+            }
+            $expConfig = var_export($generated,true);
+            $expFlattened = $generated;
+            Toolkit::flattenArray($expFlattened);
+            $expFlattened = var_export($expFlattened,true);
+            $code = <<<EOC
+<?php
+\$this->configs = ${expConfig};
+\$this->flattened = ${expFlattened};
+EOC;
+            $cache->write($code,$this->files);
+        }
+        require $cachePath;
     }
 
     public function get($name=null)
@@ -95,7 +146,13 @@ class Config implements \ArrayAccess
         if(is_null($name)){
             return $this->configs;
         }
-        $exp = explode('.',$name);
+        if(isset($configs[$name])){
+            return $this->configs[$name];
+        }elseif(isset($this->flattened[$name])){
+            return $this->flattened[$name];
+        }else{
+            throw new \InvalidArgumentException('Unknown config key: "'.$name.'"');
+        }
     }
 
     private function processFiles()
@@ -113,11 +170,13 @@ class Config implements \ArrayAccess
             $finder->in($dir);
         }
         $configs = array();
+        /* @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach($finder->files() as $file){
             $parsed = Yaml::parseFile($file);
             if(is_array($parsed)){
                 $configs = array_merge_recursive($configs,$parsed);
             }
+            $this->files[] = $file->getRealPath();
         }
         return $configs;
     }

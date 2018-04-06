@@ -7,6 +7,12 @@ services:
         resource: "../Listeners/*"
         tags:
             - { name: "event_subscribers" }
+            
+    Dotfiles\Plugins\Bash\Listeners\InstallListener:
+        calls:
+            - [setInstallDir, ['%dotfiles.install_dir%']]
+        tags:
+            - { name: "event_subscribers" }
 
     #bash.listeners.install:
     #    class: Dotfiles\Plugins\Bash\Listeners

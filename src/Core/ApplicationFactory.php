@@ -58,13 +58,15 @@ class ApplicationFactory
         foreach($this->plugins as $plugin){
             $plugin->configureContainer($builder->getContainerBuilder(),$config);
         }
+
         $builder->compile();
         $this->container = $builder->getContainer();
+        $this->container->set(Config::class,$config);
     }
 
     private function processCoreConfig(ContainerBuilder $builder, Config $config)
     {
-        $builder->setParameter('dotfiles.install_dir',$config['dotfiles']['install_dir']);
+        $builder->setParameter('dotfiles.install_dir',$config->get('dotfiles.install_dir'));
     }
 
     private function loadPlugins()

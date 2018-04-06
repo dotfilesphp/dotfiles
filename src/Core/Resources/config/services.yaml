@@ -4,10 +4,15 @@ services:
         autoconfigure: true
         public: true
     Dotfiles\Core\Application: ~
-    Dotfiles\Core\Config\Config: ~
+    Dotfiles\Core\Config\Config:
+        synthetic: true
+        calls:
+            - [setCachePath, ['%dotfiles.cache_dir%']]
     Dotfiles\Core\Event\Dispatcher: ~
     Dotfiles\Core\Command\:
         resource: '%dotfiles.base_dir%/src/Core/Command/*Command.php'
         tags: { name: "dotfiles.command" }
     dotfiles.app:
         alias: Dotfiles\Core\Application
+    dotfiles.config:
+        alias: Dotfiles\Core\Config\Config

@@ -2,8 +2,8 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-use Dotfiles\Core\Util\Config;
-
-$config = Config::create();
-$home = $config->getTempDir('test/home');
+$home = sys_get_temp_dir().'/dotfiles/home';
+if(!is_dir($home)){
+    mkdir($home,0755,true);
+}
 putenv("HOME=${home}");

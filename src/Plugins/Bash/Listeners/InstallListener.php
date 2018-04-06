@@ -22,10 +22,20 @@ class InstallListener implements EventSubscriberInterface
      */
     private $config;
 
+    private $installDir;
+
     public function __construct(Dispatcher $dispatcher, Config $config)
     {
         $this->dispatcher = $dispatcher;
         $this->config = $config;
+    }
+
+    /**
+     * @param mixed $installDir
+     */
+    public function setInstallDir($installDir): void
+    {
+        $this->installDir = $installDir;
     }
 
     public static function getSubscribedEvents()
@@ -45,7 +55,7 @@ class InstallListener implements EventSubscriberInterface
 
     private function generateDotfilesConfig($bashConfig)
     {
-        $installDir = $this->config->get('dotfiles.install_dir');
+        $installDir = $this->installDir;
 
         $uname = php_uname();
         if(false!==strpos('darwin',$uname)){
@@ -72,10 +82,10 @@ EOC;
 
     private function patchHomeConfig()
     {
-        $installDir = $this->config->get('dotfiles.install_dir');
+        $installDir = $this->installDir;
         $fs = new Filesystem();
         $contents = <<<EOC
-source "\$HOME/${installDir}/bashrc"
+source "${installDir}/bashrc"
 EOC;
 
         $fs->patch(getenv('HOME').DIRECTORY_SEPARATOR.'/.bashrc',$contents);

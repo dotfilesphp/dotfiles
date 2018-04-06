@@ -29,12 +29,8 @@ class InstallListenerTest extends TestCase
             ->method('dispatch')
             ->with(ReloadBashConfigEvent::NAME,new ReloadBashConfigEvent())
         ;
-        $config->expects($this->any())
-            ->method('get')
-            ->with('dotfiles.install_dir')
-            ->willReturn($dir)
-        ;
         $listener = new InstallListener($dispatcher,$config);
+        $listener->setInstallDir($dir);
         $listener->onInstallEvent($event);
 
         $this->assertFileExists($dir.'/bashrc');

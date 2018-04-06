@@ -57,6 +57,11 @@ class ConfigTest extends TestCase
             ->willReturn($tree)
         ;
         $config = new Config();
+        $cachePath = sys_get_temp_dir().'/dotfiles/test/cache/config.php';
+        if(is_file($cachePath)){
+            unlink($cachePath);
+        }
+        $config->setCachePath($cachePath);
         $config->addConfigDir(__DIR__.'/fixtures/config');
         $config->addDefinition($definition);
         $config->loadConfiguration();
@@ -64,5 +69,6 @@ class ConfigTest extends TestCase
         $this->assertTrue(isset($config['foo']));
         $this->assertArrayHasKey('hello',$config['foo']);
         $this->assertEquals('world',$config['foo']['hello']);
+        $this->assertEquals('world',$config->get('foo.hello'));
     }
 }

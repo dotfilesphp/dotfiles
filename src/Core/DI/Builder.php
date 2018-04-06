@@ -110,6 +110,7 @@ class Builder
             $baseDir = 'phar://dotfiles.phar';
         }
         $builder->setParameter('dotfiles.base_dir',$baseDir);
+        $builder->setParameter('dotfiles.cache_dir',$baseDir.'/var/cache');
 
         $this->configureCoreServices($builder);
         $builder->addCompilerPass(new ListenerPass());
