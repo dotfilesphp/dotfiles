@@ -12,7 +12,7 @@ class ConfigTest extends TestCase
 {
     public function testFactory()
     {
-        $config = Config::factory();
+        $config = new Config();
         $this->assertInstanceOf(Config::class,$config);
     }
 

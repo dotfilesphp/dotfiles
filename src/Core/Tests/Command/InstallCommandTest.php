@@ -22,8 +22,7 @@ class InstallCommandTest extends CommandTestCase
     public function testExecute()
     {
         $dispatcher = $this->createMock(Dispatcher::class);
-        $command = new InstallCommand();
-        $command->setDispatcher($dispatcher);
+        $command = new InstallCommand(null,$dispatcher);
         $app = $this->getApplication();
         $app->add($command);
         $command = $app->find('install');

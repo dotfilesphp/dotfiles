@@ -13,6 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Dumper\DumperInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class BuilderTest extends TestCase
 {
@@ -54,7 +55,7 @@ class BuilderTest extends TestCase
             ->method('setPublic')
             ->will($this->returnSelf())
         ;
-        $cb->expects($this->exactly(3))
+        /*$cb->expects($this->exactly(3))
             ->method('register')
             ->willReturn($definition)
             ->withConsecutive(
@@ -62,6 +63,16 @@ class BuilderTest extends TestCase
                 [Config::class],
                 [Application::class]
             )
+            ;*/
+
+        $parameterBag = $this->createMock(ParameterBagInterface::class);
+        $parameterBag->expects($this->once())
+            ->method('unescapeValue')
+            ->willReturn('../../Command/*Command')
+        ;
+        $cb->expects($this->once())
+            ->method('getParameterBag')
+            ->willReturn($parameterBag)
         ;
 
         $contents = <<<EOC
