@@ -141,6 +141,11 @@ EOC;
         require $cachePath;
     }
 
+    public function getFlattened()
+    {
+        return $this->flattened;
+    }
+
     public function get($name=null)
     {
         if(is_null($name)){

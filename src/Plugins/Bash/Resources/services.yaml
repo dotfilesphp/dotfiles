@@ -3,11 +3,6 @@ services:
         autowire: true
         autoconfigure: true
         public: true
-    Dotfiles\Plugins\Bash\Listeners\:
-        resource: "../Listeners/*"
-        tags:
-            - { name: "event_subscribers" }
-            
     Dotfiles\Plugins\Bash\Listeners\InstallListener:
         calls:
             - [setInstallDir, ['%dotfiles.install_dir%']]

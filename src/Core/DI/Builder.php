@@ -107,10 +107,9 @@ class Builder
         $builder = $this->getContainerBuilder();
         $baseDir = realpath(dirname(__DIR__.'/../../../src'));
         if(false !== strpos($dir = \Phar::running(),'phar:///')){
-            $baseDir = 'phar://dotfiles.phar';
+            $baseDir = str_replace('/dotfiles.phar','',\Phar::running(false));
         }
         $builder->setParameter('dotfiles.base_dir',$baseDir);
-        $builder->setParameter('dotfiles.cache_dir',$baseDir.'/var/cache');
 
         $this->configureCoreServices($builder);
         $builder->addCompilerPass(new ListenerPass());

@@ -23,6 +23,15 @@ class Definition implements DefinitionInterface
         $root = $builder->root('dotfiles');
         $root
             ->children()
+                ->booleanNode('debug')
+                    ->defaultFalse()
+                ->end()
+                ->scalarNode('log_dir')
+                    ->defaultValue('%dotfiles.base_dir%/var/log')
+                ->end()
+                ->scalarNode('cache_dir')
+                    ->defaultValue('%dotfiles.base_dir%/var/cache')
+                ->end()
                 ->scalarNode('install_dir')
                     ->defaultValue($defInstallDir)
                 ->end()
