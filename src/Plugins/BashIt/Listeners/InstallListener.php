@@ -58,7 +58,7 @@ class InstallListener implements EventSubscriberInterface
         $this->logger->info('Installing <comment>Bash-IT</comment>');
         $targetDir = $this->installDir.'/vendor/bash-it';
         $config = $this->config;
-        $header = <<<EOC
+        $bashItConfig = <<<EOC
 # Path to the bash it configuration
 export BASH_IT="${targetDir}"
 
@@ -107,13 +107,14 @@ export SCM_CHECK=true
 # after enabling or disabling aliases, plugins, and completions.
 # export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
 
-EOC;
+source "\$BASH_IT"/bash_it.sh
 
-        $event->addHeaderConfig($header);
+EOC;
+        file_put_contents($this->installDir.'/bash-it.sh',$bashItConfig,LOCK_EX);
 
         $footer = <<<EOC
 # Load Bash It
-source "\$BASH_IT"/bash_it.sh
+source "{$this->installDir}/bash-it.sh"
 EOC;
         $event->addFooterConfig($footer);
         $this->copySource();

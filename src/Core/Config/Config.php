@@ -130,9 +130,11 @@ class Config implements \ArrayAccess
                 $generated[$rootKey] = array_merge_recursive($generated[$rootKey],$processed);
             }
             $expConfig = var_export($generated,true);
-            $expFlattened = $generated;
-            Toolkit::flattenArray($expFlattened);
-            $expFlattened = var_export($expFlattened,true);
+            $flattened = $generated;
+            Toolkit::flattenArray($flattened);
+            $expFlattened = var_export($flattened,true);
+            $this->normalizeConfig($flattened,$expConfig);
+            $this->normalizeConfig($flattened,$expFlattened);
             $code = <<<EOC
 <?php
 \$this->configs = ${expConfig};
@@ -141,6 +143,14 @@ EOC;
             $cache->write($code,$this->files);
         }
         require $cachePath;
+    }
+
+    private function normalizeConfig($flattened,&$config)
+    {
+        foreach($flattened as $name => $value){
+            $format = '%'.$name.'%';
+            $config = strtr($config,[$format => $value]);
+        }
     }
 
     public function getFlattened()

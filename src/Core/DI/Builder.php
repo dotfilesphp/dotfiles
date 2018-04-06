@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\DumperInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Config\ConfigCache;
 
 class Builder
 {
@@ -105,21 +106,19 @@ class Builder
 
     public function compile()
     {
-        $builder = $this->getContainerBuilder();
-        $baseDir = realpath(dirname(__DIR__.'/../../../src'));
-        if(false !== strpos($dir = \Phar::running(),'phar:///')){
-            $baseDir = str_replace('/dotfiles.phar','',\Phar::running(false));
+        $cachePath = $this->getCacheFileName();
+        $cache = new ConfigCache($cachePath, true);
+        if(!$cache->isFresh()){
+            $builder = $this->getContainerBuilder();
+            $this->configureCoreServices($builder);
+            $builder->addCompilerPass(new CommandPass());
+            $builder->addCompilerPass(new ListenerPass());
+            $builder->compile();
+
+            $dumper = $this->getDumper();
+            //file_put_contents($target,$dumper->dump(['class'=>'CachedContainer']), LOCK_EX);
+            $cache->write($dumper->dump(['class'=>'CachedContainer']),$builder->getResources());
         }
-        $builder->setParameter('dotfiles.base_dir',$baseDir);
-
-        $this->configureCoreServices($builder);
-        $builder->addCompilerPass(new CommandPass());
-        $builder->addCompilerPass(new ListenerPass());
-        $builder->compile();
-
-        $dumper = $this->getDumper();
-        $target = $this->getCacheFileName();
-        file_put_contents($target,$dumper->dump(['class'=>'CachedContainer']), LOCK_EX);
     }
 
     /**

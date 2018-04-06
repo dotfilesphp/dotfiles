@@ -75,4 +75,13 @@ class Toolkit
             mkdir($dir,0755,true);
         }
     }
+
+    public static function getBaseDir()
+    {
+        $baseDir = realpath(dirname(__DIR__.'/../../../src'));
+        if(false !== strpos($dir = \Phar::running(),'phar:///')){
+            $baseDir = str_replace('/dotfiles.phar','',\Phar::running(false));
+        }
+        return $baseDir;
+    }
 }

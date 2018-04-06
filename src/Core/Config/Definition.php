@@ -12,7 +12,7 @@
 namespace Dotfiles\Core\Config;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-
+use Dotfiles\Core\Util\Toolkit;
 class Definition implements DefinitionInterface
 {
     public function getConfigTreeBuilder()
@@ -20,11 +20,15 @@ class Definition implements DefinitionInterface
         $builder = new TreeBuilder();
 
         $defInstallDir = getenv('HOME').DIRECTORY_SEPARATOR.'.dotfiles';
+        $baseDir = Toolkit::getBaseDir();
         $root = $builder->root('dotfiles');
         $root
             ->children()
                 ->booleanNode('debug')
                     ->defaultFalse()
+                ->end()
+                ->scalarNode('base_dir')
+                    ->defaultValue($baseDir)
                 ->end()
                 ->scalarNode('log_dir')
                     ->defaultValue('%dotfiles.base_dir%/var/log')
