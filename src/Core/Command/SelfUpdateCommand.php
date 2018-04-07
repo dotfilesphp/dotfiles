@@ -91,22 +91,22 @@ class SelfUpdateCommand extends Command implements CommandInterface
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln("Start checking new version");
-        $url = static::BASE_URL.'/VERSION';
-        $versionFile = $this->tempDir.'/update/VERSION';
+        $url = static::BASE_URL.'/dotfiles.phar.json';
+        $versionFile = $this->tempDir.'/update/dotfiles.phar.json';
         $downloader = $this->downloader;
         $downloader->run($url,$versionFile);
         $contents = file_get_contents($versionFile);
         if(trim($contents)===""){
-            throw new \Exception('Can not parse VERSION file');
+            throw new \Exception('Can not parse dotfiles.phar.json file');
         }
-        $exp = explode(' ',$contents);
+        $json = json_decode($contents,true);
         $this->versionFile = $versionFile;
-        $this->version = $exp[0];
-        $this->branchAlias = $exp[1];
-        $this->date = $exp[2];
+        $this->version = $json['version'];
+        $this->branchAlias = $json['branch'];
+        $this->date = $json['date'];
 
         if(Application::VERSION !== $this->version){
-            $output->writeln("Begin update into <comment>$this->version</comment>");
+            $output->writeln("Begin update into <comment>{$this->version}</comment>");
             $this->doUpdate($output);
         }else{
             $output->writeln('You already have latest <comment>dotfiles</comment> version');

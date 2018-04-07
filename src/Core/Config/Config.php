@@ -163,9 +163,9 @@ EOC;
         if(is_null($name)){
             return $this->configs;
         }
-        if(isset($configs[$name])){
+        if(array_key_exists($name,$this->configs)){
             return $this->configs[$name];
-        }elseif(isset($this->flattened[$name])){
+        }elseif(array_key_exists($name,$this->flattened)){
             return $this->flattened[$name];
         }else{
             throw new \InvalidArgumentException('Unknown config key: "'.$name.'"');

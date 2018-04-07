@@ -15,6 +15,7 @@ try {
     chmod('dotfiles.phar',0755);
     if($target){
         generateTarget($target);
+        unlink('dotfiles.phar');
     }
     chdir($cwd);
 }catch(\Exception $e){
@@ -38,10 +39,10 @@ function generateTarget($targetDir)
 
     $contents = <<<EOC
 {
-    version: "${version}",
-    branch: "${branchAlias}",
-    date: "${date}",
-    sha256: "${sha256}"
+    "version": "${version}",
+    "branch": "${branchAlias}",
+    "date": "${date}",
+    "sha256": "${sha256}"
 }
 
 EOC;

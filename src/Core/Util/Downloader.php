@@ -12,7 +12,6 @@
 namespace Dotfiles\Core\Util;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 

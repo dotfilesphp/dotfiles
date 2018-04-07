@@ -6,7 +6,6 @@ use Dotfiles\Core\Util\Filesystem;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-use Dotfiles\Core\Event\InstallEvent;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
@@ -56,65 +55,15 @@ class InstallListener implements EventSubscriberInterface
     public function onInstallEvent(ReloadBashConfigEvent $event)
     {
         $this->logger->info('Installing <comment>Bash-IT</comment>');
-        $targetDir = $this->installDir.'/vendor/bash-it';
-        $config = $this->config;
-        $bashItConfig = <<<EOC
-# Path to the bash it configuration
-export BASH_IT="${targetDir}"
 
-# Lock and Load a custom theme file
-# location /.bash_it/themes/
-export BASH_IT_THEME='{$config['bash_it']['theme_name']}'
-
-# (Advanced): Change this to the name of your remote repo if you
-# cloned bash-it with a remote other than origin such as `bash-it`.
-# export BASH_IT_REMOTE='bash-it'
-
-# Your place for hosting Git repos. I use this for private repos.
-export GIT_HOSTING='git@git.domain.com'
-
-# Don't check mail when opening terminal.
-unset MAILCHECK
-
-# Change this to your console based IRC client of choice.
-export IRC_CLIENT='{$config['bash_it']['irc_client']}'
-
-# Set this to the command you use for todo.txt-cli
-export TODO="{$config['bash_it']['todo']}"
-
-# Set this to false to turn off version control status checking within the prompt for all themes
-export SCM_CHECK=true
-
-# Set Xterm/screen/Tmux title with only a short hostname.
-# Uncomment this (or set SHORT_HOSTNAME to something else),
-# Will otherwise fall back on \$HOSTNAME.
-#export SHORT_HOSTNAME=$(hostname -s)
-
-# Set Xterm/screen/Tmux title with only a short username.
-# Uncomment this (or set SHORT_USER to something else),
-# Will otherwise fall back on \$USER.
-#export SHORT_USER=\${USER:0:8}
-
-# Set Xterm/screen/Tmux title with shortened command and directory.
-# Uncomment this to set.
-#export SHORT_TERM_LINE=true
-
-# Set vcprompt executable path for scm advance info in prompt (demula theme)
-# https://github.com/djl/vcprompt
-#export VCPROMPT_EXECUTABLE=~/.vcprompt/bin/vcprompt
-
-# (Advanced): Uncomment this to make Bash-it reload itself automatically
-# after enabling or disabling aliases, plugins, and completions.
-# export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
-
-source "\$BASH_IT"/bash_it.sh
-
-EOC;
-        file_put_contents($this->installDir.'/bash-it.sh',$bashItConfig,LOCK_EX);
+        $bashItConfig = $this->renderConfig();
+        $target = $this->installDir.'/bash-it.bash';
+        file_put_contents($target,$bashItConfig,LOCK_EX);
+        $this->logger->info("BashIt configuration written in: <comment>$target</comment>");
 
         $footer = <<<EOC
 # Load Bash It
-source "{$this->installDir}/bash-it.sh"
+source "{$this->installDir}/bash-it.bash"
 EOC;
         $event->addFooterConfig($footer);
         $this->copySource();
@@ -132,6 +81,74 @@ EOC;
         ;
         $target = $this->installDir.'/vendor/bash-it';
         $fs->mirror($source,$target,$finder,['override'=>true]);
+    }
+
+    private function renderConfig()
+    {
+        $config = $this->config;
+        $exports = [
+            'GIT_HOSTING'   => $config->get('bash_it.git_hosting'),
+            'BASH_IT_THEME' => $config->get('bash_it.theme_name'),
+            'IRC_CLIENT'    => $config->get('bash_it.irc_client'),
+            'TODO'          => $config->get('bash_it.todo'),
+            'SCM_CHECK'     => $config->get('bash_it.scm_check'),
+            'BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE' => $config->get('bash_it.automatic_reload'),
+
+            // theme section
+            'THEME_SHOW_CLOCK_CHAR' => $config->get('bash_it.theme.show_clock_char'),
+            'THEME_CLOCK_CHAR_COLOR' => $config->get('bash_it.theme.clock_char_color'),
+            'THEME_SHOW_CLOCK' => $config->get('bash_it.theme.show_clock'),
+            'THEME_SHOW_CLOCK_COLOR' => $config->get('bash_it.theme.clock_color'),
+            'THEME_CLOCK_FORMAT' => $config->get('bash_it.theme.clock_format'),
+        ];
+
+
+
+        if(!is_null($test = $config->get('bash_it.short_hostname'))){
+            $exports['SHORT_HOSTNAME'] = $test;
+        }
+
+        if(!is_null($test = $config->get('bash_it.short_user'))){
+            $exports['SHORT_USER'] = $test;
+        }
+
+        if($config->get('bash_it.short_term_line')){
+            $exports['SHORT_TERM_LINE'] = true;
+        }
+
+        if(!is_null($test=$config->get('bash_it.vcprompt_executable'))){
+            $exports['VCPROMPT_EXECUTABLE'] = $test;
+        }
+
+        // theme
+        if(!is_null($test = $config->get('bash_it.theme.clock_char'))){
+            $exports['THEME_CLOCK_CHAR'] = $test;
+        }
+
+        ksort($exports);
+        // begin generate contents
+        $targetDir = $this->installDir.'/vendor/bash-it';
+        $contents = [
+            "export BASH_IT=\"${targetDir}\""
+        ];
+        foreach($exports as $name=>$value){
+            if(is_string($value)){
+                $value = '"'.$value.'"';
+            }
+            if(is_bool($value)){
+                $value = $value ? 'true':'false';
+            }
+            $contents[] = "export $name=$value";
+            $this->logger->debug("+bash-config: export <comment>$name</comment> = <comment>$value</comment>");
+        }
+        if(!$config->get('bash_it.check_mail')){
+            $contents[] = 'unset MAILCHECK';
+            $this->logger->debug('+bash-config: unset <comment>MAILCHECK</comment>');
+        }
+
+        $contents[] = 'source "$BASH_IT"/bash_it.sh';
+        $contents[] = "\n";
+        return implode("\n",$contents);
     }
 }
 
