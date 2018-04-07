@@ -1,5 +1,23 @@
 <?php
 
+/*
+ * This file is part of the dotfiles project.
+ *
+ *     (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+$header = <<<'EOF'
+This file is part of the dotfiles project.
+
+    (c) Anthonius Munthi <me@itstoni.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+EOF;
+
 if (!file_exists(__DIR__.'/src')) {
     exit(0);
 }
@@ -15,6 +33,8 @@ return PhpCsFixer\Config::create()
         '@PSR1' => true,
         '@PSR2' => true,
         'ordered_imports' => array('sortAlgorithm' => 'alpha'),
+        'header_comment' => array('header' => $header),
+        'heredoc_to_nowdoc' => true,
     ))
     ->setRiskyAllowed(true)
     ->setFinder(
