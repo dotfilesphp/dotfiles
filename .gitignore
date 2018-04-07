@@ -6,3 +6,4 @@ bin/phpbrew
 .env
 /dotfiles.phar
 /var
+.php_cs.cache
