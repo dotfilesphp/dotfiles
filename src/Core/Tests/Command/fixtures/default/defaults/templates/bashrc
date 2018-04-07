@@ -1,0 +1,3 @@
+# default contents
+
+export foo="BAR"

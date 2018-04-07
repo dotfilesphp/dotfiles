@@ -24,6 +24,9 @@ class Definition implements DefinitionInterface
         $root = $builder->root('dotfiles');
         $root
             ->children()
+                ->scalarNode('machine_name')
+                    ->defaultNull()
+                ->end()
                 ->booleanNode('debug')
                     ->defaultFalse()
                 ->end()

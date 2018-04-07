@@ -55,7 +55,6 @@
         "symfony/filesystem": "^4.0",
         "symfony/process": "^4.0",
         "seld/phar-utils": "^1.0",
-        "league/event": "^2.1",
         "monolog/monolog": "^1.23",
         "symfony/event-dispatcher": "^4.0",
         "symfony/config": "^4.0",
