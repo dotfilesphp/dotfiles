@@ -76,7 +76,7 @@ class InstallCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->dryRun = $input->getOption('dry-run');
+        $this->dryRun = $input->hasOption('dry-run') ? $input->getOption('dry-run') : false;
         $this->getApplication()->get('backup')->execute($input, $output);
 
         $output->writeln('Begin installing <comment>dotfiles</comment>');
@@ -167,7 +167,7 @@ class InstallCommand extends Command implements CommandInterface
         foreach ($finder->files() as $file) {
             $relativePathName = $this->normalizePathName($file->getRelativePathName());
             $target = $this->config->get('dotfiles.home_dir').DIRECTORY_SEPARATOR.$relativePathName;
-            $patch = file_get_contents($file);
+            $patch = file_get_contents($file->getRealPath());
             if (!isset($this->patches[$target])) {
                 $this->patches[$target] = array();
             }
@@ -190,7 +190,7 @@ class InstallCommand extends Command implements CommandInterface
         /* @var SplFileInfo $file */
         foreach ($finder->files() as $file) {
             $target = $this->config->get('dotfiles.bin_dir').DIRECTORY_SEPARATOR.$file->getRelativePathName();
-            $this->copy($file, $target);
+            $this->copy($file->getRealPath(), $target);
         }
     }
 
@@ -218,7 +218,7 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function copy($origin, $target): void
+    private function copy(string $origin, string $target): void
     {
         if (!$this->dryRun) {
             $fs = new Filesystem();

@@ -54,7 +54,7 @@ class BackupCommand extends Command implements CommandInterface
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->dryRun = $input->getOption('dry-run');
+        $this->dryRun = $input->hasOption('dry-run') ? $input->getOption('dry-run') : false;
         $backupDir = $this->config->get('dotfiles.backup_dir');
         $manifestFile = $backupDir.DIRECTORY_SEPARATOR.'manifest.php';
         if (is_file($manifestFile)) {

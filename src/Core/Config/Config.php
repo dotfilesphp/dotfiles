@@ -192,11 +192,11 @@ EOC;
         }
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($finder->files() as $file) {
-            $parsed = Yaml::parseFile($file);
+            $parsed = Yaml::parseFile($file->getRealPath());
             if (is_array($parsed)) {
                 $configs = array_merge_recursive($configs, $parsed);
             }
-            $this->files[] = new FileResource($file);
+            $this->files[] = new FileResource($file->getRealPath());
         }
 
         return $configs;
