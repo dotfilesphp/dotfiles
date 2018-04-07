@@ -11,15 +11,18 @@
 
 namespace Dotfiles\Core;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-
 use Dotfiles\Core\Config\Config;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 abstract class Plugin implements PluginInterface
 {
-    public function registerListeners(Emitter $emitter){}
+    public function registerListeners(Emitter $emitter)
+    {
+    }
 
-    public function setupConfiguration(Config $config){}
+    public function setupConfiguration(Config $config)
+    {
+    }
 
     public function configureContainer(ContainerBuilder $container, Config $config)
     {

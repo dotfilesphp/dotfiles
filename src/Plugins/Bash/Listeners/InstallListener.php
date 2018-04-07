@@ -2,14 +2,12 @@
 
 namespace Dotfiles\Plugins\Bash\Listeners;
 
+use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Event\Dispatcher;
+use Dotfiles\Core\Event\InstallEvent;
+use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-use Dotfiles\Core\Event\InstallEvent;
-use Dotfiles\Core\Util\Filesystem;
-use Dotfiles\Core\Event\Dispatcher;
-use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
-use Dotfiles\Core\Config\Config;
 
 class InstallListener implements EventSubscriberInterface
 {
@@ -44,20 +42,20 @@ class InstallListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return [
-            InstallEvent::NAME => 'onInstallEvent'
-        ];
+        return array(
+            InstallEvent::NAME => 'onInstallEvent',
+        );
     }
 
     public function onInstallEvent(InstallEvent $event)
     {
         $reloadEvent = new ReloadBashConfigEvent($this->logger);
-        $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME,$reloadEvent);
+        $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME, $reloadEvent);
         $this->generateDotfilesConfig($reloadEvent->getBashConfig());
 
         $installDir = $this->config->get('dotfiles.install_dir');
         $target = $this->config->get('dotfiles.home_dir').'/.bashrc';
-        $event->addPatch($target,"source \"${installDir}/bashrc\"");
+        $event->addPatch($target, "source \"${installDir}/bashrc\"");
     }
 
     private function generateDotfilesConfig($bashConfig)
@@ -65,9 +63,9 @@ class InstallListener implements EventSubscriberInterface
         $installDir = $this->installDir;
 
         $uname = php_uname();
-        if(false!==strpos('darwin',$uname)){
+        if (false !== strpos('darwin', $uname)) {
             $fileName = 'bash_profile';
-        }else{
+        } else {
             $fileName = 'bashrc';
         }
 
@@ -84,7 +82,6 @@ $bashConfig
 
 EOC;
 
-        file_put_contents($installDir.DIRECTORY_SEPARATOR.$fileName,$contents, LOCK_EX);
+        file_put_contents($installDir.DIRECTORY_SEPARATOR.$fileName, $contents, LOCK_EX);
     }
 }
-

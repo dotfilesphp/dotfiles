@@ -40,42 +40,42 @@ class Downloader
 
     public function __construct(OutputInterface $output, LoggerInterface $logger)
     {
-          $this->output = $output;
-          $this->logger = $logger;
-          $this->progressBar = new ProgressBar($output);
+        $this->output = $output;
+        $this->logger = $logger;
+        $this->progressBar = new ProgressBar($output);
     }
 
     /**
      * @return ProgressBar
      */
-    public function getProgressBar():ProgressBar
+    public function getProgressBar(): ProgressBar
     {
         return $this->progressBar;
     }
 
-    public function run($url,$targetFile, $dryRun = false)
+    public function run($url, $targetFile, $dryRun = false)
     {
         $fullName = basename($targetFile);
         $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
 
         Toolkit::ensureFileDir($targetFile);
         $this->hasError = false;
-        $this->logger->debug(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
-        if(!$dryRun){
-            $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);
-            set_error_handler([$this,'handleError']);
+        $this->logger->debug(sprintf('Downloading <info>%s</info> to <info>%s</info>', $url, $targetFile));
+        if (!$dryRun) {
+            $context = stream_context_create(array(), array('notification' => array($this, 'handleNotification')));
+            set_error_handler(array($this, 'handleError'));
             $this->contents = file_get_contents($url, false, $context);
             restore_error_handler();
-            if($this->hasError){
+            if ($this->hasError) {
                 throw new \RuntimeException('Failed to download '.$url);
             }
-            $this->output->writeln("");
+            $this->output->writeln('');
             file_put_contents($targetFile, $this->contents, LOCK_EX);
         }
         $this->logger->debug('Download <comment>finished</comment>');
     }
 
-    public function handleError($bar,$message)
+    public function handleError($bar, $message)
     {
         $this->hasError = true;
         $this->output->writeln("<comment>Error:</comment>\n<info>${message}</info>\n");
@@ -83,7 +83,7 @@ class Downloader
 
     public function handleNotification($notificationCode, $severity, $message, $messageCode, $bytesTransferred, $bytesMax)
     {
-        switch($notificationCode){
+        switch ($notificationCode) {
             case STREAM_NOTIFY_RESOLVE:
             case STREAM_NOTIFY_AUTH_REQUIRED:
             case STREAM_NOTIFY_FAILURE:

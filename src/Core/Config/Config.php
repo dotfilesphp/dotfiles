@@ -11,11 +11,10 @@
 
 namespace Dotfiles\Core\Config;
 
-
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
-use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
@@ -61,22 +60,20 @@ class Config implements \ArrayAccess
         unset($this->configs[$offset]);
     }
 
-
     public function addDefinition(DefinitionInterface $config)
     {
         $builder = $config->getConfigTreeBuilder();
         $name = $builder->buildTree()->getName();
         $this->definitions[$name] = $config;
-        $this->defaults[$name] = [];
+        $this->defaults[$name] = array();
     }
-
 
     public function addConfigDir($directory)
     {
-        if(!is_dir($directory)){
+        if (!is_dir($directory)) {
             throw new \InvalidArgumentException("Directory ${directory} not exists");
         }
-        if(!in_array($directory,$this->configDirs)){
+        if (!in_array($directory, $this->configDirs)) {
             $this->configDirs[] = $directory;
         }
     }
@@ -86,20 +83,22 @@ class Config implements \ArrayAccess
      */
     public function getCachePath(): ?string
     {
-        if(is_null($this->cachePath)){
+        if (null === $this->cachePath) {
             $this->cachePath = getcwd().'/var/cache/config.php';
         }
+
         return $this->cachePath;
     }
 
     /**
      * @param string $cachePath
+     *
      * @return Config
      */
-    public function setCachePath(string $cachePath): Config
+    public function setCachePath(string $cachePath): self
     {
-        if(!is_dir($dir = dirname($cachePath))){
-            mkdir($dir,0755,true);
+        if (!is_dir($dir = dirname($cachePath))) {
+            mkdir($dir, 0755, true);
         }
         $this->cachePath = $cachePath;
 
@@ -109,52 +108,51 @@ class Config implements \ArrayAccess
     public function loadConfiguration()
     {
         $cachePath = $this->getCachePath();
-        $cache = new ConfigCache($cachePath,true);
+        $cache = new ConfigCache($cachePath, true);
 
-        if(!$cache->isFresh()){
+        if (!$cache->isFresh()) {
             $processor = new Processor();
             $configs = $this->processFiles();
-            $generated = [];
-            foreach($configs as $rootKey => $values)
-            {
-                if(!isset($this->definitions[$rootKey])){
+            $generated = array();
+            foreach ($configs as $rootKey => $values) {
+                if (!isset($this->definitions[$rootKey])) {
                     continue;
                 }
-                $temp = [];
+                $temp = array();
                 $config = $this->definitions[$rootKey];
                 $temp[$rootKey] = $values;
-                $processed = $processor->processConfiguration($config,$temp);
-                if(!isset($generated[$rootKey])){
-                    $generated[$rootKey] = [];
+                $processed = $processor->processConfiguration($config, $temp);
+                if (!isset($generated[$rootKey])) {
+                    $generated[$rootKey] = array();
                 }
-                $generated[$rootKey] = array_merge_recursive($generated[$rootKey],$processed);
+                $generated[$rootKey] = array_merge_recursive($generated[$rootKey], $processed);
             }
-            $expConfig = var_export($generated,true);
+            $expConfig = var_export($generated, true);
             $flattened = $generated;
             Toolkit::flattenArray($flattened);
-            $expFlattened = var_export($flattened,true);
+            $expFlattened = var_export($flattened, true);
 
             /* provide a way to handle normalize config */
-            $this->normalizeConfig($flattened,$expConfig);
-            $this->normalizeConfig($flattened,$expConfig);
-            $this->normalizeConfig($flattened,$expFlattened);
-            $this->normalizeConfig($flattened,$expFlattened);
+            $this->normalizeConfig($flattened, $expConfig);
+            $this->normalizeConfig($flattened, $expConfig);
+            $this->normalizeConfig($flattened, $expFlattened);
+            $this->normalizeConfig($flattened, $expFlattened);
 
             $code = <<<EOC
 <?php
 \$this->configs = ${expConfig};
 \$this->flattened = ${expFlattened};
 EOC;
-            $cache->write($code,$this->files);
+            $cache->write($code, $this->files);
         }
         require $cachePath;
     }
 
-    private function normalizeConfig($flattened,&$config)
+    private function normalizeConfig($flattened, &$config)
     {
-        foreach($flattened as $name => $value){
+        foreach ($flattened as $name => $value) {
             $format = '%'.$name.'%';
-            $config = strtr($config,[$format => $value]);
+            $config = strtr($config, array($format => $value));
         }
     }
 
@@ -163,16 +161,16 @@ EOC;
         return $this->flattened;
     }
 
-    public function get($name=null)
+    public function get($name = null)
     {
-        if(is_null($name)){
+        if (null === $name) {
             return $this->configs;
         }
-        if(array_key_exists($name,$this->configs)){
+        if (array_key_exists($name, $this->configs)) {
             return $this->configs[$name];
-        }elseif(array_key_exists($name,$this->flattened)){
+        } elseif (array_key_exists($name, $this->flattened)) {
             return $this->flattened[$name];
-        }else{
+        } else {
             throw new \InvalidArgumentException('Unknown config key: "'.$name.'"');
         }
     }
@@ -180,24 +178,25 @@ EOC;
     private function processFiles()
     {
         $configs = $this->defaults;
-        if(!count($this->configDirs) > 0){
+        if (!count($this->configDirs) > 0) {
             return $configs;
         }
         $finder = Finder::create()
             ->name('*.yaml')
             ->name('*.yml')
         ;
-        foreach($this->configDirs as $dir){
+        foreach ($this->configDirs as $dir) {
             $finder->in($dir);
         }
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach($finder->files() as $file){
+        foreach ($finder->files() as $file) {
             $parsed = Yaml::parseFile($file);
-            if(is_array($parsed)){
-                $configs = array_merge_recursive($configs,$parsed);
+            if (is_array($parsed)) {
+                $configs = array_merge_recursive($configs, $parsed);
             }
             $this->files[] = new FileResource($file);
         }
+
         return $configs;
     }
 }

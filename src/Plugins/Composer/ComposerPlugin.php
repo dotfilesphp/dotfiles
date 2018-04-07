@@ -11,7 +11,6 @@
 
 namespace Dotfiles\Plugins\Composer;
 
-
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Plugin;
 use Dotfiles\Plugins\Composer\Config\Definition;
@@ -34,7 +33,7 @@ class ComposerPlugin extends Plugin
     public function configureContainer(ContainerBuilder $container, Config $config)
     {
         $locator = new FileLocator(__DIR__.'/Resources');
-        $loader = new YamlFileLoader($container,$locator);
+        $loader = new YamlFileLoader($container, $locator);
         $loader->load('services.yaml');
     }
 }

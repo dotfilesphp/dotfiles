@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Dotfiles\Core\DI;
 
 use Dotfiles\Core\DI\Compiler\CommandPass;
+use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\DumperInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\Config\ConfigCache;
 
 class Builder
 {
@@ -37,9 +37,10 @@ class Builder
 
     /**
      * @param ContainerBuilder $builder
+     *
      * @return self
      */
-    public function setContainerBuilder(ContainerBuilder $builder):Builder
+    public function setContainerBuilder(ContainerBuilder $builder): self
     {
         $this->containerBuilder = $builder;
 
@@ -49,11 +50,12 @@ class Builder
     /**
      * @return ContainerBuilder
      */
-    public function getContainerBuilder():ContainerBuilder
+    public function getContainerBuilder(): ContainerBuilder
     {
-        if(is_null($this->containerBuilder)){
+        if (null === $this->containerBuilder) {
             $this->containerBuilder = new ContainerBuilder();
         }
+
         return $this->containerBuilder;
     }
 
@@ -62,17 +64,19 @@ class Builder
      */
     public function getDumper(): DumperInterface
     {
-        if(is_null($this->dumper)){
+        if (null === $this->dumper) {
             $this->dumper = new PhpDumper($this->containerBuilder);
         }
+
         return $this->dumper;
     }
 
     /**
      * @param DumperInterface $dumper
+     *
      * @return Builder
      */
-    public function setDumper(DumperInterface $dumper): Builder
+    public function setDumper(DumperInterface $dumper): self
     {
         $this->dumper = $dumper;
 
@@ -84,20 +88,22 @@ class Builder
      */
     public function getCacheFileName(): string
     {
-        if(is_null($this->cacheFileName)){
+        if (null === $this->cacheFileName) {
             $this->setCacheFileName(getcwd().'/var/cache/container.php');
         }
+
         return $this->cacheFileName;
     }
 
     /**
      * @param string $cacheFileName
+     *
      * @return self
      */
-    public function setCacheFileName(string $cacheFileName): Builder
+    public function setCacheFileName(string $cacheFileName): self
     {
-        if(!is_dir($dir = dirname($cacheFileName))){
-            mkdir($dir,0755,true);
+        if (!is_dir($dir = dirname($cacheFileName))) {
+            mkdir($dir, 0755, true);
         }
         $this->cacheFileName = $cacheFileName;
 
@@ -108,7 +114,7 @@ class Builder
     {
         $cachePath = $this->getCacheFileName();
         $cache = new ConfigCache($cachePath, true);
-        if(!$cache->isFresh()){
+        if (!$cache->isFresh()) {
             $builder = $this->getContainerBuilder();
             $this->configureCoreServices($builder);
             $builder->addCompilerPass(new CommandPass());
@@ -117,7 +123,7 @@ class Builder
 
             $dumper = $this->getDumper();
             //file_put_contents($target,$dumper->dump(['class'=>'CachedContainer']), LOCK_EX);
-            $cache->write($dumper->dump(['class'=>'CachedContainer']),$builder->getResources());
+            $cache->write($dumper->dump(array('class' => 'CachedContainer')), $builder->getResources());
         }
     }
 
@@ -126,7 +132,7 @@ class Builder
      */
     public function getContainer()
     {
-        if(is_null($this->container)){
+        if (null === $this->container) {
             include_once $this->getCacheFileName();
             $this->container = new \CachedContainer();
         }
@@ -136,12 +142,13 @@ class Builder
 
     /**
      * @param ContainerBuilder $builder
+     *
      * @throws \Exception
      */
     private function configureCoreServices(ContainerBuilder $builder)
     {
         $locator = new FileLocator(__DIR__.'/../Resources/config');
-        $loader = new YamlFileLoader($builder,$locator);
+        $loader = new YamlFileLoader($builder, $locator);
         $loader->load('services.yaml');
     }
 }

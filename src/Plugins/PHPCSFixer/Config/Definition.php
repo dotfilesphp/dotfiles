@@ -18,6 +18,7 @@ class Definition implements DefinitionInterface
                 ->end()
             ->end()
         ;
+
         return $builder;
     }
 }

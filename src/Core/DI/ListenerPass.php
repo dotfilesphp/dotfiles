@@ -3,8 +3,8 @@
 namespace Dotfiles\Core\DI;
 
 use Dotfiles\Core\Event\Dispatcher;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 class ListenerPass implements CompilerPassInterface
@@ -19,8 +19,8 @@ class ListenerPass implements CompilerPassInterface
 
         // find all service IDs with the event_subscribers tag
         $taggedServices = $container->findTaggedServiceIds('event_subscribers');
-        foreach($taggedServices as $id => $tags){
-            $definition->addMethodCall('addSubscriber',[new Reference($id)]);
+        foreach ($taggedServices as $id => $tags) {
+            $definition->addMethodCall('addSubscriber', array(new Reference($id)));
         }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Dotfiles\Core\Event;
 
-use League\Event\EventInterface as BaseEventInterface;
 use Dotfiles\Core\Config\Config;
+use League\Event\EventInterface as BaseEventInterface;
 
 interface EventInterface extends BaseEventInterface
 {

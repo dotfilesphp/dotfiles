@@ -11,7 +11,6 @@
 
 namespace Dotfiles\Core\Command;
 
-
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
@@ -56,8 +55,9 @@ class BackupCommand extends Command implements CommandInterface
         $this->dryRun = $input->getOption('dry-run');
         $backupDir = $this->config->get('dotfiles.backup_dir');
         $manifestFile = $backupDir.DIRECTORY_SEPARATOR.'manifest.php';
-        if(is_file($manifestFile)){
+        if (is_file($manifestFile)) {
             $output->writeln("Backup files already exists in <comment>$backupDir</comment>");
+
             return;
         }
 
@@ -71,11 +71,11 @@ class BackupCommand extends Command implements CommandInterface
 
         $overwrite = $input->hasOption('overwrite-new');
         $fs = new Filesystem();
-        foreach($this->files as $relativePathName => $info){
+        foreach ($this->files as $relativePathName => $info) {
             $origin = $info['origin'];
             $target = $info['target'];
-            if(!$this->dryRun){
-                $fs->copy($origin,$target,['overwriteNewerFiles' => $overwrite]);
+            if (!$this->dryRun) {
+                $fs->copy($origin, $target, array('overwriteNewerFiles' => $overwrite));
             }
 
             $this->logger->debug(
@@ -88,7 +88,7 @@ class BackupCommand extends Command implements CommandInterface
         }
 
         // generate manifest
-        $exports = var_export($this->files,true);
+        $exports = var_export($this->files, true);
         $date = new \DateTime();
         $contents = "<?php\n/* generated at: {$date->format('Y-m-d H:i:s')}*/\nreturn {$exports};\n";
         Toolkit::ensureFileDir($manifestFile);
@@ -101,7 +101,7 @@ class BackupCommand extends Command implements CommandInterface
 
     private function generateFileList($dir)
     {
-        if(!is_dir($dir)){
+        if (!is_dir($dir)) {
             return;
         }
         $homeDir = $this->config->get('dotfiles.home_dir');
@@ -113,14 +113,14 @@ class BackupCommand extends Command implements CommandInterface
         ;
 
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach($finder->files() as $file){
+        foreach ($finder->files() as $file) {
             $relativePathName = Toolkit::ensureDotPath($file->getRelativePathname());
             $homeFile = $homeDir.DIRECTORY_SEPARATOR.$relativePathName;
-            if(!array_key_exists($relativePathName,$this->files) && is_file($homeFile)){
-                $this->files[$relativePathName] = [
+            if (!array_key_exists($relativePathName, $this->files) && is_file($homeFile)) {
+                $this->files[$relativePathName] = array(
                     'origin' => $homeFile,
-                    'target' => $backupDir.DIRECTORY_SEPARATOR.$relativePathName
-                ];
+                    'target' => $backupDir.DIRECTORY_SEPARATOR.$relativePathName,
+                );
             }
         }
     }

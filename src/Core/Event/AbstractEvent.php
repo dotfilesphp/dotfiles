@@ -11,9 +11,9 @@
 
 namespace Dotfiles\Core\Event;
 
-use Symfony\Component\EventDispatcher\Event;
-use Psr\Log\LoggerInterface;
 use Dotfiles\Core\Config\Config;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\Event;
 
 class AbstractEvent extends Event
 {
@@ -32,13 +32,14 @@ class AbstractEvent extends Event
         $this->logger = $logger;
     }
 
-    public function getLogger():LoggerInterface
+    public function getLogger(): LoggerInterface
     {
         return $this->logger;
     }
 
     /**
      * @param Config $config
+     *
      * @return self
      */
     public function setConfig(Config $config)
@@ -53,6 +54,6 @@ class AbstractEvent extends Event
      */
     public function getConfig()
     {
-      return $this->config;
+        return $this->config;
     }
 }

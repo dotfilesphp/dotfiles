@@ -11,8 +11,9 @@
 
 namespace Dotfiles\Core\Config;
 
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Dotfiles\Core\Util\Toolkit;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+
 class Definition implements DefinitionInterface
 {
     public function getConfigTreeBuilder()

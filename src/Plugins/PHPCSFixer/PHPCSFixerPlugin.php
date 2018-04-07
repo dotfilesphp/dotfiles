@@ -11,7 +11,6 @@
 
 namespace Dotfiles\Plugins\PHPCSFixer;
 
-
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Plugin;
 use Dotfiles\Plugins\PHPCSFixer\Config\Definition;
@@ -34,7 +33,7 @@ class PHPCSFixerPlugin extends Plugin
     public function configureContainer(ContainerBuilder $container, Config $config)
     {
         $locator = new FileLocator(__DIR__.'/Resources');
-        $loader = new YamlFileLoader($container,$locator);
+        $loader = new YamlFileLoader($container, $locator);
         $loader->load('services.yaml');
     }
 }

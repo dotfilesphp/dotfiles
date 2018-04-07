@@ -12,16 +12,16 @@
 namespace Dotfiles\Core\Command;
 
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Event\Dispatcher;
+use Dotfiles\Core\Event\InstallEvent;
 use Dotfiles\Core\Util\Filesystem;
+use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
-use Dotfiles\Core\Util\Toolkit;
-use Dotfiles\Core\Event\InstallEvent;
-use Dotfiles\Core\Event\Dispatcher;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\Process;
 
 class InstallCommand extends Command implements CommandInterface
@@ -60,8 +60,7 @@ class InstallCommand extends Command implements CommandInterface
         Dispatcher $dispatcher,
         Config $config,
         LoggerInterface $logger
-    )
-    {
+    ) {
         parent::__construct($name);
         $this->dispatcher = $dispatcher;
         $this->config = $config;
@@ -76,7 +75,7 @@ class InstallCommand extends Command implements CommandInterface
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->dryRun = $input->getOption('dry-run');
-        $this->getApplication()->get('backup')->execute($input,$output);
+        $this->getApplication()->get('backup')->execute($input, $output);
 
         $output->writeln('Begin installing <comment>dotfiles</comment>');
         $config = $this->config;
@@ -95,8 +94,8 @@ class InstallCommand extends Command implements CommandInterface
         $this->dispatcher->dispatch(InstallEvent::NAME, $event);
         $this->patches = $event->getPatches();
         $this->processSection($output, 'defaults');
-        if(!is_null($machineName = $config->get('dotfiles.machine_name'))){
-            $this->processSection($output,'machines/'.$machineName);
+        if (null !== ($machineName = $config->get('dotfiles.machine_name'))) {
+            $this->processSection($output, 'machines/'.$machineName);
         }
         $this->applyPatch();
     }
@@ -106,7 +105,7 @@ class InstallCommand extends Command implements CommandInterface
         $config = $this->config;
         $baseDir = $config->get('dotfiles.base_dir');
         $output->writeln("Processing <comment>$section</comment> section");
-        $this->doProcessTemplates($baseDir . '/'.$section.'/templates');
+        $this->doProcessTemplates($baseDir.'/'.$section.'/templates');
         $this->doProcessPatch($baseDir.'/'.$section.'/patch');
         $this->doProcessBin($baseDir.'/'.$section.'/bin');
         $this->doProcessInstallHook($baseDir.'/'.$section.'/hooks');
@@ -115,26 +114,26 @@ class InstallCommand extends Command implements CommandInterface
     private function applyPatch()
     {
         $fs = new Filesystem();
-        foreach($this->patches as $target => $patches)
-        {
+        foreach ($this->patches as $target => $patches) {
             $patchContents = implode("\n", $patches);
-            if(!$this->dryRun){
-                $fs->patch($target,$patchContents);
+            if (!$this->dryRun) {
+                $fs->patch($target, $patchContents);
             }
             $this->debug(
                 sprintf(
-                    "Patching file: <comment>%s</comment>",
+                    'Patching file: <comment>%s</comment>',
                             Toolkit::stripPath($target)
                 )
             );
         }
     }
 
-    private function doProcessTemplates($templateDir,$overwrite = false)
+    private function doProcessTemplates($templateDir, $overwrite = false)
     {
         $targetDir = $this->config->get('dotfiles.home_dir');
         if (!is_dir($templateDir)) {
             $this->debug("Template directory <comment>$templateDir</comment> not found");
+
             return;
         }
 
@@ -145,30 +144,30 @@ class InstallCommand extends Command implements CommandInterface
             ->files()
         ;
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach($finder->files() as $file){
+        foreach ($finder->files() as $file) {
             $source = $file->getRealPath();
             $relativePathName = $this->normalizePathName($file->getRelativePathname());
 
             $target = $targetDir.DIRECTORY_SEPARATOR.$relativePathName;
-            $this->copy($source,$target);
+            $this->copy($source, $target);
         }
     }
 
     private function doProcessPatch($patchDir)
     {
-        if(!is_dir($patchDir)){
+        if (!is_dir($patchDir)) {
             return;
         }
         $finder = Finder::create()
             ->in($patchDir)
         ;
         /* @var SplFileInfo $file */
-        foreach($finder->files() as $file){
+        foreach ($finder->files() as $file) {
             $relativePathName = $this->normalizePathName($file->getRelativePathName());
             $target = $this->config->get('dotfiles.home_dir').DIRECTORY_SEPARATOR.$relativePathName;
             $patch = file_get_contents($file);
-            if(!isset($this->patches[$target])){
-                $this->patches[$target] = [];
+            if (!isset($this->patches[$target])) {
+                $this->patches[$target] = array();
             }
             $this->patches[$target][] = $patch;
         }
@@ -176,7 +175,7 @@ class InstallCommand extends Command implements CommandInterface
 
     private function doProcessBin($binDir)
     {
-        if(!is_dir($binDir)){
+        if (!is_dir($binDir)) {
             return;
         }
 
@@ -187,15 +186,15 @@ class InstallCommand extends Command implements CommandInterface
         ;
 
         /* @var SplFileInfo $file */
-        foreach($finder->files() as $file){
+        foreach ($finder->files() as $file) {
             $target = $this->config->get('dotfiles.bin_dir').DIRECTORY_SEPARATOR.$file->getRelativePathName();
-            $this->copy($file,$target);
+            $this->copy($file, $target);
         }
     }
 
     private function doProcessInstallHook($hookDir)
     {
-        if(!is_dir($hookDir)){
+        if (!is_dir($hookDir)) {
             return;
         }
         $finder = Finder::create()
@@ -203,28 +202,28 @@ class InstallCommand extends Command implements CommandInterface
             ->name('install')
             ->name('install.sh')
         ;
-        foreach($finder->files() as $file){
+        foreach ($finder->files() as $file) {
             $this->debug("executing <comment>$file</comment>");
             $cmd = $file;
             $process = new Process($cmd);
-            $process->run(function($type,$buffer){
+            $process->run(function ($type, $buffer) {
                 if (Process::ERR === $type) {
                     $this->output->writeln("Error: $buffer");
                 } else {
-                    $this->output->writeln($buffer);;
+                    $this->output->writeln($buffer);
                 }
             });
         }
     }
 
-    private function copy($origin,$target)
+    private function copy($origin, $target)
     {
-        if(!$this->dryRun){
+        if (!$this->dryRun) {
             $fs = new Filesystem();
-            $fs->copy($origin,$target,['overwriteNewerFiles' => $this->overwriteNewFiles]);
+            $fs->copy($origin, $target, array('overwriteNewerFiles' => $this->overwriteNewFiles));
         }
         $this->debug(sprintf(
-            "Copy files from <comment>%s</comment> to <comment>%s</comment>",
+            'Copy files from <comment>%s</comment> to <comment>%s</comment>',
             Toolkit::stripPath($origin),
             Toolkit::stripPath($target)
         ));
@@ -232,14 +231,15 @@ class InstallCommand extends Command implements CommandInterface
 
     private function normalizePathName(string $relativePathName)
     {
-        if(0 !== strpos($relativePathName,'.')){
+        if (0 !== strpos($relativePathName, '.')) {
             $relativePathName = '.'.$relativePathName;
         }
+
         return $relativePathName;
     }
 
-    private function debug($message,$context = array())
+    private function debug($message, $context = array())
     {
-        $this->logger->debug("install: ".$message,$context);
+        $this->logger->debug('install: '.$message, $context);
     }
 }

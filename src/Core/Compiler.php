@@ -11,9 +11,9 @@
 
 namespace Dotfiles\Core;
 
+use Seld\PharUtils\Timestamps;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
-use Seld\PharUtils\Timestamps;
 
 class Compiler
 {
@@ -23,7 +23,7 @@ class Compiler
 
     public function compile($pharFile = 'dotfiles.phar')
     {
-        if(file_exists($pharFile)){
+        if (file_exists($pharFile)) {
             unlink($pharFile);
         }
 
@@ -34,34 +34,33 @@ class Compiler
     private function setupVersion()
     {
         $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
-        if ($process->run() != 0) {
+        if (0 != $process->run()) {
             throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
         }
         $this->version = trim($process->getOutput());
 
         $process = new Process('git log -n1 --pretty=%ci HEAD', __DIR__);
-        if ($process->run() != 0) {
+        if (0 != $process->run()) {
             throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
         }
 
         $this->versionDate = new \DateTime(trim($process->getOutput()));
         $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
         $process = new Process('git describe --tags --exact-match HEAD');
-        if ($process->run() == 0) {
+        if (0 == $process->run()) {
             $this->version = trim($process->getOutput());
         } else {
             // get branch-alias defined in composer.json for dev-master (if any)
-            $localConfig = __DIR__ . '/../../composer.json';
+            $localConfig = __DIR__.'/../../composer.json';
             $contents = file_get_contents($localConfig);
-            $json = json_decode($contents,true);
+            $json = json_decode($contents, true);
             if (isset($json['extra']['branch-alias']['dev-master'])) {
                 $this->branchAliasVersion = $json['extra']['branch-alias']['dev-master'];
             }
         }
-
     }
 
-    private function generatePhar($pharFile="dotfiles.phar")
+    private function generatePhar($pharFile = 'dotfiles.phar')
     {
         $phar = new \Phar($pharFile, 0, 'dotfiles.phar');
         $phar->setSignatureAlgorithm(\Phar::SHA1);
@@ -77,9 +76,9 @@ class Compiler
             ->name('*.php')
             ->name('*.yaml')
             ->name('*.yml')
-            ->exclude([
-                'Tests'
-            ])
+            ->exclude(array(
+                'Tests',
+            ))
             ->notName('Compiler.php')
             ->in(__DIR__)
             ->sort($finderSort)
@@ -96,11 +95,11 @@ class Compiler
             ->exclude('Tests')
             ->exclude('tests')
             ->exclude('docs')
-            ->in(__DIR__ . '/../../vendor/symfony')
-            ->in(__DIR__ . '/../../vendor/composer')
-            ->in(__DIR__ . '/../../vendor/myclabs')
-            ->in(__DIR__ . '/../../vendor/psr')
-            ->in(__DIR__ . '/../../vendor/monolog')
+            ->in(__DIR__.'/../../vendor/symfony')
+            ->in(__DIR__.'/../../vendor/composer')
+            ->in(__DIR__.'/../../vendor/myclabs')
+            ->in(__DIR__.'/../../vendor/psr')
+            ->in(__DIR__.'/../../vendor/monolog')
             ->sort($finderSort)
         ;
 
@@ -116,11 +115,11 @@ class Compiler
             ->name('*.yaml')
             ->name('*.yml')
             ->name('*.php')
-            ->in(__DIR__ . '/../Plugins')
+            ->in(__DIR__.'/../Plugins')
             ->sort($finderSort)
         ;
 
-        $this->doAddFile($phar,$finder);
+        $this->doAddFile($phar, $finder);
 
         // bash-it
         $finder->files()
@@ -133,9 +132,9 @@ class Compiler
             ->in(__DIR__.'/../../vendor/bash-it')
             ->sort($finderSort)
         ;
-        $this->doAddFile($phar,$finder);
+        $this->doAddFile($phar, $finder);
 
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/autoload.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/autoload.php'));
         $this->addDotfilesBin($phar);
         $phar->setStub($this->getStub());
         $phar->stopBuffering();
@@ -147,7 +146,7 @@ class Compiler
         $util->save($pharFile, \Phar::SHA1);
     }
 
-    private function doAddFile($phar,$finder)
+    private function doAddFile($phar, $finder)
     {
         foreach ($finder as $file) {
             $this->addFile($phar, $file);
@@ -188,7 +187,7 @@ EOF;
             $stub .= "define('COMPOSER_DEV_WARNING_TIME', $warningTime);\n";
         }
 
-        return $stub . <<<'EOF'
+        return $stub.<<<'EOF'
 require 'phar://dotfiles.phar/bin/dotfiles';
 
 __HALT_COMPILER();
@@ -197,7 +196,7 @@ EOF;
 
     private function addDotfilesBin($phar)
     {
-        $content = file_get_contents(__DIR__ . '/../../bin/dotfiles');
+        $content = file_get_contents(__DIR__.'/../../bin/dotfiles');
         $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
         $phar->addFromString('bin/dotfiles', $content);
     }
@@ -212,7 +211,7 @@ EOF;
             $content = "\n".$content."\n";
         }
 
-        if ($path === 'src/Core/Application.php') {
+        if ('src/Core/Application.php' === $path) {
             $content = str_replace('@package_version@', $this->version, $content);
             $content = str_replace('@package_branch_alias_version@', $this->branchAliasVersion, $content);
             $content = str_replace('@release_date@', $this->versionDate->format('Y-m-d H:i:s'), $content);
@@ -223,7 +222,8 @@ EOF;
     /**
      * Removes whitespace from a PHP source string while preserving line numbers.
      *
-     * @param  string $source A PHP string
+     * @param string $source A PHP string
+     *
      * @return string The PHP string with the whitespace removed
      */
     private function stripWhitespace($source)
@@ -255,15 +255,17 @@ EOF;
     }
 
     /**
-     * @param  \SplFileInfo $file
+     * @param \SplFileInfo $file
+     *
      * @return string
      */
     private function getRelativeFilePath($file)
     {
         $realPath = $file->getRealPath();
-        $pathPrefix = dirname(dirname(__DIR__ )).DIRECTORY_SEPARATOR;
+        $pathPrefix = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR;
         $pos = strpos($realPath, $pathPrefix);
-        $relativePath = ($pos !== false) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
-	    return strtr($relativePath, '\\', '/');
+        $relativePath = (false !== $pos) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
+
+        return strtr($relativePath, '\\', '/');
     }
 }

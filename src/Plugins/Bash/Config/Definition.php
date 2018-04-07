@@ -25,6 +25,7 @@ class Definition implements DefinitionInterface
         $root = $builder->root('bash');
         $root
         ;
+
         return $builder;
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Dotfiles\Plugins\BashIt\Config;
-
 
 use Dotfiles\Core\Config\DefinitionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -86,6 +84,7 @@ class Definition implements DefinitionInterface
                 ->end()
             ->end()
         ;
+
         return $builder;
     }
 }

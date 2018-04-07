@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 interface PluginInterface
 {
     /**
-     * Returns the name of plugin
+     * Returns the name of plugin.
      *
      * @return string
      */
@@ -16,6 +16,7 @@ interface PluginInterface
 
     /**
      * @param Config $config
+     *
      * @return mixed
      */
     public function setupConfiguration(Config $config);

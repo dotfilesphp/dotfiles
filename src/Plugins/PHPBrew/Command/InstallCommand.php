@@ -11,10 +11,10 @@
 
 namespace Dotfiles\Plugins\PHPBrew\Command;
 
+use Dotfiles\Core\Command\CommandInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Dotfiles\Core\Command\CommandInterface;
 
 class InstallCommand extends Command implements CommandInterface
 {
@@ -25,6 +25,5 @@ class InstallCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-
     }
 }

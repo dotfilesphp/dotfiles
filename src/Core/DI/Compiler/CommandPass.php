@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: toni
  * Date: 4/6/18
- * Time: 1:56 PM
+ * Time: 1:56 PM.
  */
 
 namespace Dotfiles\Core\DI\Compiler;
-
 
 use Dotfiles\Core\Application;
 use Dotfiles\Core\Command\CommandInterface;
@@ -22,15 +21,14 @@ class CommandPass implements CompilerPassInterface
         $application = $container->findDefinition(Application::class);
         $definitions = $container->getDefinitions();
 
-        foreach($definitions as $definition){
+        foreach ($definitions as $definition) {
             $class = $definition->getClass();
-            if(class_exists($class)){
+            if (class_exists($class)) {
                 $r = new \ReflectionClass($class);
-                if($r->implementsInterface(CommandInterface::class)){
-                    $application->addMethodCall('add',[new Reference($class)]);
+                if ($r->implementsInterface(CommandInterface::class)) {
+                    $application->addMethodCall('add', array(new Reference($class)));
                 }
             }
         }
     }
-
 }

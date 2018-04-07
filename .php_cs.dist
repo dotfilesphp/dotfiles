@@ -3,6 +3,7 @@
 if (!file_exists(__DIR__.'/src')) {
     exit(0);
 }
+
 return PhpCsFixer\Config::create()
     ->setRules(array(
         '@Symfony' => true,
@@ -11,6 +12,9 @@ return PhpCsFixer\Config::create()
         'php_unit_no_expectation_annotation' => false, // part of `PHPUnitXYMigration:risky` ruleset, to be enabled when PHPUnit 4.x support will be dropped, as we don't want to rewrite exceptions handling twice
         'array_syntax' => array('syntax' => 'long'),
         'protected_to_private' => false,
+        '@PSR1' => true,
+        '@PSR2' => true,
+        'ordered_imports' => array('sortAlgorithm' => 'alpha'),
     ))
     ->setRiskyAllowed(true)
     ->setFinder(

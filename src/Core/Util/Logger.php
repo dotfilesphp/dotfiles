@@ -20,5 +20,4 @@ class Logger extends BaseLogger implements LoggerInterface
     {
         parent::__construct('dotfiles');
     }
-
 }
