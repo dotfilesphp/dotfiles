@@ -55,7 +55,7 @@ class BackupCommand extends Command implements CommandInterface
     {
         $this->dryRun = $input->getOption('dry-run');
         $backupDir = $this->config->get('dotfiles.backup_dir');
-        $manifestFile = $backupDir.DIRECTORY_SEPARATOR.'/manifest.php';
+        $manifestFile = $backupDir.DIRECTORY_SEPARATOR.'manifest.php';
         if(is_file($manifestFile)){
             $output->writeln("Backup files already exists in <comment>$backupDir</comment>");
             return;
@@ -91,6 +91,7 @@ class BackupCommand extends Command implements CommandInterface
         $exports = var_export($this->files,true);
         $date = new \DateTime();
         $contents = "<?php\n/* generated at: {$date->format('Y-m-d H:i:s')}*/\nreturn {$exports};\n";
+        Toolkit::ensureFileDir($manifestFile);
         file_put_contents(
             $manifestFile,
             $contents,

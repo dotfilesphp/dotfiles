@@ -14,11 +14,15 @@ namespace Dotfiles\Plugins\PHPCSFixer\Listeners;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Event\InstallEvent;
 use Dotfiles\Core\Util\Downloader;
+use Dotfiles\Core\Util\Filesystem;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallSubscriber implements EventSubscriberInterface
 {
     const URL = 'http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar';
+
     /**
      * @var Config
      */
@@ -36,10 +40,12 @@ class InstallSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function __construct(Config $config, Downloader $downloader)
+    public function __construct(Config $config, Downloader $downloader, OutputInterface $output, LoggerInterface $logger)
     {
         $this->config       = $config;
         $this->downloader   = $downloader;
+        $this->output       = $output;
+        $this->logger       = $logger;
     }
 
     public function onInstallEvent(InstallEvent $event)
@@ -49,8 +55,22 @@ class InstallSubscriber implements EventSubscriberInterface
         $dryRun = $event->isDryRun();
         $tempDir = $config->get('dotfiles.temp_dir');
         $targetFile = $tempDir.'/phpcs/php-cs-fixer.phar';
+        $installDir = $config->get('dotfiles.bin_dir');
+        $installFile = $installDir.DIRECTORY_SEPARATOR.$config->get('phpcs.file_name');
+
+        if(is_file($installFile)){
+            $this->output->writeln('PHP-CS-Fixer already installed, skipping');
+            return;
+        }
+
         if(!is_file($targetFile)){
             $downloader->run(static::URL,$targetFile,$dryRun);
+        }
+
+        if(is_file($targetFile)){
+            $fs = new Filesystem();
+            $fs->copy($targetFile,$installFile);
+            $this->output->writeln('PHP-CS-Fixer installed to: <comment>'.$installFile.'</comment>');
         }
     }
 }

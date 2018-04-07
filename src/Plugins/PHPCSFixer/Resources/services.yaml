@@ -5,3 +5,4 @@ services:
         public: true
     phpcs.listeners.install:
         class: Dotfiles\Plugins\PHPCSFixer\Listeners\InstallSubscriber
+        tags: { name: "event_subscribers" }
