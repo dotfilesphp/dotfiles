@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -44,13 +46,13 @@ class BackupCommand extends Command implements CommandInterface
         $this->logger = $logger;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('backup');
         $this->setDescription('Backup current dotfiles');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->dryRun = $input->getOption('dry-run');
         $backupDir = $this->config->get('dotfiles.backup_dir');
@@ -99,7 +101,7 @@ class BackupCommand extends Command implements CommandInterface
         );
     }
 
-    private function generateFileList($dir)
+    private function generateFileList($dir): void
     {
         if (!is_dir($dir)) {
             return;

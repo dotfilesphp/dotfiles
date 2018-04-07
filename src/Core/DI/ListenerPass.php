@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -18,7 +20,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class ListenerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->has(Dispatcher::class)) {
             return;

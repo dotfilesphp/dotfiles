@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -16,7 +18,7 @@ use Psr\Log\LoggerInterface;
 
 class ReloadBashConfigEvent extends AbstractEvent
 {
-    const NAME = 'bash.reload_config';
+    public const NAME = 'bash.reload_config';
 
     private $header = array();
 
@@ -32,7 +34,7 @@ class ReloadBashConfigEvent extends AbstractEvent
         $this->logger = $logger;
     }
 
-    public function addHeaderConfig($contents)
+    public function addHeaderConfig($contents): void
     {
         if (!is_array($contents)) {
             $contents = array($contents);
@@ -44,7 +46,7 @@ class ReloadBashConfigEvent extends AbstractEvent
         );
     }
 
-    public function addFooterConfig($contents)
+    public function addFooterConfig($contents): void
     {
         if (!is_array($contents)) {
             $contents = array($contents);

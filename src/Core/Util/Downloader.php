@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -53,7 +55,7 @@ class Downloader
         return $this->progressBar;
     }
 
-    public function run($url, $targetFile, $dryRun = false)
+    public function run($url, $targetFile, $dryRun = false): void
     {
         $fullName = basename($targetFile);
         $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
@@ -75,13 +77,13 @@ class Downloader
         $this->logger->debug('Download <comment>finished</comment>');
     }
 
-    public function handleError($bar, $message)
+    public function handleError($bar, $message): void
     {
         $this->hasError = true;
         $this->output->writeln("<comment>Error:</comment>\n<info>${message}</info>\n");
     }
 
-    public function handleNotification($notificationCode, $severity, $message, $messageCode, $bytesTransferred, $bytesMax)
+    public function handleNotification($notificationCode, $severity, $message, $messageCode, $bytesTransferred, $bytesMax): void
     {
         switch ($notificationCode) {
             case STREAM_NOTIFY_RESOLVE:

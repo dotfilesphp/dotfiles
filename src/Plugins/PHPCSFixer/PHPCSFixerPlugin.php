@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -25,12 +27,12 @@ class PHPCSFixerPlugin extends Plugin
         return 'phpcs';
     }
 
-    public function setupConfiguration(Config $config)
+    public function setupConfiguration(Config $config): void
     {
         $config->addDefinition(new Definition());
     }
 
-    public function configureContainer(ContainerBuilder $container, Config $config)
+    public function configureContainer(ContainerBuilder $container, Config $config): void
     {
         $locator = new FileLocator(__DIR__.'/Resources');
         $loader = new YamlFileLoader($container, $locator);

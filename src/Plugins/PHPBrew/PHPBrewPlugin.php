@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -24,12 +26,12 @@ class PHPBrewPlugin extends Plugin
         return 'PHPBrew';
     }
 
-    public function setupConfiguration(Config $config)
+    public function setupConfiguration(Config $config): void
     {
         $config->addDefinition(new Definition());
     }
 
-    public function handleBashConfig(ReloadBashConfigEvent $event)
+    public function handleBashConfig(ReloadBashConfigEvent $event): void
     {
         $config = $event->getConfig();
         if ($config->get('phpbrew.set_prompt')) {
@@ -41,7 +43,7 @@ class PHPBrewPlugin extends Plugin
         $event->addFooterConfig('source $HOME/.phpbrew/bashrc');
     }
 
-    public function configureContainer(ContainerBuilder $container, Config $config)
+    public function configureContainer(ContainerBuilder $container, Config $config): void
     {
     }
 }

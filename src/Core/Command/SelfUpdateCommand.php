@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -21,7 +23,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class SelfUpdateCommand extends Command implements CommandInterface
 {
-    const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
+    public const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
 
     private $version;
 
@@ -53,7 +55,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
      */
     private $cacheDir;
 
-    public function configure()
+    public function configure(): void
     {
         $this->setName('self-update');
     }
@@ -90,7 +92,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $this->downloader = $downloader;
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         $output->writeln('Start checking new version');
         $url = static::BASE_URL.'/dotfiles.phar.json';
@@ -115,7 +117,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         }
     }
 
-    private function doUpdate(OutputInterface $output)
+    private function doUpdate(OutputInterface $output): void
     {
         $fs = new Filesystem();
         $tempDir = $this->tempDir.'/update/'.DIRECTORY_SEPARATOR.$this->version;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -15,7 +17,7 @@ use Symfony\Component\Filesystem\Filesystem as BaseFileSystem;
 
 class Filesystem extends BaseFileSystem
 {
-    public function patch($file, $patch)
+    public function patch($file, $patch): void
     {
         if (!is_dir($dir = dirname($file))) {
             mkdir($dir, 0755, true);

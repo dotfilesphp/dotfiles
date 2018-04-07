@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -50,7 +52,7 @@ class Toolkit
      * @param array  $subnode Current subnode being parsed, used internally for recursive calls
      * @param string $path    Current path being parsed, used internally for recursive calls
      */
-    public static function flattenArray(array &$values, array $subnode = null, $path = null)
+    public static function flattenArray(array &$values, array $subnode = null, $path = null): void
     {
         if (null === $subnode) {
             $subnode = &$values;
@@ -68,7 +70,7 @@ class Toolkit
         }
     }
 
-    public static function ensureDir(string $dir)
+    public static function ensureDir(string $dir): void
     {
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
@@ -80,7 +82,7 @@ class Toolkit
      *
      * @param string $file
      */
-    public static function ensureFileDir($file)
+    public static function ensureFileDir($file): void
     {
         static::ensureDir(dirname($file));
     }

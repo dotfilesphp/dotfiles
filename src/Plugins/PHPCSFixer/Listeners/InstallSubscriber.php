@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -21,7 +23,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class InstallSubscriber implements EventSubscriberInterface
 {
-    const URL = 'http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar';
+    public const URL = 'http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar';
 
     /**
      * @var Config
@@ -48,7 +50,7 @@ class InstallSubscriber implements EventSubscriberInterface
         $this->logger = $logger;
     }
 
-    public function onInstallEvent(InstallEvent $event)
+    public function onInstallEvent(InstallEvent $event): void
     {
         $config = $this->config;
         $downloader = $this->downloader;

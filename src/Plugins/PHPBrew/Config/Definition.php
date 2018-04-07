@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -47,7 +49,7 @@ class Definition implements DefinitionInterface
         return $treeBuilder;
     }
 
-    public function getBaseRootNode($node)
+    public function getBaseRootNode($node): void
     {
         $node
             ->children()

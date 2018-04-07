@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -50,17 +52,17 @@ class Config implements \ArrayAccess
         return $this->configs[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->configs[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->configs[$offset]);
     }
 
-    public function addDefinition(DefinitionInterface $config)
+    public function addDefinition(DefinitionInterface $config): void
     {
         $builder = $config->getConfigTreeBuilder();
         $name = $builder->buildTree()->getName();
@@ -68,7 +70,7 @@ class Config implements \ArrayAccess
         $this->defaults[$name] = array();
     }
 
-    public function addConfigDir($directory)
+    public function addConfigDir($directory): void
     {
         if (!is_dir($directory)) {
             throw new \InvalidArgumentException("Directory ${directory} not exists");
@@ -105,7 +107,7 @@ class Config implements \ArrayAccess
         return $this;
     }
 
-    public function loadConfiguration()
+    public function loadConfiguration(): void
     {
         $cachePath = $this->getCachePath();
         $cache = new ConfigCache($cachePath, true);
@@ -148,7 +150,7 @@ EOC;
         require $cachePath;
     }
 
-    private function normalizeConfig($flattened, &$config)
+    private function normalizeConfig($flattened, &$config): void
     {
         foreach ($flattened as $name => $value) {
             $format = '%'.$name.'%';

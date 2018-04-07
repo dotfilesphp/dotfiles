@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -21,7 +23,7 @@ class Compiler
     private $branchAliasVersion = '';
     private $versionDate;
 
-    public function compile($pharFile = 'dotfiles.phar')
+    public function compile($pharFile = 'dotfiles.phar'): void
     {
         if (file_exists($pharFile)) {
             unlink($pharFile);
@@ -31,7 +33,7 @@ class Compiler
         $this->generatePhar($pharFile);
     }
 
-    private function setupVersion()
+    private function setupVersion(): void
     {
         $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
         if (0 != $process->run()) {
@@ -60,7 +62,7 @@ class Compiler
         }
     }
 
-    private function generatePhar($pharFile = 'dotfiles.phar')
+    private function generatePhar($pharFile = 'dotfiles.phar'): void
     {
         $phar = new \Phar($pharFile, 0, 'dotfiles.phar');
         $phar->setSignatureAlgorithm(\Phar::SHA1);
@@ -146,7 +148,7 @@ class Compiler
         $util->save($pharFile, \Phar::SHA1);
     }
 
-    private function doAddFile($phar, $finder)
+    private function doAddFile($phar, $finder): void
     {
         foreach ($finder as $file) {
             $this->addFile($phar, $file);
@@ -194,14 +196,14 @@ __HALT_COMPILER();
 EOF;
     }
 
-    private function addDotfilesBin($phar)
+    private function addDotfilesBin($phar): void
     {
         $content = file_get_contents(__DIR__.'/../../bin/dotfiles');
         $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
         $phar->addFromString('bin/dotfiles', $content);
     }
 
-    private function addFile($phar, $file, $strip = true)
+    private function addFile($phar, $file, $strip = true): void
     {
         $path = $this->getRelativeFilePath($file);
         $content = file_get_contents($file);

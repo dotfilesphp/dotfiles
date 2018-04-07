@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -18,12 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallCommand extends Command implements CommandInterface
 {
-    public function configure()
+    public function configure(): void
     {
         $this->setName('phpbrew:install');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
     }
 }

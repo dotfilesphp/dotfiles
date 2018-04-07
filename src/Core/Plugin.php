@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -16,15 +18,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 abstract class Plugin implements PluginInterface
 {
-    public function registerListeners(Emitter $emitter)
+    public function registerListeners(Emitter $emitter): void
     {
     }
 
-    public function setupConfiguration(Config $config)
+    public function setupConfiguration(Config $config): void
     {
     }
 
-    public function configureContainer(ContainerBuilder $container, Config $config)
+    public function configureContainer(ContainerBuilder $container, Config $config): void
     {
     }
 }

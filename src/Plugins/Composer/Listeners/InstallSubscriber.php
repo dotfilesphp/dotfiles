@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -22,8 +24,8 @@ use Symfony\Component\Process\Process;
 
 class InstallSubscriber implements EventSubscriberInterface
 {
-    const SCRIPT_URL = 'https://getcomposer.org/installer';
-    const SIG_URL = 'https://composer.github.io/installer.sig';
+    public const SCRIPT_URL = 'https://getcomposer.org/installer';
+    public const SIG_URL = 'https://composer.github.io/installer.sig';
 
     /**
      * @var LoggerInterface
@@ -64,7 +66,7 @@ class InstallSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function onInstallEvent()
+    public function onInstallEvent(): void
     {
         $config = $this->config;
         $targetDir = $config->get('dotfiles.bin_dir');
@@ -123,7 +125,7 @@ class InstallSubscriber implements EventSubscriberInterface
         return true;
     }
 
-    private function executeInstallScript($scriptFile, $installDir, $fileName)
+    private function executeInstallScript($scriptFile, $installDir, $fileName): void
     {
         $cmd = array(
             'php',
@@ -137,7 +139,7 @@ class InstallSubscriber implements EventSubscriberInterface
         $process = new Process($cmd);
         $process->setTimeout(3600);
         $process->setIdleTimeout(60);
-        $process->run(function ($type, $buffer) {
+        $process->run(function ($type, $buffer): void {
             if (Process::ERR === $type) {
                 $this->logger->error($buffer);
             } else {
@@ -146,7 +148,7 @@ class InstallSubscriber implements EventSubscriberInterface
         });
     }
 
-    private function debug($message, $context = array())
+    private function debug($message, $context = array()): void
     {
         $message = '<comment>composer:</comment> '.$message;
         $this->logger->debug($message, $context);

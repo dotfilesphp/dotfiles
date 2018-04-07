@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -56,7 +58,7 @@ class InstallListener implements EventSubscriberInterface
         );
     }
 
-    public function onInstallEvent(InstallEvent $event)
+    public function onInstallEvent(InstallEvent $event): void
     {
         $reloadEvent = new ReloadBashConfigEvent($this->logger);
         $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME, $reloadEvent);
@@ -67,7 +69,7 @@ class InstallListener implements EventSubscriberInterface
         $event->addPatch($target, "source \"${installDir}/bashrc\"");
     }
 
-    private function generateDotfilesConfig($bashConfig)
+    private function generateDotfilesConfig($bashConfig): void
     {
         $installDir = $this->installDir;
 

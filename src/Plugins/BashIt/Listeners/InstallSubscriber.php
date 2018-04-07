@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -60,7 +62,7 @@ class InstallSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function onInstallEvent(ReloadBashConfigEvent $event)
+    public function onInstallEvent(ReloadBashConfigEvent $event): void
     {
         $this->logger->info('Installing <comment>Bash-IT</comment>');
 
@@ -77,7 +79,7 @@ EOC;
         $this->copySource();
     }
 
-    private function copySource()
+    private function copySource(): void
     {
         $fs = new Filesystem();
         $source = __DIR__.'/../../../../vendor/bash-it/bash-it';

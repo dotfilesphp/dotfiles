@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -67,12 +69,12 @@ class InstallCommand extends Command implements CommandInterface
         $this->logger = $logger;
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->setName('install');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->dryRun = $input->getOption('dry-run');
         $this->getApplication()->get('backup')->execute($input, $output);
@@ -100,7 +102,7 @@ class InstallCommand extends Command implements CommandInterface
         $this->applyPatch();
     }
 
-    private function processSection(OutputInterface $output, $section)
+    private function processSection(OutputInterface $output, $section): void
     {
         $config = $this->config;
         $baseDir = $config->get('dotfiles.base_dir');
@@ -111,7 +113,7 @@ class InstallCommand extends Command implements CommandInterface
         $this->doProcessInstallHook($baseDir.'/'.$section.'/hooks');
     }
 
-    private function applyPatch()
+    private function applyPatch(): void
     {
         $fs = new Filesystem();
         foreach ($this->patches as $target => $patches) {
@@ -128,7 +130,7 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function doProcessTemplates($templateDir, $overwrite = false)
+    private function doProcessTemplates($templateDir, $overwrite = false): void
     {
         $targetDir = $this->config->get('dotfiles.home_dir');
         if (!is_dir($templateDir)) {
@@ -153,7 +155,7 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function doProcessPatch($patchDir)
+    private function doProcessPatch($patchDir): void
     {
         if (!is_dir($patchDir)) {
             return;
@@ -173,7 +175,7 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function doProcessBin($binDir)
+    private function doProcessBin($binDir): void
     {
         if (!is_dir($binDir)) {
             return;
@@ -192,7 +194,7 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function doProcessInstallHook($hookDir)
+    private function doProcessInstallHook($hookDir): void
     {
         if (!is_dir($hookDir)) {
             return;
@@ -206,7 +208,7 @@ class InstallCommand extends Command implements CommandInterface
             $this->debug("executing <comment>$file</comment>");
             $cmd = $file;
             $process = new Process($cmd);
-            $process->run(function ($type, $buffer) {
+            $process->run(function ($type, $buffer): void {
                 if (Process::ERR === $type) {
                     $this->output->writeln("Error: $buffer");
                 } else {
@@ -216,7 +218,7 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function copy($origin, $target)
+    private function copy($origin, $target): void
     {
         if (!$this->dryRun) {
             $fs = new Filesystem();
@@ -238,7 +240,7 @@ class InstallCommand extends Command implements CommandInterface
         return $relativePathName;
     }
 
-    private function debug($message, $context = array())
+    private function debug($message, $context = array()): void
     {
         $this->logger->debug('install: '.$message, $context);
     }

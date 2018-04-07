@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -37,13 +39,13 @@ class ApplicationFactory
         return $this->container;
     }
 
-    public function createApplication()
+    public function createApplication(): void
     {
         $this->loadPlugins();
         $this->compileContainer();
     }
 
-    private function compileContainer()
+    private function compileContainer(): void
     {
         $config = new Config();
         $phar = \Phar::running(false);
@@ -67,7 +69,7 @@ class ApplicationFactory
         $this->container->set(Config::class, $config);
     }
 
-    private function loadPlugins()
+    private function loadPlugins(): void
     {
         $finder = Finder::create();
         $finder

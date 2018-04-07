@@ -119,7 +119,7 @@ class Builder
         return $this;
     }
 
-    public function compile()
+    public function compile(): void
     {
         $cachePath = $this->getCacheFileName();
         $cache = new ConfigCache($cachePath, true);
@@ -154,7 +154,7 @@ class Builder
      *
      * @throws \Exception
      */
-    private function configureCoreServices(ContainerBuilder $builder)
+    private function configureCoreServices(ContainerBuilder $builder): void
     {
         $locator = new FileLocator(__DIR__.'/../Resources/config');
         $loader = new YamlFileLoader($builder, $locator);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
@@ -13,7 +15,7 @@ namespace Dotfiles\Core\Event;
 
 class InstallEvent extends AbstractEvent
 {
-    const NAME = 'dotfiles.install';
+    public const NAME = 'dotfiles.install';
 
     /**
      * @var array
@@ -35,7 +37,7 @@ class InstallEvent extends AbstractEvent
         return static::NAME;
     }
 
-    public function addPatch($target, $patch)
+    public function addPatch($target, $patch): void
     {
         if (!isset($this->patches[$target])) {
             $this->patches[$target] = array();
