@@ -77,10 +77,9 @@ class InstallCommand extends Command implements CommandInterface
     private function doProcessMachine($machineName,$overwrite=false)
     {
         $baseDir = $this->config->get('dotfiles.base_dir');
-        $targetDir = getenv('HOME');
         $templateDir = $baseDir.'/machines/'.$machineName.'/templates';
         if(is_dir($templateDir)){
-            $this->doProcessTemplates($targetDir,$templateDir,$overwrite);
+            $this->doProcessTemplates($templateDir,$overwrite);
         }
     }
 
@@ -88,13 +87,13 @@ class InstallCommand extends Command implements CommandInterface
     {
         $config = $this->config;
         $baseDir = $config->get('dotfiles.base_dir');
-        $targetDir = getenv('HOME');
         $output->writeln("Copy files from <comment>$baseDir</comment>");
-        $this->doProcessTemplates($targetDir,$baseDir . '/defaults/templates');
+        $this->doProcessTemplates($baseDir . '/defaults/templates');
     }
 
-    private function doProcessTemplates($targetDir,$templateDir,$overwrite = false)
+    private function doProcessTemplates($templateDir,$overwrite = false)
     {
+        $targetDir = getenv('HOME');
         if (!is_dir($templateDir)) {
             $this->debug("Template directory <comment>$templateDir</comment> not found");
             return;
@@ -117,7 +116,9 @@ class InstallCommand extends Command implements CommandInterface
 
     private function doPatch($targetDir,$patchDir)
     {
-
+        $fs = new Filesystem();
+        $targetDir = getenv('HOME');
+        
     }
 
     private function debug($message,$context = array())
