@@ -11,6 +11,16 @@ class InstallEvent extends AbstractEvent
      */
     private $patches = [];
 
+    /**
+     * @var bool
+     */
+    private $dryRun;
+
+    /**
+     * @var bool
+     */
+    private $overwriteNewFiles;
+
     public function getName()
     {
         return static::NAME;
@@ -30,5 +40,41 @@ class InstallEvent extends AbstractEvent
     public function getPatches(): array
     {
         return $this->patches;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDryRun(): bool
+    {
+        return $this->dryRun;
+    }
+
+    /**
+     * @param bool $dryRun
+     * @return InstallEvent
+     */
+    public function setDryRun(bool $dryRun): InstallEvent
+    {
+        $this->dryRun = $dryRun;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOverwriteNewFiles(): bool
+    {
+        return $this->overwriteNewFiles;
+    }
+
+    /**
+     * @param bool $overwriteNewFiles
+     * @return InstallEvent
+     */
+    public function setOverwriteNewFiles(bool $overwriteNewFiles): InstallEvent
+    {
+        $this->overwriteNewFiles = $overwriteNewFiles;
+        return $this;
     }
 }

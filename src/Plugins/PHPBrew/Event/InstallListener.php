@@ -8,6 +8,6 @@ namespace Dotfiles\Plugins\PHPBrew\Event;
  * chmod +x phpbrew
  * phpbrew init
  */
-class InstallListener extends AbstractListener
+class InstallListener
 {
 }

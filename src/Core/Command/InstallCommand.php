@@ -88,6 +88,10 @@ class InstallCommand extends Command implements CommandInterface
             mkdir($dir, 0755, true);
         }
         $event = new InstallEvent();
+        $event
+            ->setDryRun($this->dryRun)
+            ->setOverwriteNewFiles($this->overwriteNewFiles)
+        ;
         $this->dispatcher->dispatch(InstallEvent::NAME, $event);
         $this->patches = $event->getPatches();
         $this->processSection($output, 'defaults');

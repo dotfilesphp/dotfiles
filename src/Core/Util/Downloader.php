@@ -53,7 +53,7 @@ class Downloader
         return $this->progressBar;
     }
 
-    public function run($url,$targetFile)
+    public function run($url,$targetFile, $dryRun = false)
     {
         $fullName = basename($targetFile);
         $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
@@ -61,15 +61,17 @@ class Downloader
         Toolkit::ensureFileDir($targetFile);
         $this->hasError = false;
         $this->logger->debug(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
-        $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);
-        set_error_handler([$this,'handleError']);
-        $this->contents = file_get_contents($url, false, $context);
-        restore_error_handler();
-        if($this->hasError){
-            throw new \RuntimeException('Failed to download '.$url);
+        if(!$dryRun){
+            $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);
+            set_error_handler([$this,'handleError']);
+            $this->contents = file_get_contents($url, false, $context);
+            restore_error_handler();
+            if($this->hasError){
+                throw new \RuntimeException('Failed to download '.$url);
+            }
+            $this->output->writeln("");
+            file_put_contents($targetFile, $this->contents, LOCK_EX);
         }
-        $this->output->writeln("");
-        file_put_contents($targetFile, $this->contents, LOCK_EX);
         $this->logger->debug('Download <comment>finished</comment>');
     }
 
