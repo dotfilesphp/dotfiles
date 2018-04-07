@@ -74,6 +74,7 @@ class InstallListener implements EventSubscriberInterface
 # This file is generated automatically by DOTFILES installer
 # All changes in this file will be overwrite later with DOTFILES
 
+export PATH="{$installDir}/bin:\$PATH"
 $bashConfig
 
 # END DOTFILES CONFIG
