@@ -44,13 +44,15 @@ class InstallCommandTest extends CommandTestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $binDir = sys_get_temp_dir().'/dotfiles/tests/bin';
         $vendorDir = sys_get_temp_dir().'/dotfiles/tests/vendor';
+        $backupDir = sys_get_temp_dir().'/dotfiles/backup';
         $this->config->expects($this->any())
             ->method('get')
             ->willReturnMap([
                 ['dotfiles.bin_dir',$binDir],
                 ['dotfiles.vendor_dir',$vendorDir],
                 ['dotfiles.base_dir',$baseDir],
-                ['dotfiles.machine_name',$machineName]
+                ['dotfiles.machine_name',$machineName],
+                ['dotfiles.backup_dir',$backupDir]
             ])
         ;
         $command = new InstallCommand(
@@ -93,5 +95,12 @@ class InstallCommandTest extends CommandTestCase
         $home = getenv('HOME');
         $this->assertFileExists($home.'/.config/i3/config');
         $this->assertFileExists($home.'/.zeus');
+
+        // testing patch
+        $file = $home.'/.patch';
+        $contents = file_get_contents($file);
+        $this->assertContains('base contents', $contents);
+        $this->assertContains('patch default', $contents);
+        $this->assertContains('patch zeus', $contents);
     }
 }
