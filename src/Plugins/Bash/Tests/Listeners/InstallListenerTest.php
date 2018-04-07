@@ -2,6 +2,7 @@
 
 namespace Dotfiles\Plugins\Bash\Tests\Listeners;
 
+use Psr\Log\LoggerInterface;
 use Dotfiles\Plugins\Bash\Listeners\InstallListener;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\InstallEvent;
@@ -24,12 +25,12 @@ class InstallListenerTest extends TestCase
             ->method('getConfig')
             ->willReturn($config)
         ;
-
+        $logger = $this->createMock(LoggerInterface::class);
         $dispatcher->expects($this->once())
             ->method('dispatch')
-            ->with(ReloadBashConfigEvent::NAME,new ReloadBashConfigEvent())
+            ->with(ReloadBashConfigEvent::NAME,new ReloadBashConfigEvent($logger))
         ;
-        $listener = new InstallListener($dispatcher,$config);
+        $listener = new InstallListener($dispatcher,$config, $logger);
         $listener->setInstallDir($dir);
         $listener->onInstallEvent($event);
 

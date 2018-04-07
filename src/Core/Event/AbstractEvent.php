@@ -12,7 +12,7 @@
 namespace Dotfiles\Core\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Dotfiles\Core\Util\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use Dotfiles\Core\Config\Config;
 
 class AbstractEvent extends Event

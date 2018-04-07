@@ -65,7 +65,7 @@ class BuilderTest extends TestCase
             )
             ;*/
 
-        $parameterBag = $this->createMock(ParameterBagInterface::class);
+        /*$parameterBag = $this->createMock(ParameterBagInterface::class);
         $parameterBag->expects($this->once())
             ->method('unescapeValue')
             ->willReturn('../../Command/*Command')
@@ -73,7 +73,7 @@ class BuilderTest extends TestCase
         $cb->expects($this->once())
             ->method('getParameterBag')
             ->willReturn($parameterBag)
-        ;
+        ;*/
 
         $contents = <<<EOC
 <?php
