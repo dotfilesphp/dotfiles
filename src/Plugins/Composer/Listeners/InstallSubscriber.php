@@ -84,8 +84,8 @@ class InstallSubscriber implements EventSubscriberInterface
         $downloader = $this->downloader;
         $scriptFile = $config->get('dotfiles.temp_dir').'/composer/composer.php';
         $sigFile = $config->get('dotfiles.temp_dir').'/composer/composer.sig';
-        Toolkit::ensureDir($scriptFile);
-        Toolkit::ensureDir($sigFile);
+        Toolkit::ensureFileDir($scriptFile);
+        Toolkit::ensureFileDir($sigFile);
 
         if(!is_file($sigFile)){
             $downloader->run(static::SIG_URL,$sigFile);

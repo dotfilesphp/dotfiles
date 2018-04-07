@@ -133,8 +133,13 @@ class Config implements \ArrayAccess
             $flattened = $generated;
             Toolkit::flattenArray($flattened);
             $expFlattened = var_export($flattened,true);
+
+            /* provide a way to handle normalize config */
+            $this->normalizeConfig($flattened,$expConfig);
             $this->normalizeConfig($flattened,$expConfig);
             $this->normalizeConfig($flattened,$expFlattened);
+            $this->normalizeConfig($flattened,$expFlattened);
+
             $code = <<<EOC
 <?php
 \$this->configs = ${expConfig};

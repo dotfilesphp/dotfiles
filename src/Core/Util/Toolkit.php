@@ -64,16 +64,21 @@ class Toolkit
         }
     }
 
+    public static function ensureDir(string $dir)
+    {
+        if(!is_dir($dir)){
+            mkdir($dir,0755,true);
+        }
+    }
+
     /**
      * Ensure that directory exists
      *
      * @param string $file
      */
-    public static function ensureDir($file)
+    public static function ensureFileDir($file)
     {
-        if(!is_dir($dir = dirname($file))){
-            mkdir($dir,0755,true);
-        }
+        static::ensureDir(dirname($file));
     }
 
     public static function getBaseDir()
@@ -83,5 +88,18 @@ class Toolkit
             $baseDir = str_replace('/dotfiles.phar','',\Phar::running(false));
         }
         return $baseDir;
+    }
+
+    public static function ensureDotPath(string $relativePathName)
+    {
+        if(0 !== strpos($relativePathName,'.')){
+            $relativePathName = '.'.$relativePathName;
+        }
+        return $relativePathName;
+    }
+
+    public static function stripPath(string $path)
+    {
+        return substr($path,strrpos($path,DIRECTORY_SEPARATOR),strlen($path));
     }
 }

@@ -22,6 +22,7 @@ use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Core\Event\InstallEvent;
 use Dotfiles\Core\Event\Dispatcher;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Process;
 
 class InstallCommand extends Command implements CommandInterface
 {
@@ -45,6 +46,15 @@ class InstallCommand extends Command implements CommandInterface
      */
     private $patches = array();
 
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    private $dryRun = false;
+
+    private $overwriteNewFiles = false;
+
     public function __construct(
         ?string $name = null,
         Dispatcher $dispatcher,
@@ -65,8 +75,12 @@ class InstallCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->dryRun = $input->getOption('dry-run');
+        $this->getApplication()->get('backup')->execute($input,$output);
+
         $output->writeln('Begin installing <comment>dotfiles</comment>');
         $config = $this->config;
+        $this->output = $output;
         if (!is_dir($dir = $config->get('dotfiles.bin_dir'))) {
             mkdir($dir, 0755, true);
         }
@@ -75,44 +89,64 @@ class InstallCommand extends Command implements CommandInterface
         }
         $event = new InstallEvent();
         $this->dispatcher->dispatch(InstallEvent::NAME, $event);
-        $this->doProcessSection($output, 'defaults');
+        $this->patches = $event->getPatches();
+        $this->processSection($output, 'defaults');
         if(!is_null($machineName = $config->get('dotfiles.machine_name'))){
-            $this->doProcessSection($output,'machines/'.$machineName);
+            $this->processSection($output,'machines/'.$machineName);
         }
-        $this->doApplyPatch();
+        $this->applyPatch();
     }
 
-    private function doProcessSection(OutputInterface $output, $section)
+    private function processSection(OutputInterface $output, $section)
     {
         $config = $this->config;
         $baseDir = $config->get('dotfiles.base_dir');
         $output->writeln("Processing <comment>$section</comment> section");
         $this->doProcessTemplates($baseDir . '/'.$section.'/templates');
         $this->doProcessPatch($baseDir.'/'.$section.'/patch');
-        $this->doProcessInstallHook($baseDir.'/'.$section.'/custom');
+        $this->doProcessBin($baseDir.'/'.$section.'/bin');
+        $this->doProcessInstallHook($baseDir.'/'.$section.'/hooks');
+    }
+
+    private function applyPatch()
+    {
+        $fs = new Filesystem();
+        foreach($this->patches as $target => $patches)
+        {
+            $patchContents = implode("\n", $patches);
+            if(!$this->dryRun){
+                $fs->patch($target,$patchContents);
+            }
+            $this->debug(
+                sprintf(
+                    "Patching file: <comment>%s</comment>",
+                            Toolkit::stripPath($target)
+                )
+            );
+        }
     }
 
     private function doProcessTemplates($templateDir,$overwrite = false)
     {
-        $targetDir = getenv('HOME');
+        $targetDir = $this->config->get('dotfiles.home_dir');
         if (!is_dir($templateDir)) {
             $this->debug("Template directory <comment>$templateDir</comment> not found");
             return;
         }
-        $this->debug("copy files from <comment>$templateDir</comment>");
 
         $finder = Finder::create()
             ->in($templateDir)
             ->ignoreVCS(true)
+            ->ignoreDotFiles(false)
             ->files()
         ;
-        $fs = new Filesystem();
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach($finder->files() as $file){
             $source = $file->getRealPath();
-            $target = $targetDir.DIRECTORY_SEPARATOR.'.'.$file->getRelativePathname();
-            $this->backup($target);
-            $fs->copy($source,$target,['overwriteNewerFiles' => $overwrite]);
+            $relativePathName = $this->normalizePathName($file->getRelativePathname());
+
+            $target = $targetDir.DIRECTORY_SEPARATOR.$relativePathName;
+            $this->copy($source,$target);
         }
     }
 
@@ -121,12 +155,13 @@ class InstallCommand extends Command implements CommandInterface
         if(!is_dir($patchDir)){
             return;
         }
-        $targetDir = getenv('HOME');
         $finder = Finder::create()
             ->in($patchDir)
         ;
+        /* @var SplFileInfo $file */
         foreach($finder->files() as $file){
-            $target = getenv('HOME').DIRECTORY_SEPARATOR.'.'.$file->getRelativePathName();
+            $relativePathName = $this->normalizePathName($file->getRelativePathName());
+            $target = $this->config->get('dotfiles.home_dir').DIRECTORY_SEPARATOR.$relativePathName;
             $patch = file_get_contents($file);
             if(!isset($this->patches[$target])){
                 $this->patches[$target] = [];
@@ -135,31 +170,68 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function doApplyPatch()
+    private function doProcessBin($binDir)
     {
-        $fs = new Filesystem();
-        foreach($this->patches as $target => $patches)
-        {
-            $patchContents = implode("\n", $patches);
-            $fs->patch($target,$patchContents);
+        if(!is_dir($binDir)){
+            return;
+        }
+
+        $finder = Finder::create()
+            ->in($binDir)
+            ->ignoreVCS(true)
+            ->ignoreDotFiles(false)
+        ;
+
+        /* @var SplFileInfo $file */
+        foreach($finder->files() as $file){
+            $target = $this->config->get('dotfiles.bin_dir').DIRECTORY_SEPARATOR.$file->getRelativePathName();
+            $this->copy($file,$target);
         }
     }
 
     private function doProcessInstallHook($hookDir)
     {
-
+        if(!is_dir($hookDir)){
+            return;
+        }
+        $finder = Finder::create()
+            ->in($hookDir)
+            ->name('install')
+            ->name('install.sh')
+        ;
+        foreach($finder->files() as $file){
+            $this->debug("executing <comment>$file</comment>");
+            $cmd = $file;
+            $process = new Process($cmd);
+            $process->run(function($type,$buffer){
+                if (Process::ERR === $type) {
+                    $this->output->writeln("Error: $buffer");
+                } else {
+                    $this->output->writeln($buffer);;
+                }
+            });
+        }
     }
 
-    private function backup($file)
+    private function copy($origin,$target)
     {
-        $relativePathName = str_replace(getenv('HOME').DIRECTORY_SEPARATOR,'',$file);
-        $fs = new Filesystem();
-        $backupDir = $this->config->get('dotfiles.backup_dir');
-        $target = $backupDir.DIRECTORY_SEPARATOR.$relativePathName;
-        Toolkit::ensureDir($target);
-        if(is_file($file) && !is_file($target)){
-            $fs->copy($file,$target,['overwriteNewerFiles' => true]);
+        if(!$this->dryRun){
+            $fs = new Filesystem();
+            $fs->copy($origin,$target,['overwriteNewerFiles' => $this->overwriteNewFiles]);
         }
+        $this->debug(sprintf(
+            "Copy files from <comment>%s</comment> to <comment>%s</comment>",
+            Toolkit::stripPath($origin),
+            Toolkit::stripPath($target)
+        ));
+    }
+
+    private function normalizePathName(string $relativePathName)
+    {
+        if(0 !== strpos($relativePathName,'.')){
+            $relativePathName = '.'.$relativePathName;
+        }
+        return $relativePathName;
     }
 
     private function debug($message,$context = array())

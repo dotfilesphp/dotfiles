@@ -60,7 +60,8 @@
         "symfony/config": "^4.0",
         "symfony/dependency-injection": "^4.0",
         "symfony/yaml": "^4.0",
-        "zsh/oh-my-zsh": "^1.0"
+        "zsh/oh-my-zsh": "^1.0",
+        "symfony/dotenv": "^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0",

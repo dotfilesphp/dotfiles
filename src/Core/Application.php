@@ -12,6 +12,7 @@
 namespace Dotfiles\Core;
 
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Input\InputOption;
 
 class Application extends BaseApplication
 {
@@ -27,6 +28,9 @@ class Application extends BaseApplication
     public function __construct()
     {
         parent::__construct('dotfiles', static::VERSION);
+        $this->getDefinition()->addOption(
+            new InputOption('dry-run','-d',InputOption::VALUE_NONE,'Run command in test mode')
+        );
     }
 
     public function getLongVersion()

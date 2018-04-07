@@ -12,6 +12,7 @@
 namespace Dotfiles\Core\Tests\Command;
 
 
+use Dotfiles\Core\Command\BackupCommand;
 use Dotfiles\Core\Command\InstallCommand;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Tests\CommandTestCase;
@@ -52,7 +53,8 @@ class InstallCommandTest extends CommandTestCase
                 ['dotfiles.vendor_dir',$vendorDir],
                 ['dotfiles.base_dir',$baseDir],
                 ['dotfiles.machine_name',$machineName],
-                ['dotfiles.backup_dir',$backupDir]
+                ['dotfiles.backup_dir',$backupDir],
+                ['dotfiles.home_dir',getenv('HOME')]
             ])
         ;
         $command = new InstallCommand(
@@ -65,12 +67,49 @@ class InstallCommandTest extends CommandTestCase
         return $command;
     }
 
+    /**
+     * @return MockObject
+     * @throws \ReflectionException
+     */
+    private function getBackupCommand()
+    {
+        $backup = $this->getMockBuilder(BackupCommand::class)
+            ->setMethods(['execute','isEnabled','getName','getDefinition','getAliases'])
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $backup->expects($this->any())
+            ->method('isEnabled')
+            ->willReturn(true)
+        ;
+        $backup->expects($this->any())
+            ->method('getName')
+            ->willReturn('backup')
+        ;
+        $backup->expects($this->any())
+            ->method('getDefinition')
+            ->willReturn('Backup command')
+        ;
+        $backup->expects($this->any())
+            ->method('getAliases')
+            ->willReturn([])
+        ;
+        return $backup;
+    }
+
     public function testExecute()
     {
+
         $command = $this->getClassToTest();
+
+        $backup = $this->getBackupCommand();
+        $backup->expects($this->once())
+            ->method('execute')
+        ;
 
         $app = $this->getApplication();
         $app->add($command);
+        $app->add($backup);
         $command = $app->find('install');
         $tester = new CommandTester($command);
         $tester->execute([]);
@@ -79,28 +118,45 @@ class InstallCommandTest extends CommandTestCase
         $this->assertContains('Begin installing dotfiles',$output);
     }
 
-    public function testProcessMachine()
+    /**
+     * @dataProvider getTestProcessMachine
+     */
+    public function testProcessMachine($machine)
     {
         $fixturesDir = __DIR__.'/fixtures/default';
-        $command = $this->getClassToTest($fixturesDir,'zeus');
+        $command = $this->getClassToTest($fixturesDir,$machine);
 
+        $backup = $this->getBackupCommand();
         $app = $this->getApplication();
         $app->add($command);
+        $app->add($backup);
         $command = $app->find('install');
         $tester = new CommandTester($command);
-        $tester->execute([
-        ]);
+        $tester->execute([]);
 
         $output = $tester->getDisplay(true);
         $home = getenv('HOME');
+        $binDir = sys_get_temp_dir().'/dotfiles/tests/bin';
         $this->assertFileExists($home.'/.config/i3/config');
-        $this->assertFileExists($home.'/.zeus');
+        $this->assertFileExists($home.'/.'.$machine);
+        $this->assertFileExists($binDir.'/default-bin');
+        $this->assertFileExists($binDir."/{$machine}-bin");
+        $this->assertContains('default install hook',$output);
+        $this->assertContains("$machine install hook",$output);
 
         // testing patch
         $file = $home.'/.patch';
         $contents = file_get_contents($file);
         $this->assertContains('base contents', $contents);
         $this->assertContains('patch default', $contents);
-        $this->assertContains('patch zeus', $contents);
+        $this->assertContains('patch '.$machine, $contents);
+    }
+
+    public function getTestProcessMachine()
+    {
+        return [
+            ['zeus'],
+            ['athena']
+        ];
     }
 }

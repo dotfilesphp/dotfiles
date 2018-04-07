@@ -58,7 +58,7 @@ class Downloader
         $fullName = basename($targetFile);
         $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
 
-        Toolkit::ensureDir($targetFile);
+        Toolkit::ensureFileDir($targetFile);
         $this->hasError = false;
         $this->logger->debug(sprintf('Downloading <info>%s</info> to <info>%s</info>',$url,$targetFile));
         $context = stream_context_create([], ['notification' => [$this, 'handleNotification']]);

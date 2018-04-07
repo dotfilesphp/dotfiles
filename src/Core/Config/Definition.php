@@ -18,14 +18,15 @@ class Definition implements DefinitionInterface
     public function getConfigTreeBuilder()
     {
         $builder = new TreeBuilder();
-
-        $defInstallDir = getenv('HOME').DIRECTORY_SEPARATOR.'.dotfiles';
         $baseDir = Toolkit::getBaseDir();
         $root = $builder->root('dotfiles');
         $root
             ->children()
                 ->scalarNode('machine_name')
-                    ->defaultNull()
+                    ->defaultValue(getenv('DOTFILES_MACHINE_NAME'))
+                ->end()
+                ->scalarNode('home_dir')
+                    ->defaultValue(getenv('HOME'))
                 ->end()
                 ->booleanNode('debug')
                     ->defaultFalse()
@@ -34,7 +35,7 @@ class Definition implements DefinitionInterface
                     ->defaultValue($baseDir)
                 ->end()
                 ->scalarNode('install_dir')
-                    ->defaultValue($defInstallDir)
+                    ->defaultValue('%dotfiles.home_dir%/.dotfiles')
                 ->end()
                 ->scalarNode('log_dir')
                     ->defaultValue('%dotfiles.base_dir%/var/log')

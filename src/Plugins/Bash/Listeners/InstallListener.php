@@ -54,7 +54,10 @@ class InstallListener implements EventSubscriberInterface
         $reloadEvent = new ReloadBashConfigEvent($this->logger);
         $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME,$reloadEvent);
         $this->generateDotfilesConfig($reloadEvent->getBashConfig());
-        $this->patchHomeConfig();
+
+        $installDir = $this->config->get('dotfiles.install_dir');
+        $target = $this->config->get('dotfiles.home_dir').'/.bashrc';
+        $event->addPatch($target,"source \"${installDir}/bashrc\"");
     }
 
     private function generateDotfilesConfig($bashConfig)
@@ -82,18 +85,6 @@ $bashConfig
 EOC;
 
         file_put_contents($installDir.DIRECTORY_SEPARATOR.$fileName,$contents, LOCK_EX);
-
-    }
-
-    private function patchHomeConfig()
-    {
-        $installDir = $this->installDir;
-        $fs = new Filesystem();
-        $contents = <<<EOC
-source "${installDir}/bashrc"
-EOC;
-
-        $fs->patch(getenv('HOME').DIRECTORY_SEPARATOR.'/.bashrc',$contents);
     }
 }
 
