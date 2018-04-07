@@ -19,6 +19,11 @@ services:
     # aliasses
     Psr\Log\LoggerInterface:
         alias: dotfiles.logger
+    Symfony\Component\Console\Output\OutputInterface:
+        alias: dotfiles.output
+    Dotfiles\Core\Util\Downloader:
+        alias: dotfiles.downloader
+        
     dotfiles.app:
         alias: Dotfiles\Core\Application
     dotfiles.config:

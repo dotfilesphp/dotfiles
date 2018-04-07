@@ -11,7 +11,7 @@ use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Core\Config\Config;
 use Symfony\Component\Finder\Finder;
 
-class InstallListener implements EventSubscriberInterface
+class InstallSubscriber implements EventSubscriberInterface
 {
     /**
      * @var Dispatcher

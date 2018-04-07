@@ -4,7 +4,7 @@ services:
         autoconfigure: true
         public: true
     bashit.install:
-        class: Dotfiles\Plugins\BashIt\Listeners\InstallListener
+        class: Dotfiles\Plugins\BashIt\Listeners\InstallSubscriber
         calls:
             - [setInstallDir, ['%dotfiles.install_dir%']]
         tags:

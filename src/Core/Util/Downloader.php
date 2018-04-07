@@ -68,6 +68,7 @@ class Downloader
         if($this->hasError){
             throw new \RuntimeException('Failed to download '.$url);
         }
+        $this->output->writeln("");
         file_put_contents($targetFile, $this->contents, LOCK_EX);
         $this->logger->debug('Download <comment>finished</comment>');
     }
