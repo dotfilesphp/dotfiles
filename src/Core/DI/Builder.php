@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\DumperInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Dotfiles\Core\Util\Toolkit;
 
 class Builder
 {
@@ -98,7 +99,8 @@ class Builder
     public function getCacheFileName(): string
     {
         if (null === $this->cacheFileName) {
-            $this->setCacheFileName(getcwd().'/var/cache/container.php');
+            $base = Toolkit::getBaseDir();
+            $this->setCacheFileName($base.'/var/cache/container.php');
         }
 
         return $this->cacheFileName;
@@ -142,7 +144,9 @@ class Builder
     public function getContainer()
     {
         if (null === $this->container) {
-            include_once $this->getCacheFileName();
+            if(!class_exists('CachedContainer')){
+                include_once $this->getCacheFileName();
+            }
             $this->container = new \CachedContainer();
         }
 

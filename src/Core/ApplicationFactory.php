@@ -16,6 +16,7 @@ namespace Dotfiles\Core;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Config\Definition;
 use Dotfiles\Core\DI\Builder;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Finder\Finder;
 
@@ -41,8 +42,25 @@ class ApplicationFactory
 
     public function createApplication(): void
     {
+        $this->addAutoload();
         $this->loadPlugins();
         $this->compileContainer();
+    }
+
+    public function hasPlugin(string $name):bool
+    {
+        print_r($this->plugins);
+        return array_key_exists($name,$this->plugins);
+    }
+
+    private function addAutoload(): void
+    {
+        $baseDir = Toolkit::getBaseDir();
+        $autoloadFile = $baseDir.'/vendor/autoload.php';
+        if (is_file($autoloadFile)) {
+            $ret = include $autoloadFile;
+        }
+
     }
 
     private function compileContainer(): void

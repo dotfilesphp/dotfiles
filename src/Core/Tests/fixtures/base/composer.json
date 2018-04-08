@@ -1,0 +1,17 @@
+{
+    "name": "dotfiles/test",
+    "type": "dotfiles-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anthonius Munthi",
+            "email": "me@itstoni.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Dotfiles\\Plugins\\Foo\\": "./src"
+        }
+    }
+}

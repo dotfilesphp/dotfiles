@@ -89,7 +89,8 @@ class Toolkit
 
     public static function getBaseDir()
     {
-        $baseDir = realpath(dirname(__DIR__.'/../../../src'));
+        //$baseDir = realpath(dirname(__DIR__.'/../../../src'));
+        $baseDir = getcwd();
         if (false !== strpos($dir = \Phar::running(), 'phar:///')) {
             $baseDir = str_replace('/dotfiles.phar', '', \Phar::running(false));
         }
