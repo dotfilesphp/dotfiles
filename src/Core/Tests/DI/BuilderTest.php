@@ -51,26 +51,6 @@ class BuilderTest extends TestCase
             ->method('setPublic')
             ->will($this->returnSelf())
         ;
-        /*$cb->expects($this->exactly(3))
-            ->method('register')
-            ->willReturn($definition)
-            ->withConsecutive(
-                [Dispatcher::class],
-                [Config::class],
-                [Application::class]
-            )
-            ;*/
-
-        /*$parameterBag = $this->createMock(ParameterBagInterface::class);
-        $parameterBag->expects($this->once())
-            ->method('unescapeValue')
-            ->willReturn('../../Command/*Command')
-        ;
-        $cb->expects($this->once())
-            ->method('getParameterBag')
-            ->willReturn($parameterBag)
-        ;*/
-
         $contents = <<<EOC
 <?php
 
