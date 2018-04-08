@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 require __DIR__.'/../vendor/autoload.php';
 
+\Dotfiles\Core\Util\Toolkit::loadDotEnv();
+
 $home = sys_get_temp_dir().'/dotfiles/home';
 if (!is_dir($home)) {
     mkdir($home, 0755, true);

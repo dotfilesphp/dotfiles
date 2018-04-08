@@ -14,12 +14,24 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\PHPBrew\Command;
 
 use Dotfiles\Core\Command\CommandInterface;
+use Dotfiles\Plugins\PHPBrew\Installer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallCommand extends Command implements CommandInterface
 {
+    /**
+     * @var Installer
+     */
+    private $installer;
+
+    public function __construct(?string $name = null, Installer $installer)
+    {
+        parent::__construct($name);
+        $this->installer = $installer;
+    }
+
     public function configure(): void
     {
         $this->setName('phpbrew:install');
@@ -27,5 +39,6 @@ class InstallCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output): void
     {
+        $this->installer->run();
     }
 }

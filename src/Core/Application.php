@@ -14,7 +14,10 @@ declare(strict_types=1);
 namespace Dotfiles\Core;
 
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Application extends BaseApplication
 {
@@ -31,7 +34,7 @@ class Application extends BaseApplication
     {
         parent::__construct('dotfiles', static::VERSION);
         $this->getDefinition()->addOption(
-            new InputOption('dry-run', '-d', InputOption::VALUE_NONE, 'Run command in test mode')
+            new InputOption('dry-run', '-d', InputOption::VALUE_NONE, 'Only show which files would have been modified')
         );
     }
 
@@ -52,12 +55,20 @@ class Application extends BaseApplication
         ));
     }
 
+    public function run(InputInterface $input = null, OutputInterface $output = null)
+    {
+        $dryRun = $input->hasParameterOption(array('--dry-run'), true);
+        $this->container->get('dotfiles.config')->set('dotfiles.dry_run', $dryRun);
+
+        return parent::run($input, $output);
+    }
+
     /**
-     * @param Container $container
+     * @param ContainerInterface $container
      *
      * @return Application
      */
-    public function setContainer(Container $container): self
+    public function setContainer(ContainerInterface $container): self
     {
         $this->container = $container;
 

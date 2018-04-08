@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\DI;
 
 use Dotfiles\Core\DI\Compiler\CommandPass;
+use Dotfiles\Core\DI\Compiler\ListenerPass;
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
@@ -48,7 +49,9 @@ class Builder
     {
         $cachePath = $this->getCacheFileName();
         $cache = new ConfigCache($cachePath, true);
-        if (!$cache->isFresh()) {
+        $env = getenv('DOTFILES_ENV');
+
+        if (!$cache->isFresh() || 'dev' === $env) {
             $builder = $this->getContainerBuilder();
             $this->configureCoreServices($builder);
             $builder->addCompilerPass(new CommandPass());

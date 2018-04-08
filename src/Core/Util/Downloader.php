@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Util;
 
+use Dotfiles\Core\Config\Config;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,26 +25,42 @@ class Downloader
      */
     private $bytesMax;
 
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var string
+     */
     private $contents;
 
+    /**
+     * @var bool
+     */
     private $hasError = false;
 
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**
      * @var OutputInterface
      */
     private $output;
+
     /**
      * @var ProgressBar
      */
     private $progressBar;
 
-    public function __construct(OutputInterface $output, LoggerInterface $logger)
+    public function __construct(OutputInterface $output, LoggerInterface $logger, Config $config)
     {
         $this->output = $output;
         $this->logger = $logger;
         $this->progressBar = new ProgressBar($output);
+        $this->config = $config;
     }
 
     /**
@@ -86,8 +103,9 @@ class Downloader
         }
     }
 
-    public function run($url, $targetFile, $dryRun = false): void
+    public function run($url, $targetFile): void
     {
+        $dryRun = $this->config->get('dotfiles.dry_run');
         $fullName = basename($targetFile);
         $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
 

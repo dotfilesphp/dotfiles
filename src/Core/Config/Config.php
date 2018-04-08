@@ -117,8 +117,8 @@ class Config implements \ArrayAccess
     {
         $cachePath = $this->getCachePath();
         $cache = new ConfigCache($cachePath, true);
-
-        if (!$cache->isFresh()) {
+        $env = getenv('DOTFILES_ENV');
+        if (!$cache->isFresh() || 'dev' === $env) {
             $processor = new Processor();
             $configs = $this->processFiles();
             $generated = array();
@@ -174,6 +174,11 @@ EOC;
     public function offsetUnset($offset): void
     {
         unset($this->configs[$offset]);
+    }
+
+    public function set($name, $value): void
+    {
+        $this->flattened[$name] = $value;
     }
 
     /**

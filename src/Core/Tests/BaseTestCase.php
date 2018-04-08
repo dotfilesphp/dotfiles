@@ -22,6 +22,11 @@ abstract class BaseTestCase extends TestCase
     public static function setUpBeforeClass(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         parent::setUpBeforeClass();
+        static::cleanupTempDir();
+    }
+
+    public static function cleanupTempDir(): void
+    {
         $finder = Finder::create()
             ->in(sys_get_temp_dir().'/dotfiles')
         ;

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Util;
 
+use Symfony\Component\Dotenv\Dotenv;
+
 class Toolkit
 {
     public static function ensureDir(string $dir): void
@@ -82,6 +84,23 @@ class Toolkit
         }
 
         return $baseDir;
+    }
+
+    public static function loadDotEnv(): void
+    {
+        $cwd = static::getBaseDir();
+        $files = array();
+        if (is_file($file = $cwd.'/.env.dist')) {
+            $files[] = $file;
+        }
+        if (is_file($file = $cwd.'/.env')) {
+            $files[] = $file;
+        }
+
+        if (count($files) > 0) {
+            $env = new Dotenv();
+            call_user_func_array(array($env, 'load'), $files);
+        }
     }
 
     public static function normalizeValue($value)

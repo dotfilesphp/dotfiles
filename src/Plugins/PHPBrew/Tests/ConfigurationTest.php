@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @covers \Dotfiles\Plugins\PHPBrew\Configuration
  */
-class DefinitionTest extends TestCase
+class ConfigurationTest extends TestCase
 {
     public function testProcess(): void
     {

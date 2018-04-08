@@ -26,6 +26,12 @@ class Definition implements DefinitionInterface
         $root = $builder->root('dotfiles');
         $root
             ->children()
+                ->scalarNode('env')
+                    ->defaultValue(getenv('DOTFILES_ENV'))
+                ->end()
+                ->booleanNode('dry_run')
+                    ->defaultTrue()
+                ->end()
                 ->scalarNode('machine_name')
                     ->defaultValue(getenv('DOTFILES_MACHINE_NAME'))
                 ->end()

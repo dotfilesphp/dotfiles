@@ -8,31 +8,14 @@ use Symfony\Component\Dotenv\Dotenv;
 use Dotfiles\Core\Util\Toolkit;
 
 try{
-    loadEnv();
+    Toolkit::loadDotEnv();
     $factory = new ApplicationFactory();
     $factory->boot();
     $container = $factory->getContainer();
     $app = $container->get('dotfiles.app');
+    $app->setContainer($container);
     exit($app->run($container->get('dotfiles.input'),$container->get('dotfiles.output')));
 }catch (\Exception $e){
     echo $e->getMessage()."\n";
     exit(1);
-}
-
-
-function loadEnv()
-{
-    $cwd = Toolkit::getBaseDir();
-    $files = array();
-    if(is_file($file = $cwd.'/.env.dist')){
-        $files[] = $file;
-    }
-    if(is_file($file = $cwd.'/.env')){
-        $files[] = $file;
-    }
-
-    if(count($files) > 0){
-        $env = new Dotenv();
-        call_user_func_array([$env,'load'],$files);
-    }
 }

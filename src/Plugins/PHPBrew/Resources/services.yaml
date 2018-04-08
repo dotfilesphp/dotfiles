@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autoconfigure: true
+        autowire: true
+        public: true
+
+    Dotfiles\Plugins\PHPBrew\Command\InstallCommand: ~
+    phpbrew.installer:
+        class: Dotfiles\Plugins\PHPBrew\Installer
+    phpbrew.listeners.install:
+        class: Dotfiles\Plugins\PHPBrew\Listeners\InstallListener
+        tags:
+            - { name: event_listener, method: onInstallEvent, event: dotfiles.install }
+    Dotfiles\Plugins\PHPBrew\Installer:
+        alias: phpbrew.installer

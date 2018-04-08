@@ -16,6 +16,11 @@ namespace Dotfiles\Plugins\Bash\Tests;
 use Dotfiles\Core\ApplicationFactory;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class BashPluginTest.
+ *
+ * @covers \Dotfiles\Plugins\Bash\BashPlugin
+ */
 class BashPluginTest extends TestCase
 {
     public function testSetupConfiguration(): void

@@ -15,12 +15,19 @@ namespace Dotfiles\Plugins\PHPBrew\Tests;
 
 use Dotfiles\Plugins\PHPBrew\PHPBrewPlugin;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class PHPBrewPluginTest extends TestCase
 {
-    public function testGetName(): void
+    public function testLoad(): void
     {
-        $phpbrew = new PHPBrewPlugin();
-        $this->assertEquals('phpbrew', $phpbrew->getName());
+        $builder = $this->createMock(ContainerBuilder::class);
+        $builder->expects($this->once())
+            ->method('fileExists')
+            ->with($this->stringContains('services.yaml'))
+        ;
+
+        $plugin = new PHPBrewPlugin();
+        $plugin->load(array(), $builder);
     }
 }
