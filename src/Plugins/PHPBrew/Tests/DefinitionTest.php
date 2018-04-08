@@ -11,16 +11,16 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\PHPBrew\Tests\Config;
+namespace Dotfiles\Plugins\PHPBrew\Tests;
 
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Plugins\PHPBrew\Config\Configuration;
+use Dotfiles\Plugins\PHPBrew\Configuration;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class DefinitionTest.
  *
- * @covers \Dotfiles\Plugins\PHPBrew\Config\Configuration
+ * @covers \Dotfiles\Plugins\PHPBrew\Configuration
  */
 class DefinitionTest extends TestCase
 {

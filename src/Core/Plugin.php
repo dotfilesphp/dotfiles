@@ -16,7 +16,7 @@ namespace Dotfiles\Core;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
-abstract class Plugin extends Extension implements PluginInterface
+abstract class Plugin extends Extension
 {
     public function getName(): string
     {
