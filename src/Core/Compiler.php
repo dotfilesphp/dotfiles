@@ -22,12 +22,11 @@ class Compiler
     /**
      * @var string
      */
-    private $version;
-
+    private $branchAliasVersion = '';
     /**
      * @var string
      */
-    private $branchAliasVersion = '';
+    private $version;
 
     /**
      * @var \DateTime
@@ -47,17 +46,17 @@ class Compiler
     /**
      * @return string
      */
-    public function getVersion(): string
+    public function getBranchAliasVersion(): string
     {
-        return $this->version;
+        return $this->branchAliasVersion;
     }
 
     /**
      * @return string
      */
-    public function getBranchAliasVersion(): string
+    public function getVersion(): string
     {
-        return $this->branchAliasVersion;
+        return $this->version;
     }
 
     /**
@@ -68,32 +67,40 @@ class Compiler
         return $this->versionDate;
     }
 
-    private function setupVersion(): void
+    private function addDotfilesBin($phar): void
     {
-        $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
-        if (0 != $process->run()) {
-            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
-        }
-        $this->version = trim($process->getOutput());
+        $content = file_get_contents(__DIR__.'/../../bin/dotfiles');
+        $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
+        $phar->addFromString('bin/dotfiles', $content);
+    }
 
-        $process = new Process('git log -n1 --pretty=%ci HEAD', __DIR__);
-        if (0 != $process->run()) {
-            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
+    /**
+     * @param $phar
+     * @param \SplFileInfo $file
+     * @param bool         $strip
+     */
+    private function addFile($phar, \SplFileInfo $file, $strip = true): void
+    {
+        $path = $this->getRelativeFilePath($file);
+        $content = file_get_contents($file->getRealPath());
+        if ($strip) {
+            $content = $this->stripWhitespace($content);
+        } elseif ('LICENSE' === basename($file)) {
+            $content = "\n".$content."\n";
         }
 
-        $this->versionDate = new \DateTime(trim($process->getOutput()));
-        $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
-        $process = new Process('git describe --tags --exact-match HEAD');
-        if (0 == $process->run()) {
-            $this->version = trim($process->getOutput());
-        } else {
-            // get branch-alias defined in composer.json for dev-master (if any)
-            $localConfig = __DIR__.'/../../composer.json';
-            $contents = file_get_contents($localConfig);
-            $json = json_decode($contents, true);
-            if (isset($json['extra']['branch-alias']['dev-master'])) {
-                $this->branchAliasVersion = $json['extra']['branch-alias']['dev-master'];
-            }
+        if ('src/Core/Application.php' === $path) {
+            $content = str_replace('@package_version@', $this->version, $content);
+            $content = str_replace('@package_branch_alias_version@', $this->branchAliasVersion, $content);
+            $content = str_replace('@release_date@', $this->versionDate->format('Y-m-d H:i:s'), $content);
+        }
+        $phar->addFromString($path, $content);
+    }
+
+    private function doAddFile($phar, $finder): void
+    {
+        foreach ($finder as $file) {
+            $this->addFile($phar, $file);
         }
     }
 
@@ -183,11 +190,19 @@ class Compiler
         $util->save($pharFile, \Phar::SHA1);
     }
 
-    private function doAddFile($phar, $finder): void
+    /**
+     * @param \SplFileInfo $file
+     *
+     * @return string
+     */
+    private function getRelativeFilePath($file)
     {
-        foreach ($finder as $file) {
-            $this->addFile($phar, $file);
-        }
+        $realPath = $file->getRealPath();
+        $pathPrefix = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR;
+        $pos = strpos($realPath, $pathPrefix);
+        $relativePath = (false !== $pos) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
+
+        return strtr($relativePath, '\\', '/');
     }
 
     private function getStub()
@@ -231,34 +246,33 @@ __HALT_COMPILER();
 EOF;
     }
 
-    private function addDotfilesBin($phar): void
+    private function setupVersion(): void
     {
-        $content = file_get_contents(__DIR__.'/../../bin/dotfiles');
-        $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
-        $phar->addFromString('bin/dotfiles', $content);
-    }
+        $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
+        if (0 != $process->run()) {
+            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
+        }
+        $this->version = trim($process->getOutput());
 
-    /**
-     * @param $phar
-     * @param \SplFileInfo $file
-     * @param bool         $strip
-     */
-    private function addFile($phar, \SplFileInfo $file, $strip = true): void
-    {
-        $path = $this->getRelativeFilePath($file);
-        $content = file_get_contents($file->getRealPath());
-        if ($strip) {
-            $content = $this->stripWhitespace($content);
-        } elseif ('LICENSE' === basename($file)) {
-            $content = "\n".$content."\n";
+        $process = new Process('git log -n1 --pretty=%ci HEAD', __DIR__);
+        if (0 != $process->run()) {
+            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
         }
 
-        if ('src/Core/Application.php' === $path) {
-            $content = str_replace('@package_version@', $this->version, $content);
-            $content = str_replace('@package_branch_alias_version@', $this->branchAliasVersion, $content);
-            $content = str_replace('@release_date@', $this->versionDate->format('Y-m-d H:i:s'), $content);
+        $this->versionDate = new \DateTime(trim($process->getOutput()));
+        $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
+        $process = new Process('git describe --tags --exact-match HEAD');
+        if (0 == $process->run()) {
+            $this->version = trim($process->getOutput());
+        } else {
+            // get branch-alias defined in composer.json for dev-master (if any)
+            $localConfig = __DIR__.'/../../composer.json';
+            $contents = file_get_contents($localConfig);
+            $json = json_decode($contents, true);
+            if (isset($json['extra']['branch-alias']['dev-master'])) {
+                $this->branchAliasVersion = $json['extra']['branch-alias']['dev-master'];
+            }
         }
-        $phar->addFromString($path, $content);
     }
 
     /**
@@ -294,20 +308,5 @@ EOF;
         }
 
         return $output;
-    }
-
-    /**
-     * @param \SplFileInfo $file
-     *
-     * @return string
-     */
-    private function getRelativeFilePath($file)
-    {
-        $realPath = $file->getRealPath();
-        $pathPrefix = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR;
-        $pos = strpos($realPath, $pathPrefix);
-        $relativePath = (false !== $pos) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
-
-        return strtr($relativePath, '\\', '/');
     }
 }

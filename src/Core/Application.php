@@ -18,9 +18,9 @@ use Symfony\Component\Console\Input\InputOption;
 
 class Application extends BaseApplication
 {
-    public const VERSION = '@package_version@';
     public const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
     public const RELEASE_DATE = '@release_date@';
+    public const VERSION = '@package_version@';
 
     /**
      * @var Container
@@ -35,6 +35,14 @@ class Application extends BaseApplication
         );
     }
 
+    /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
+    }
+
     public function getLongVersion()
     {
         return implode(' ', array(
@@ -42,14 +50,6 @@ class Application extends BaseApplication
             static::BRANCH_ALIAS_VERSION,
             static::RELEASE_DATE,
         ));
-    }
-
-    /**
-     * @return Container
-     */
-    public function getContainer(): Container
-    {
-        return $this->container;
     }
 
     /**

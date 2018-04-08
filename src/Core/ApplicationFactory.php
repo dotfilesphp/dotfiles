@@ -25,16 +25,6 @@ use Symfony\Component\Finder\Finder;
 class ApplicationFactory
 {
     /**
-     * @var PluginInterface[]
-     */
-    private $plugins = array();
-
-    /**
-     * @var Container
-     */
-    private $container;
-
-    /**
      * @var Builder
      */
     private $builder;
@@ -45,12 +35,13 @@ class ApplicationFactory
     private $config;
 
     /**
-     * @return Container
+     * @var Container
      */
-    public function getContainer(): Container
-    {
-        return $this->container;
-    }
+    private $container;
+    /**
+     * @var PluginInterface[]
+     */
+    private $plugins = array();
 
     /**
      * @return $this
@@ -65,6 +56,14 @@ class ApplicationFactory
         $this->compileContainer();
 
         return $this;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
     }
 
     /**
@@ -116,6 +115,38 @@ class ApplicationFactory
         $this->container->set(Config::class, $config);
     }
 
+    /**
+     * Load available plugins directory.
+     *
+     * @return array
+     */
+    private function loadDirectoryFromAutoloader()
+    {
+        $spl = spl_autoload_functions();
+
+        $dirs = array();
+        foreach ($spl as $item) {
+            $object = $item[0];
+            if (!$object instanceof ClassLoader) {
+                continue;
+            }
+            $temp = array_merge($object->getPrefixes(), $object->getPrefixesPsr4());
+            foreach ($temp as $name => $dir) {
+                if (false === strpos($name, 'Dotfiles')) {
+                    continue;
+                }
+                foreach ($dir as $num => $path) {
+                    $path = realpath($path);
+                    if ($path && is_dir($path) && !in_array($path, $dirs)) {
+                        $dirs[] = $path;
+                    }
+                }
+            }
+        }
+
+        return $dirs;
+    }
+
     private function loadPlugins(): void
     {
         $finder = Finder::create();
@@ -152,37 +183,5 @@ class ApplicationFactory
         if ($config instanceof ConfigurationInterface) {
             $this->config->addDefinition($config);
         }
-    }
-
-    /**
-     * Load available plugins directory.
-     *
-     * @return array
-     */
-    private function loadDirectoryFromAutoloader()
-    {
-        $spl = spl_autoload_functions();
-
-        $dirs = array();
-        foreach ($spl as $item) {
-            $object = $item[0];
-            if (!$object instanceof ClassLoader) {
-                continue;
-            }
-            $temp = array_merge($object->getPrefixes(), $object->getPrefixesPsr4());
-            foreach ($temp as $name => $dir) {
-                if (false === strpos($name, 'Dotfiles')) {
-                    continue;
-                }
-                foreach ($dir as $num => $path) {
-                    $path = realpath($path);
-                    if ($path && is_dir($path) && !in_array($path, $dirs)) {
-                        $dirs[] = $path;
-                    }
-                }
-            }
-        }
-
-        return $dirs;
     }
 }

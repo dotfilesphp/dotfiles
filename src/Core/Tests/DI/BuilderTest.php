@@ -27,20 +27,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class BuilderTest extends TestCase
 {
-    public function testDefaults(): void
-    {
-        $builder = new Builder();
-        $this->assertInstanceOf(ContainerBuilder::class, $builder->getContainerBuilder());
-
-        $cb = $this->createMock(ContainerBuilder::class);
-        $cb->expects($this->once())
-            ->method('isCompiled')
-            ->willReturn(true)
-        ;
-        $builder->setContainerBuilder($cb);
-        $this->assertInstanceOf(DumperInterface::class, $builder->getDumper());
-    }
-
     public function testCacheFileName(): void
     {
         // check default cache file generation
@@ -111,5 +97,19 @@ EOC;
         $this->assertEquals($contents, file_get_contents($cacheFileName));
 
         $this->assertInstanceOf(Container::class, $builder->getContainer());
+    }
+
+    public function testDefaults(): void
+    {
+        $builder = new Builder();
+        $this->assertInstanceOf(ContainerBuilder::class, $builder->getContainerBuilder());
+
+        $cb = $this->createMock(ContainerBuilder::class);
+        $cb->expects($this->once())
+            ->method('isCompiled')
+            ->willReturn(true)
+        ;
+        $builder->setContainerBuilder($cb);
+        $this->assertInstanceOf(DumperInterface::class, $builder->getDumper());
     }
 }

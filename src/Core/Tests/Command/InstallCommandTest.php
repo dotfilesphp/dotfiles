@@ -27,77 +27,23 @@ class InstallCommandTest extends CommandTestCase
     /**
      * @var MockObject
      */
-    private $dispatcher;
-
+    private $config;
     /**
      * @var MockObject
      */
-    private $config;
+    private $dispatcher;
 
     /**
      * @var MockObject
      */
     private $logger;
 
-    private function getClassToTest($baseDir = null, $machineName = null)
+    public function getTestProcessMachine()
     {
-        $this->dispatcher = $this->createMock(Dispatcher::class);
-        $this->config = $this->createMock(Config::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $binDir = sys_get_temp_dir().'/dotfiles/tests/bin';
-        $vendorDir = sys_get_temp_dir().'/dotfiles/tests/vendor';
-        $backupDir = sys_get_temp_dir().'/dotfiles/backup';
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap(array(
-                array('dotfiles.bin_dir', $binDir),
-                array('dotfiles.vendor_dir', $vendorDir),
-                array('dotfiles.base_dir', $baseDir),
-                array('dotfiles.machine_name', $machineName),
-                array('dotfiles.backup_dir', $backupDir),
-                array('dotfiles.home_dir', getenv('HOME')),
-            ))
-        ;
-        $command = new InstallCommand(
-            null,
-            $this->dispatcher,
-            $this->config,
-            $this->logger
+        return array(
+            array('zeus'),
+            array('athena'),
         );
-
-        return $command;
-    }
-
-    /**
-     * @return MockObject
-     *
-     * @throws \ReflectionException
-     */
-    private function getBackupCommand()
-    {
-        $backup = $this->getMockBuilder(BackupCommand::class)
-            ->setMethods(array('execute', 'isEnabled', 'getName', 'getDefinition', 'getAliases'))
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-        $backup->expects($this->any())
-            ->method('isEnabled')
-            ->willReturn(true)
-        ;
-        $backup->expects($this->any())
-            ->method('getName')
-            ->willReturn('backup')
-        ;
-        $backup->expects($this->any())
-            ->method('getDefinition')
-            ->willReturn('Backup command')
-        ;
-        $backup->expects($this->any())
-            ->method('getAliases')
-            ->willReturn(array())
-        ;
-
-        return $backup;
     }
 
     public function testExecute(): void
@@ -154,11 +100,64 @@ class InstallCommandTest extends CommandTestCase
         $this->assertContains('patch '.$machine, $contents);
     }
 
-    public function getTestProcessMachine()
+    /**
+     * @return MockObject
+     *
+     * @throws \ReflectionException
+     */
+    private function getBackupCommand()
     {
-        return array(
-            array('zeus'),
-            array('athena'),
+        $backup = $this->getMockBuilder(BackupCommand::class)
+            ->setMethods(array('execute', 'isEnabled', 'getName', 'getDefinition', 'getAliases'))
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $backup->expects($this->any())
+            ->method('isEnabled')
+            ->willReturn(true)
+        ;
+        $backup->expects($this->any())
+            ->method('getName')
+            ->willReturn('backup')
+        ;
+        $backup->expects($this->any())
+            ->method('getDefinition')
+            ->willReturn('Backup command')
+        ;
+        $backup->expects($this->any())
+            ->method('getAliases')
+            ->willReturn(array())
+        ;
+
+        return $backup;
+    }
+
+    private function getClassToTest($baseDir = null, $machineName = null)
+    {
+        $this->dispatcher = $this->createMock(Dispatcher::class);
+        $this->config = $this->createMock(Config::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
+        $binDir = sys_get_temp_dir().'/dotfiles/tests/bin';
+        $vendorDir = sys_get_temp_dir().'/dotfiles/tests/vendor';
+        $backupDir = sys_get_temp_dir().'/dotfiles/backup';
+        $this->config->expects($this->any())
+            ->method('get')
+            ->willReturnMap(array(
+                array('dotfiles.bin_dir', $binDir),
+                array('dotfiles.vendor_dir', $vendorDir),
+                array('dotfiles.base_dir', $baseDir),
+                array('dotfiles.machine_name', $machineName),
+                array('dotfiles.backup_dir', $backupDir),
+                array('dotfiles.home_dir', getenv('HOME')),
+            ))
+        ;
+        $command = new InstallCommand(
+            null,
+            $this->dispatcher,
+            $this->config,
+            $this->logger
         );
+
+        return $command;
     }
 }

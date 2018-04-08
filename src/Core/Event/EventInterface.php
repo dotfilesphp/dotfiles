@@ -19,12 +19,12 @@ use League\Event\EventInterface as BaseEventInterface;
 interface EventInterface extends BaseEventInterface
 {
     /**
-     * @param Config $config
-     */
-    public function setConfig(Config $config);
-
-    /**
      * @return Config
      */
     public function getConfig();
+
+    /**
+     * @param Config $config
+     */
+    public function setConfig(Config $config);
 }

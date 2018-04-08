@@ -49,7 +49,7 @@ class Configuration implements DefinitionInterface
         return $treeBuilder;
     }
 
-    public function getBaseRootNode($node): void
+    private function getBaseRootNode($node): void
     {
         $node
             ->children()

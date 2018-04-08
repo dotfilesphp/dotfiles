@@ -36,21 +36,14 @@ class InstallSubscriber implements EventSubscriberInterface
     private $downloader;
 
     /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
-    public static function getSubscribedEvents()
-    {
-        return array(
-            InstallEvent::NAME => 'onInstallEvent',
-        );
-    }
+    /**
+     * @var OutputInterface
+     */
+    private $output;
 
     public function __construct(Config $config, Downloader $downloader, OutputInterface $output, LoggerInterface $logger)
     {
@@ -58,6 +51,13 @@ class InstallSubscriber implements EventSubscriberInterface
         $this->downloader = $downloader;
         $this->output = $output;
         $this->logger = $logger;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            InstallEvent::NAME => 'onInstallEvent',
+        );
     }
 
     public function onInstallEvent(InstallEvent $event): void

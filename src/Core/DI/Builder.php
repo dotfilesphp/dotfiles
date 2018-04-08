@@ -26,35 +26,67 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class Builder
 {
     /**
-     * @var ContainerBuilder
+     * @var string
      */
-    private $containerBuilder;
+    private $cacheFileName;
 
     /**
      * @var ContainerInterface
      */
     private $container;
+    /**
+     * @var ContainerBuilder
+     */
+    private $containerBuilder;
 
     /**
      * @var DumperInterface
      */
     private $dumper;
 
-    /**
-     * @var string
-     */
-    private $cacheFileName;
-
-    /**
-     * @param ContainerBuilder $builder
-     *
-     * @return self
-     */
-    public function setContainerBuilder(ContainerBuilder $builder): self
+    public function compile(): void
     {
-        $this->containerBuilder = $builder;
+        $cachePath = $this->getCacheFileName();
+        $cache = new ConfigCache($cachePath, true);
+        if (!$cache->isFresh()) {
+            $builder = $this->getContainerBuilder();
+            $this->configureCoreServices($builder);
+            $builder->addCompilerPass(new CommandPass());
+            $builder->addCompilerPass(new ListenerPass());
+            $builder->compile();
 
-        return $this;
+            $dumper = $this->getDumper();
+            //file_put_contents($target,$dumper->dump(['class'=>'CachedContainer']), LOCK_EX);
+            $cache->write($dumper->dump(array('class' => 'CachedContainer')), $builder->getResources());
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheFileName(): string
+    {
+        if (null === $this->cacheFileName) {
+            $base = Toolkit::getBaseDir();
+            $this->setCacheFileName($base.'/var/cache/container.php');
+        }
+
+        return $this->cacheFileName;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer()
+    {
+        if (null === $this->container) {
+            if (!class_exists('CachedContainer')) {
+                include_once $this->getCacheFileName();
+            }
+            $this->container = new \CachedContainer();
+        }
+
+        return $this->container;
     }
 
     /**
@@ -82,31 +114,6 @@ class Builder
     }
 
     /**
-     * @param DumperInterface $dumper
-     *
-     * @return Builder
-     */
-    public function setDumper(DumperInterface $dumper): self
-    {
-        $this->dumper = $dumper;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCacheFileName(): string
-    {
-        if (null === $this->cacheFileName) {
-            $base = Toolkit::getBaseDir();
-            $this->setCacheFileName($base.'/var/cache/container.php');
-        }
-
-        return $this->cacheFileName;
-    }
-
-    /**
      * @param string $cacheFileName
      *
      * @return self
@@ -121,36 +128,28 @@ class Builder
         return $this;
     }
 
-    public function compile(): void
+    /**
+     * @param ContainerBuilder $builder
+     *
+     * @return self
+     */
+    public function setContainerBuilder(ContainerBuilder $builder): self
     {
-        $cachePath = $this->getCacheFileName();
-        $cache = new ConfigCache($cachePath, true);
-        if (!$cache->isFresh()) {
-            $builder = $this->getContainerBuilder();
-            $this->configureCoreServices($builder);
-            $builder->addCompilerPass(new CommandPass());
-            $builder->addCompilerPass(new ListenerPass());
-            $builder->compile();
+        $this->containerBuilder = $builder;
 
-            $dumper = $this->getDumper();
-            //file_put_contents($target,$dumper->dump(['class'=>'CachedContainer']), LOCK_EX);
-            $cache->write($dumper->dump(array('class' => 'CachedContainer')), $builder->getResources());
-        }
+        return $this;
     }
 
     /**
-     * @return Container
+     * @param DumperInterface $dumper
+     *
+     * @return Builder
      */
-    public function getContainer()
+    public function setDumper(DumperInterface $dumper): self
     {
-        if (null === $this->container) {
-            if (!class_exists('CachedContainer')) {
-                include_once $this->getCacheFileName();
-            }
-            $this->container = new \CachedContainer();
-        }
+        $this->dumper = $dumper;
 
-        return $this->container;
+        return $this;
     }
 
     /**

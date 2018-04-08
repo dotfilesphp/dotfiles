@@ -24,14 +24,13 @@ use Symfony\Component\Finder\Finder;
 class InstallSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
-
-    /**
      * @var Config
      */
     private $config;
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
 
     private $installDir;
 
@@ -45,14 +44,6 @@ class InstallSubscriber implements EventSubscriberInterface
         $this->dispatcher = $dispatcher;
         $this->config = $config;
         $this->logger = $logger;
-    }
-
-    /**
-     * @param mixed $installDir
-     */
-    public function setInstallDir($installDir): void
-    {
-        $this->installDir = $installDir;
     }
 
     public static function getSubscribedEvents()
@@ -77,6 +68,14 @@ source "{$this->installDir}/bash-it.bash"
 EOC;
         $event->addFooterConfig($footer);
         $this->copySource();
+    }
+
+    /**
+     * @param mixed $installDir
+     */
+    public function setInstallDir($installDir): void
+    {
+        $this->installDir = $installDir;
     }
 
     private function copySource(): void

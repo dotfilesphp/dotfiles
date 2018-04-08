@@ -28,24 +28,24 @@ class InstallSubscriber implements EventSubscriberInterface
     public const SIG_URL = 'https://composer.github.io/installer.sig';
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var Config
      */
     private $config;
 
     /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
      * @var Downloader
      */
     private $downloader;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
 
     public function __construct(
         OutputInterface $output,
@@ -125,6 +125,12 @@ class InstallSubscriber implements EventSubscriberInterface
         return true;
     }
 
+    private function debug($message, $context = array()): void
+    {
+        $message = '<comment>composer:</comment> '.$message;
+        $this->logger->debug($message, $context);
+    }
+
     private function executeInstallScript($scriptFile, $installDir, $fileName): void
     {
         $cmd = array(
@@ -146,11 +152,5 @@ class InstallSubscriber implements EventSubscriberInterface
                 $this->debug($buffer);
             }
         });
-    }
-
-    private function debug($message, $context = array()): void
-    {
-        $message = '<comment>composer:</comment> '.$message;
-        $this->logger->debug($message, $context);
     }
 }

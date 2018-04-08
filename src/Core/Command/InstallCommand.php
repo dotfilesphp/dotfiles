@@ -29,14 +29,15 @@ use Symfony\Component\Process\Process;
 class InstallCommand extends Command implements CommandInterface
 {
     /**
+     * @var Config
+     */
+    private $config;
+    /**
      * @var Dispatcher
      */
     private $dispatcher;
 
-    /**
-     * @var Config
-     */
-    private $config;
+    private $dryRun = false;
 
     /**
      * @var LoggerInterface
@@ -44,18 +45,16 @@ class InstallCommand extends Command implements CommandInterface
     private $logger;
 
     /**
-     * @var array
-     */
-    private $patches = array();
-
-    /**
      * @var OutputInterface
      */
     private $output;
 
-    private $dryRun = false;
-
     private $overwriteNewFiles = false;
+
+    /**
+     * @var array
+     */
+    private $patches = array();
 
     public function __construct(
         ?string $name = null,
@@ -102,17 +101,6 @@ class InstallCommand extends Command implements CommandInterface
         $this->applyPatch();
     }
 
-    private function processSection(OutputInterface $output, $section): void
-    {
-        $config = $this->config;
-        $baseDir = $config->get('dotfiles.base_dir');
-        $output->writeln("Processing <comment>$section</comment> section");
-        $this->doProcessTemplates($baseDir.'/'.$section.'/templates');
-        $this->doProcessPatch($baseDir.'/'.$section.'/patch');
-        $this->doProcessBin($baseDir.'/'.$section.'/bin');
-        $this->doProcessInstallHook($baseDir.'/'.$section.'/hooks');
-    }
-
     private function applyPatch(): void
     {
         $fs = new Filesystem();
@@ -130,49 +118,22 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function doProcessTemplates($templateDir, $overwrite = false): void
+    private function copy(string $origin, string $target): void
     {
-        $targetDir = $this->config->get('dotfiles.home_dir');
-        if (!is_dir($templateDir)) {
-            $this->debug("Template directory <comment>$templateDir</comment> not found");
-
-            return;
+        if (!$this->dryRun) {
+            $fs = new Filesystem();
+            $fs->copy($origin, $target, array('overwriteNewerFiles' => $this->overwriteNewFiles));
         }
-
-        $finder = Finder::create()
-            ->in($templateDir)
-            ->ignoreVCS(true)
-            ->ignoreDotFiles(false)
-            ->files()
-        ;
-        /* @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($finder->files() as $file) {
-            $source = $file->getRealPath();
-            $relativePathName = $this->normalizePathName($file->getRelativePathname());
-
-            $target = $targetDir.DIRECTORY_SEPARATOR.$relativePathName;
-            $this->copy($source, $target);
-        }
+        $this->debug(sprintf(
+            'Copy files from <comment>%s</comment> to <comment>%s</comment>',
+            Toolkit::stripPath($origin),
+            Toolkit::stripPath($target)
+        ));
     }
 
-    private function doProcessPatch($patchDir): void
+    private function debug($message, $context = array()): void
     {
-        if (!is_dir($patchDir)) {
-            return;
-        }
-        $finder = Finder::create()
-            ->in($patchDir)
-        ;
-        /* @var SplFileInfo $file */
-        foreach ($finder->files() as $file) {
-            $relativePathName = $this->normalizePathName($file->getRelativePathName());
-            $target = $this->config->get('dotfiles.home_dir').DIRECTORY_SEPARATOR.$relativePathName;
-            $patch = file_get_contents($file->getRealPath());
-            if (!isset($this->patches[$target])) {
-                $this->patches[$target] = array();
-            }
-            $this->patches[$target][] = $patch;
-        }
+        $this->logger->debug('install: '.$message, $context);
     }
 
     private function doProcessBin($binDir): void
@@ -218,17 +179,49 @@ class InstallCommand extends Command implements CommandInterface
         }
     }
 
-    private function copy(string $origin, string $target): void
+    private function doProcessPatch($patchDir): void
     {
-        if (!$this->dryRun) {
-            $fs = new Filesystem();
-            $fs->copy($origin, $target, array('overwriteNewerFiles' => $this->overwriteNewFiles));
+        if (!is_dir($patchDir)) {
+            return;
         }
-        $this->debug(sprintf(
-            'Copy files from <comment>%s</comment> to <comment>%s</comment>',
-            Toolkit::stripPath($origin),
-            Toolkit::stripPath($target)
-        ));
+        $finder = Finder::create()
+            ->in($patchDir)
+        ;
+        /* @var SplFileInfo $file */
+        foreach ($finder->files() as $file) {
+            $relativePathName = $this->normalizePathName($file->getRelativePathName());
+            $target = $this->config->get('dotfiles.home_dir').DIRECTORY_SEPARATOR.$relativePathName;
+            $patch = file_get_contents($file->getRealPath());
+            if (!isset($this->patches[$target])) {
+                $this->patches[$target] = array();
+            }
+            $this->patches[$target][] = $patch;
+        }
+    }
+
+    private function doProcessTemplates($templateDir, $overwrite = false): void
+    {
+        $targetDir = $this->config->get('dotfiles.home_dir');
+        if (!is_dir($templateDir)) {
+            $this->debug("Template directory <comment>$templateDir</comment> not found");
+
+            return;
+        }
+
+        $finder = Finder::create()
+            ->in($templateDir)
+            ->ignoreVCS(true)
+            ->ignoreDotFiles(false)
+            ->files()
+        ;
+        /* @var \Symfony\Component\Finder\SplFileInfo $file */
+        foreach ($finder->files() as $file) {
+            $source = $file->getRealPath();
+            $relativePathName = $this->normalizePathName($file->getRelativePathname());
+
+            $target = $targetDir.DIRECTORY_SEPARATOR.$relativePathName;
+            $this->copy($source, $target);
+        }
     }
 
     private function normalizePathName(string $relativePathName)
@@ -240,8 +233,14 @@ class InstallCommand extends Command implements CommandInterface
         return $relativePathName;
     }
 
-    private function debug($message, $context = array()): void
+    private function processSection(OutputInterface $output, $section): void
     {
-        $this->logger->debug('install: '.$message, $context);
+        $config = $this->config;
+        $baseDir = $config->get('dotfiles.base_dir');
+        $output->writeln("Processing <comment>$section</comment> section");
+        $this->doProcessTemplates($baseDir.'/'.$section.'/templates');
+        $this->doProcessPatch($baseDir.'/'.$section.'/patch');
+        $this->doProcessBin($baseDir.'/'.$section.'/bin');
+        $this->doProcessInstallHook($baseDir.'/'.$section.'/hooks');
     }
 }

@@ -23,14 +23,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class InstallListener implements EventSubscriberInterface
 {
     /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
-
-    /**
      * @var Config
      */
     private $config;
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
 
     private $installDir;
 
@@ -41,14 +40,6 @@ class InstallListener implements EventSubscriberInterface
         $this->dispatcher = $dispatcher;
         $this->config = $config;
         $this->logger = $logger;
-    }
-
-    /**
-     * @param mixed $installDir
-     */
-    public function setInstallDir($installDir): void
-    {
-        $this->installDir = $installDir;
     }
 
     public static function getSubscribedEvents()
@@ -67,6 +58,14 @@ class InstallListener implements EventSubscriberInterface
         $installDir = $this->config->get('dotfiles.install_dir');
         $target = $this->config->get('dotfiles.home_dir').'/.bashrc';
         $event->addPatch($target, "source \"${installDir}/bashrc\"");
+    }
+
+    /**
+     * @param mixed $installDir
+     */
+    public function setInstallDir($installDir): void
+    {
+        $this->installDir = $installDir;
     }
 
     private function generateDotfilesConfig($bashConfig): void

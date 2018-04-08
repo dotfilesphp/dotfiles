@@ -18,11 +18,6 @@ class InstallEvent extends AbstractEvent
     public const NAME = 'dotfiles.install';
 
     /**
-     * @var array
-     */
-    private $patches = array();
-
-    /**
      * @var bool
      */
     private $dryRun;
@@ -32,10 +27,10 @@ class InstallEvent extends AbstractEvent
      */
     private $overwriteNewFiles;
 
-    public function getName()
-    {
-        return static::NAME;
-    }
+    /**
+     * @var array
+     */
+    private $patches = array();
 
     public function addPatch($target, $patch): void
     {
@@ -43,6 +38,11 @@ class InstallEvent extends AbstractEvent
             $this->patches[$target] = array();
         }
         $this->patches[$target][] = $patch;
+    }
+
+    public function getName()
+    {
+        return static::NAME;
     }
 
     /**
@@ -62,6 +62,14 @@ class InstallEvent extends AbstractEvent
     }
 
     /**
+     * @return bool
+     */
+    public function isOverwriteNewFiles(): bool
+    {
+        return $this->overwriteNewFiles;
+    }
+
+    /**
      * @param bool $dryRun
      *
      * @return InstallEvent
@@ -71,14 +79,6 @@ class InstallEvent extends AbstractEvent
         $this->dryRun = $dryRun;
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isOverwriteNewFiles(): bool
-    {
-        return $this->overwriteNewFiles;
     }
 
     /**

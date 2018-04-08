@@ -20,25 +20,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Downloader
 {
     /**
-     * @var ProgressBar
+     * @var int
      */
-    private $progressBar;
+    private $bytesMax;
+
+    private $contents;
+
+    private $hasError = false;
+
+    private $logger;
 
     /**
      * @var OutputInterface
      */
     private $output;
-
     /**
-     * @var int
+     * @var ProgressBar
      */
-    private $bytesMax;
-
-    private $hasError = false;
-
-    private $contents;
-
-    private $logger;
+    private $progressBar;
 
     public function __construct(OutputInterface $output, LoggerInterface $logger)
     {
@@ -53,28 +52,6 @@ class Downloader
     public function getProgressBar(): ProgressBar
     {
         return $this->progressBar;
-    }
-
-    public function run($url, $targetFile, $dryRun = false): void
-    {
-        $fullName = basename($targetFile);
-        $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
-
-        Toolkit::ensureFileDir($targetFile);
-        $this->hasError = false;
-        $this->logger->debug(sprintf('Downloading <info>%s</info> to <info>%s</info>', $url, $targetFile));
-        if (!$dryRun) {
-            $context = stream_context_create(array(), array('notification' => array($this, 'handleNotification')));
-            set_error_handler(array($this, 'handleError'));
-            $this->contents = file_get_contents($url, false, $context);
-            restore_error_handler();
-            if ($this->hasError) {
-                throw new \RuntimeException('Failed to download '.$url);
-            }
-            $this->output->writeln('');
-            file_put_contents($targetFile, $this->contents, LOCK_EX);
-        }
-        $this->logger->debug('Download <comment>finished</comment>');
     }
 
     public function handleError($bar, $message): void
@@ -107,5 +84,27 @@ class Downloader
                 $this->progressBar->clear();
                 break;
         }
+    }
+
+    public function run($url, $targetFile, $dryRun = false): void
+    {
+        $fullName = basename($targetFile);
+        $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
+
+        Toolkit::ensureFileDir($targetFile);
+        $this->hasError = false;
+        $this->logger->debug(sprintf('Downloading <info>%s</info> to <info>%s</info>', $url, $targetFile));
+        if (!$dryRun) {
+            $context = stream_context_create(array(), array('notification' => array($this, 'handleNotification')));
+            set_error_handler(array($this, 'handleError'));
+            $this->contents = file_get_contents($url, false, $context);
+            restore_error_handler();
+            if ($this->hasError) {
+                throw new \RuntimeException('Failed to download '.$url);
+            }
+            $this->output->writeln('');
+            file_put_contents($targetFile, $this->contents, LOCK_EX);
+        }
+        $this->logger->debug('Download <comment>finished</comment>');
     }
 }

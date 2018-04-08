@@ -37,17 +37,6 @@ class ConfigTest extends TestCase
         $this->cachePath = $cachePath;
     }
 
-    public function testArrayAccess(): void
-    {
-        $config = new Config();
-        $config['foo'] = 'bar';
-        $this->assertTrue(isset($config['foo']));
-        $this->assertEquals('bar', $config['foo']);
-        $this->assertEquals('bar', $config->get('foo'));
-        unset($config['foo']);
-        $this->assertFalse(isset($config['foo']));
-    }
-
     public function testAddConfigAndCacheDir(): void
     {
         $config = new Config();
@@ -79,6 +68,30 @@ class ConfigTest extends TestCase
         $config->addDefinition($definition);
     }
 
+    public function testArrayAccess(): void
+    {
+        $config = new Config();
+        $config['foo'] = 'bar';
+        $this->assertTrue(isset($config['foo']));
+        $this->assertEquals('bar', $config['foo']);
+        $this->assertEquals('bar', $config->get('foo'));
+        unset($config['foo']);
+        $this->assertFalse(isset($config['foo']));
+    }
+
+    public function testLoadConfigurationProcessConfigFiles(): void
+    {
+        $config = new Config();
+        $config->setCachePath($this->cachePath);
+
+        $config->addConfigDir(__DIR__.'/fixtures/config');
+        $config->addDefinition(new TestDefinition());
+        $config->loadConfiguration();
+
+        $this->assertEquals('bar', $config->get('test.foo'));
+        $this->assertEquals('world', $config->get('test.hello'));
+    }
+
     public function testLoadConfigurationProcessDefaultValue(): void
     {
         $config = new Config();
@@ -98,19 +111,6 @@ class ConfigTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $config->get('hello.world');
-    }
-
-    public function testLoadConfigurationProcessConfigFiles(): void
-    {
-        $config = new Config();
-        $config->setCachePath($this->cachePath);
-
-        $config->addConfigDir(__DIR__.'/fixtures/config');
-        $config->addDefinition(new TestDefinition());
-        $config->loadConfiguration();
-
-        $this->assertEquals('bar', $config->get('test.foo'));
-        $this->assertEquals('world', $config->get('test.hello'));
     }
 
     public function testShouldHandleError(): void

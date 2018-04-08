@@ -29,54 +29,23 @@ use Symfony\Component\Yaml\Yaml;
 class Config implements \ArrayAccess
 {
     /**
-     * @var ConfigurationInterface[]
-     */
-    private $definitions = array();
-
-    private $configs = array();
-
-    private $flattened = array();
-
-    private $defaults = array();
-
-    private $configDirs = array();
-
-    private $files = array();
-
-    /**
      * @var null|string
      */
     private $cachePath = null;
 
-    public function offsetExists($offset)
-    {
-        return isset($this->configs[$offset]);
-    }
+    private $configDirs = array();
 
-    public function offsetGet($offset)
-    {
-        return $this->configs[$offset];
-    }
+    private $configs = array();
 
-    public function offsetSet($offset, $value): void
-    {
-        $this->configs[$offset] = $value;
-    }
+    private $defaults = array();
+    /**
+     * @var ConfigurationInterface[]
+     */
+    private $definitions = array();
 
-    public function offsetUnset($offset): void
-    {
-        unset($this->configs[$offset]);
-    }
+    private $files = array();
 
-    public function addDefinition(ConfigurationInterface $config): self
-    {
-        $builder = $config->getConfigTreeBuilder();
-        $name = $builder->buildTree()->getName();
-        $this->definitions[$name] = $config;
-        $this->defaults[$name] = array();
-
-        return $this;
-    }
+    private $flattened = array();
 
     /**
      * @param $directory
@@ -95,12 +64,30 @@ class Config implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getConfigDirs(): array
+    public function addDefinition(ConfigurationInterface $config): self
     {
-        return $this->configDirs;
+        $builder = $config->getConfigTreeBuilder();
+        $name = $builder->buildTree()->getName();
+        $this->definitions[$name] = $config;
+        $this->defaults[$name] = array();
+
+        return $this;
+    }
+
+    public function get($name)
+    {
+        if (array_key_exists($name, $this->configs)) {
+            return $this->configs[$name];
+        } elseif (array_key_exists($name, $this->flattened)) {
+            return $this->flattened[$name];
+        } else {
+            throw new \InvalidArgumentException('Unknown config key: "'.$name.'"');
+        }
+    }
+
+    public function getAll($flattened = false)
+    {
+        return $flattened ? $this->flattened : $this->configs;
     }
 
     /**
@@ -116,16 +103,11 @@ class Config implements \ArrayAccess
     }
 
     /**
-     * @param string $cachePath
-     *
-     * @return Config
+     * @return array
      */
-    public function setCachePath(string $cachePath): self
+    public function getConfigDirs(): array
     {
-        Toolkit::ensureFileDir($cachePath);
-        $this->cachePath = $cachePath;
-
-        return $this;
+        return $this->configDirs;
     }
 
     /**
@@ -174,27 +156,44 @@ EOC;
         require $cachePath;
     }
 
+    public function offsetExists($offset)
+    {
+        return isset($this->configs[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->configs[$offset];
+    }
+
+    public function offsetSet($offset, $value): void
+    {
+        $this->configs[$offset] = $value;
+    }
+
+    public function offsetUnset($offset): void
+    {
+        unset($this->configs[$offset]);
+    }
+
+    /**
+     * @param string $cachePath
+     *
+     * @return Config
+     */
+    public function setCachePath(string $cachePath): self
+    {
+        Toolkit::ensureFileDir($cachePath);
+        $this->cachePath = $cachePath;
+
+        return $this;
+    }
+
     private function normalizeConfig($flattened, &$config): void
     {
         foreach ($flattened as $name => $value) {
             $format = '%'.$name.'%';
             $config = strtr($config, array($format => $value));
-        }
-    }
-
-    public function getAll($flattened = false)
-    {
-        return $flattened ? $this->flattened : $this->configs;
-    }
-
-    public function get($name)
-    {
-        if (array_key_exists($name, $this->configs)) {
-            return $this->configs[$name];
-        } elseif (array_key_exists($name, $this->flattened)) {
-            return $this->flattened[$name];
-        } else {
-            throw new \InvalidArgumentException('Unknown config key: "'.$name.'"');
         }
     }
 

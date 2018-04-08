@@ -30,14 +30,14 @@ class BackupCommand extends Command implements CommandInterface
      */
     private $config;
 
+    private $dryRun = false;
+
+    private $files = array();
+
     /**
      * @var LoggerInterface
      */
     private $logger;
-
-    private $files = array();
-
-    private $dryRun = false;
 
     public function __construct(Config $config, LoggerInterface $logger)
     {

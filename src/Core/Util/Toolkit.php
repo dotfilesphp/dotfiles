@@ -15,27 +15,30 @@ namespace Dotfiles\Core\Util;
 
 class Toolkit
 {
-    public static function normalizeValues($values)
+    public static function ensureDir(string $dir): void
     {
-        foreach ($values as $section => $contents) {
-            foreach ($contents as $key => $value) {
-                $values[$section][$key] = static::normalizeValue($value);
-            }
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
         }
-
-        return $values;
     }
 
-    public static function normalizeValue($value)
+    public static function ensureDotPath(string $relativePathName)
     {
-        // replace environment variables
-        $pattern = '/%%([A-Z]*)%%/i';
-        preg_match($pattern, $value, $match);
-        if (isset($match[1])) {
-            $value = str_replace($match[0], getenv($match[1]), $value);
+        if (0 !== strpos($relativePathName, '.')) {
+            $relativePathName = '.'.$relativePathName;
         }
 
-        return $value;
+        return $relativePathName;
+    }
+
+    /**
+     * Ensure that directory exists.
+     *
+     * @param string $file
+     */
+    public static function ensureFileDir($file): void
+    {
+        static::ensureDir(dirname($file));
     }
 
     /**
@@ -70,23 +73,6 @@ class Toolkit
         }
     }
 
-    public static function ensureDir(string $dir): void
-    {
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-    }
-
-    /**
-     * Ensure that directory exists.
-     *
-     * @param string $file
-     */
-    public static function ensureFileDir($file): void
-    {
-        static::ensureDir(dirname($file));
-    }
-
     public static function getBaseDir()
     {
         //$baseDir = realpath(dirname(__DIR__.'/../../../src'));
@@ -98,13 +84,27 @@ class Toolkit
         return $baseDir;
     }
 
-    public static function ensureDotPath(string $relativePathName)
+    public static function normalizeValue($value)
     {
-        if (0 !== strpos($relativePathName, '.')) {
-            $relativePathName = '.'.$relativePathName;
+        // replace environment variables
+        $pattern = '/%%([A-Z]*)%%/i';
+        preg_match($pattern, $value, $match);
+        if (isset($match[1])) {
+            $value = str_replace($match[0], getenv($match[1]), $value);
         }
 
-        return $relativePathName;
+        return $value;
+    }
+
+    public static function normalizeValues($values)
+    {
+        foreach ($values as $section => $contents) {
+            foreach ($contents as $key => $value) {
+                $values[$section][$key] = static::normalizeValue($value);
+            }
+        }
+
+        return $values;
     }
 
     public static function stripPath(string $path)

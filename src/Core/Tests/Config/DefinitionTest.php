@@ -25,21 +25,6 @@ use Symfony\Component\Config\Definition\Processor;
  */
 class DefinitionTest extends TestCase
 {
-    /**
-     * @param string $key
-     * @param string
-     * @dataProvider getTestConfigTreeBuilderData
-     */
-    public function testGetConfigTreeBuilder(string $key, string $default): void
-    {
-        $definition = new Definition();
-        $processor = new Processor();
-        $config = $processor->process($definition->getConfigTreeBuilder()->buildTree(), array());
-
-        $this->assertArrayHasKey($key, $config);
-        $this->assertEquals($config[$key], $default);
-    }
-
     public function getTestConfigTreeBuilderData()
     {
         return array(
@@ -55,5 +40,20 @@ class DefinitionTest extends TestCase
             array('bin_dir', '%dotfiles.install_dir%/bin'),
             array('vendor_dir', '%dotfiles.install_dir%/vendor'),
         );
+    }
+
+    /**
+     * @param string $key
+     * @param string
+     * @dataProvider getTestConfigTreeBuilderData
+     */
+    public function testGetConfigTreeBuilder(string $key, string $default): void
+    {
+        $definition = new Definition();
+        $processor = new Processor();
+        $config = $processor->process($definition->getConfigTreeBuilder()->buildTree(), array());
+
+        $this->assertArrayHasKey($key, $config);
+        $this->assertEquals($config[$key], $default);
     }
 }

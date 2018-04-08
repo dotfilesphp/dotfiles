@@ -20,9 +20,9 @@ class ReloadBashConfigEvent extends AbstractEvent
 {
     public const NAME = 'bash.reload_config';
 
-    private $header = array();
-
     private $footer = array();
+
+    private $header = array();
 
     /**
      * @var LoggerInterface
@@ -32,6 +32,14 @@ class ReloadBashConfigEvent extends AbstractEvent
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    public function addFooterConfig($contents): void
+    {
+        if (!is_array($contents)) {
+            $contents = array($contents);
+        }
+        $this->footer = array_merge($this->footer, $contents);
     }
 
     public function addHeaderConfig($contents): void
@@ -44,14 +52,6 @@ class ReloadBashConfigEvent extends AbstractEvent
             'Added bash config',
             array('contents' => implode(PHP_EOL, $contents))
         );
-    }
-
-    public function addFooterConfig($contents): void
-    {
-        if (!is_array($contents)) {
-            $contents = array($contents);
-        }
-        $this->footer = array_merge($this->footer, $contents);
     }
 
     public function getBashConfig()

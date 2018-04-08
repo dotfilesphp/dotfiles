@@ -25,71 +25,39 @@ class SelfUpdateCommand extends Command implements CommandInterface
 {
     public const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
 
-    private $version;
-
     private $branchAlias;
-
-    private $date;
-
-    private $versionFile;
-
-    private $pharFile;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var Downloader
-     */
-    private $downloader;
-
-    /**
-     * @var string
-     */
-    private $tempDir;
 
     /**
      * @var string
      */
     private $cacheDir;
 
+    /**
+     * @var Config
+     */
+    private $config;
+
+    private $date;
+
+    /**
+     * @var Downloader
+     */
+    private $downloader;
+
+    private $pharFile;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    private $version;
+
+    private $versionFile;
+
     public function configure(): void
     {
         $this->setName('self-update');
-    }
-
-    /**
-     * @param string $tempDir
-     *
-     * @return SelfUpdateCommand
-     */
-    public function setTempDir(string $tempDir): self
-    {
-        $this->tempDir = $tempDir;
-
-        return $this;
-    }
-
-    /**
-     * @param string $cacheDir
-     *
-     * @return SelfUpdateCommand
-     */
-    public function setCacheDir(string $cacheDir): self
-    {
-        $this->cacheDir = $cacheDir;
-
-        return $this;
-    }
-
-    /**
-     * @param Downloader $downloader
-     */
-    public function setDownloader(Downloader $downloader): void
-    {
-        $this->downloader = $downloader;
     }
 
     public function execute(InputInterface $input, OutputInterface $output): void
@@ -115,6 +83,38 @@ class SelfUpdateCommand extends Command implements CommandInterface
         } else {
             $output->writeln('You already have latest <comment>dotfiles</comment> version');
         }
+    }
+
+    /**
+     * @param string $cacheDir
+     *
+     * @return SelfUpdateCommand
+     */
+    public function setCacheDir(string $cacheDir): self
+    {
+        $this->cacheDir = $cacheDir;
+
+        return $this;
+    }
+
+    /**
+     * @param Downloader $downloader
+     */
+    public function setDownloader(Downloader $downloader): void
+    {
+        $this->downloader = $downloader;
+    }
+
+    /**
+     * @param string $tempDir
+     *
+     * @return SelfUpdateCommand
+     */
+    public function setTempDir(string $tempDir): self
+    {
+        $this->tempDir = $tempDir;
+
+        return $this;
     }
 
     private function doUpdate(OutputInterface $output): void
