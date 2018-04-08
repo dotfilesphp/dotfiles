@@ -4,18 +4,17 @@
 umask(0000);
 require __DIR__.'/../vendor/autoload.php';
 use Dotfiles\Core\ApplicationFactory;
-use Symfony\Component\Dotenv\Dotenv;
 use Dotfiles\Core\Util\Toolkit;
 
-try{
+try {
     Toolkit::loadDotEnv();
     $factory = new ApplicationFactory();
     $factory->boot();
     $container = $factory->getContainer();
     $app = $container->get('dotfiles.app');
     $app->setContainer($container);
-    exit($app->run($container->get('dotfiles.input'),$container->get('dotfiles.output')));
-}catch (\Exception $e){
+    exit($app->run($container->get('dotfiles.input'), $container->get('dotfiles.output')));
+} catch (\Exception $e) {
     echo $e->getMessage()."\n";
     exit(1);
 }

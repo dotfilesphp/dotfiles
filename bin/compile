@@ -8,26 +8,26 @@ chdir(dirname(__DIR__));
 
 use Dotfiles\Core\Compiler;
 
-$target = isset($argv[1]) ? realpath($argv[1]):false;
+$target = isset($argv[1]) ? realpath($argv[1]) : false;
 try {
     $compiler = new Compiler();
     $compiler->compile();
-    chmod('dotfiles.phar',0755);
-    if($target){
-        generateTarget($compiler,$target);
+    chmod('dotfiles.phar', 0755);
+    if ($target) {
+        generateTarget($compiler, $target);
         unlink('dotfiles.phar');
     }
     chdir($cwd);
-}catch(\Exception $e){
+} catch (\Exception $e) {
     echo 'Failed to compile phar: ['.get_class($e).'] '.$e->getMessage().' at '.$e->getFile().':'.$e->getLine().PHP_EOL;
     chdir($cwd);
     exit(1);
 }
 
-function generateTarget(Compiler $compiler, $targetDir)
+function generateTarget(Compiler $compiler, $targetDir): void
 {
-    copy('dotfiles.phar',$targetDir.'/dotfiles.phar');
-    chmod($targetDir.'/dotfiles.phar',0755);
+    copy('dotfiles.phar', $targetDir.'/dotfiles.phar');
+    chmod($targetDir.'/dotfiles.phar', 0755);
 
     $version = $compiler->getVersion();
     $branchAlias = $compiler->getBranchAliasVersion();
@@ -44,6 +44,5 @@ function generateTarget(Compiler $compiler, $targetDir)
 
 EOC;
 
-    file_put_contents($targetDir.'/dotfiles.phar.json',$contents,LOCK_EX);
-
+    file_put_contents($targetDir.'/dotfiles.phar.json', $contents, LOCK_EX);
 }
