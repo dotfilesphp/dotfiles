@@ -15,7 +15,6 @@ class ReloadBashConfigEventTest extends TestCase
     {
         $logger = $this->createMock(LoggerInterface::class);
         $event = new ReloadBashConfigEvent($logger);
-		$event->setLogger($logger);
         $event->addHeaderConfig(['foo']);
         $event->addHeaderConfig('bar');
         $event->addFooterConfig(['hello']);
@@ -33,7 +32,6 @@ class ReloadBashConfigEventTest extends TestCase
             ->with("Added bash config",['contents' => 'dispatched'])
         ;
         $event = new ReloadBashConfigEvent($logger);
-        $event->setLogger($logger);
         $dispatcher = new Dispatcher();
         $dispatcher->addListener(ReloadBashConfigEvent::NAME,function($event){
             $event->addHeaderConfig('dispatched');

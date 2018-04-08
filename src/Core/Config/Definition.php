@@ -22,6 +22,7 @@ class Definition implements DefinitionInterface
     {
         $builder = new TreeBuilder();
         $baseDir = Toolkit::getBaseDir();
+        $tempDir = sys_get_temp_dir().'/dotfiles/temp';
         $root = $builder->root('dotfiles');
         $root
             ->children()
@@ -47,7 +48,7 @@ class Definition implements DefinitionInterface
                     ->defaultValue('%dotfiles.base_dir%/var/cache')
                 ->end()
                 ->scalarNode('temp_dir')
-                    ->defaultValue('%dotfiles.base_dir%/var/temp')
+                    ->defaultValue($tempDir)
                 ->end()
                 ->scalarNode('backup_dir')
                     ->defaultValue('%dotfiles.base_dir%/var/backup')

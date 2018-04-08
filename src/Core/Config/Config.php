@@ -20,6 +20,12 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Class Config
+ *
+ * @package Dotfiles\Core\Config
+ * @covers \Dotfiles\Core\Config\Config
+ */
 class Config implements \ArrayAccess
 {
     /**
@@ -62,15 +68,21 @@ class Config implements \ArrayAccess
         unset($this->configs[$offset]);
     }
 
-    public function addDefinition(DefinitionInterface $config): void
+    public function addDefinition(DefinitionInterface $config): self
     {
         $builder = $config->getConfigTreeBuilder();
         $name = $builder->buildTree()->getName();
         $this->definitions[$name] = $config;
         $this->defaults[$name] = array();
+
+        return $this;
     }
 
-    public function addConfigDir($directory): void
+    /**
+     * @param $directory
+     * @return Config
+     */
+    public function addConfigDir($directory): self
     {
         if (!is_dir($directory)) {
             throw new \InvalidArgumentException("Directory ${directory} not exists");
@@ -78,6 +90,16 @@ class Config implements \ArrayAccess
         if (!in_array($directory, $this->configDirs)) {
             $this->configDirs[] = $directory;
         }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfigDirs(): array
+    {
+        return $this->configDirs;
     }
 
     /**
@@ -99,14 +121,15 @@ class Config implements \ArrayAccess
      */
     public function setCachePath(string $cachePath): self
     {
-        if (!is_dir($dir = dirname($cachePath))) {
-            mkdir($dir, 0755, true);
-        }
+        Toolkit::ensureFileDir($cachePath);
         $this->cachePath = $cachePath;
 
         return $this;
     }
 
+    /**
+     * Load configuration from files and default value
+     */
     public function loadConfiguration(): void
     {
         $cachePath = $this->getCachePath();
@@ -158,16 +181,13 @@ EOC;
         }
     }
 
-    public function getFlattened()
+    public function getAll($flattened = false)
     {
-        return $this->flattened;
+        return $flattened ? $this->flattened:$this->configs;
     }
 
-    public function get($name = null)
+    public function get($name)
     {
-        if (null === $name) {
-            return $this->configs;
-        }
         if (array_key_exists($name, $this->configs)) {
             return $this->configs[$name];
         } elseif (array_key_exists($name, $this->flattened)) {

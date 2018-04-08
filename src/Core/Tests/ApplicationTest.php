@@ -14,6 +14,11 @@ namespace Dotfiles\Core\Tests;
 use Dotfiles\Core\Application;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class ApplicationTest
+ * @package Dotfiles\Core\Tests
+ * @covers \Dotfiles\Core\Application
+ */
 class ApplicationTest extends TestCase
 {
     public function testEnv()

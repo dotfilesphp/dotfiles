@@ -10,7 +10,7 @@ use Dotfiles\Core\Util\Toolkit;
 try{
     loadEnv();
     $factory = new ApplicationFactory();
-    $factory->createApplication();
+    $factory->boot();
     $container = $factory->getContainer();
     $app = $container->get('dotfiles.app');
     exit($app->run($container->get('dotfiles.input'),$container->get('dotfiles.output')));

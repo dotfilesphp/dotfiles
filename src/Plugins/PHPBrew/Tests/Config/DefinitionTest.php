@@ -7,6 +7,12 @@ use Dotfiles\Core\Config\Config;
 use Dotfiles\Plugins\PHPBrew\Config\Definition;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class DefinitionTest
+ *
+ * @package Dotfiles\Plugins\PHPBrew\Tests\Config
+ * @covers \Dotfiles\Plugins\PHPBrew\Config\Definition
+ */
 class DefinitionTest extends TestCase
 {
     public function testProcess()
@@ -20,7 +26,7 @@ class DefinitionTest extends TestCase
         $config->addConfigDir(__DIR__.'/fixtures');
         $config->setCachePath($cachePath);
         $config->loadConfiguration();
-        $processed = $config->get();
+        $processed = $config->getAll();
 
         $this->assertTrue($processed['phpbrew']['set_prompt']);
         $this->assertArrayHasKey('machines',$processed['phpbrew']);

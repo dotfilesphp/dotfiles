@@ -15,12 +15,24 @@ namespace Dotfiles\Core;
 
 use Seld\PharUtils\Timestamps;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\Process;
 
 class Compiler
 {
+    /**
+     * @var string
+     */
     private $version;
+
+    /**
+     * @var string
+     */
     private $branchAliasVersion = '';
+
+    /**
+     * @var \DateTime
+     */
     private $versionDate;
 
     public function compile($pharFile = 'dotfiles.phar'): void
@@ -31,6 +43,30 @@ class Compiler
 
         $this->setupVersion();
         $this->generatePhar($pharFile);
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBranchAliasVersion(): string
+    {
+        return $this->branchAliasVersion;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getVersionDate(): \DateTime
+    {
+        return $this->versionDate;
     }
 
     private function setupVersion(): void
@@ -203,10 +239,15 @@ EOF;
         $phar->addFromString('bin/dotfiles', $content);
     }
 
-    private function addFile($phar, $file, $strip = true): void
+    /**
+     * @param $phar
+     * @param \SplFileInfo $file
+     * @param bool $strip
+     */
+    private function addFile($phar, \SplFileInfo $file, $strip = true): void
     {
         $path = $this->getRelativeFilePath($file);
-        $content = file_get_contents($file);
+        $content = file_get_contents($file->getRealPath());
         if ($strip) {
             $content = $this->stripWhitespace($content);
         } elseif ('LICENSE' === basename($file)) {

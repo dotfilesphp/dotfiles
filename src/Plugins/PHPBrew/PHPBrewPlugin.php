@@ -31,18 +31,6 @@ class PHPBrewPlugin extends Plugin
         $config->addDefinition(new Definition());
     }
 
-    public function handleBashConfig(ReloadBashConfigEvent $event): void
-    {
-        $config = $event->getConfig();
-        if ($config->get('phpbrew.set_prompt')) {
-            $event->addHeaderConfig('export PHPBREW_SET_PROMPT=1');
-        }
-        if ($config->get('phpbrew.rc_enable')) {
-            $event->addHeaderConfig('export PHPBREW_RC_ENABLE=1');
-        }
-        $event->addFooterConfig('source $HOME/.phpbrew/bashrc');
-    }
-
     public function configureContainer(ContainerBuilder $container, Config $config): void
     {
     }

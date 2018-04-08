@@ -21,10 +21,6 @@ class InstallListenerTest extends TestCase
         $dispatcher = $this->createMock(Dispatcher::class);
         $event = $this->createMock(InstallEvent::class);
         $config = $this->createMock(Config::class);
-        $event->expects($this->any())
-            ->method('getConfig')
-            ->willReturn($config)
-        ;
         $logger = $this->createMock(LoggerInterface::class);
         $dispatcher->expects($this->once())
             ->method('dispatch')

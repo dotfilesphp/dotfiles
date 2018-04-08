@@ -15,6 +15,7 @@ use Dotfiles\Core\Command\BackupCommand;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Tests\CommandTester;
+use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
 
 class BackupCommandTest extends CommandTestCase
@@ -53,6 +54,7 @@ class BackupCommandTest extends CommandTestCase
         $app->add($command);
 
         $backupDir = $this->dirs['backup_dir'];
+        Toolkit::ensureDir($backupDir);
         touch($backupDir.'/manifest.php');
         $tester = new CommandTester($command);
         $tester->execute([]);

@@ -14,7 +14,7 @@ try {
     $compiler->compile();
     chmod('dotfiles.phar',0755);
     if($target){
-        generateTarget($target);
+        generateTarget($compiler,$target);
         unlink('dotfiles.phar');
     }
     chdir($cwd);
@@ -24,17 +24,14 @@ try {
     exit(1);
 }
 
-function generateTarget($targetDir)
+function generateTarget(Compiler $compiler, $targetDir)
 {
     copy('dotfiles.phar',$targetDir.'/dotfiles.phar');
     chmod($targetDir.'/dotfiles.phar',0755);
 
-    // parse version
-    $output = shell_exec('php dotfiles.phar --version');
-    $exp = explode(' ',$output);
-    $version = $exp[0];
-    $branchAlias = $exp[1];
-    $date = $exp[2];
+    $version = $compiler->getVersion();
+    $branchAlias = $compiler->getBranchAliasVersion();
+    $date = $compiler->getVersionDate()->format('Y-m-d H:i:s');
     $sha256 = trim(shell_exec('sha256sum dotfiles.phar'));
 
     $contents = <<<EOC

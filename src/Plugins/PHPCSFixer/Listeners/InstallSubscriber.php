@@ -35,6 +35,16 @@ class InstallSubscriber implements EventSubscriberInterface
      */
     private $downloader;
 
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public static function getSubscribedEvents()
     {
         return array(

@@ -1,1 +1,7 @@
-foo: bar
+test:
+    foo: bar
+    hello: world
+    
+outside:
+    foo: outside
+    bar: outside

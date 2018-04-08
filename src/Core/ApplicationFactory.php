@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core;
 
+use Composer\Autoload\ClassLoader;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Config\Definition;
 use Dotfiles\Core\DI\Builder;
@@ -25,7 +26,7 @@ class ApplicationFactory
     /**
      * @var PluginInterface[]
      */
-    private $plugins;
+    private $plugins = [];
 
     /**
      * @var Container
@@ -40,16 +41,20 @@ class ApplicationFactory
         return $this->container;
     }
 
-    public function createApplication(): void
+    /**
+     * @return $this
+     */
+    public function boot():self
     {
         $this->addAutoload();
         $this->loadPlugins();
         $this->compileContainer();
+
+        return $this;
     }
 
     public function hasPlugin(string $name):bool
     {
-        print_r($this->plugins);
         return array_key_exists($name,$this->plugins);
     }
 
@@ -57,8 +62,14 @@ class ApplicationFactory
     {
         $baseDir = Toolkit::getBaseDir();
         $autoloadFile = $baseDir.'/vendor/autoload.php';
-        if (is_file($autoloadFile)) {
-            $ret = include $autoloadFile;
+
+        // ignore if files is already loaded in phar file
+        if (
+            is_file($autoloadFile) &&
+            (false === strpos($autoloadFile,'phar:///'))
+        ) {
+
+            include_once $autoloadFile;
         }
 
     }
@@ -77,7 +88,7 @@ class ApplicationFactory
         $config->loadConfiguration();
 
         $builder = new Builder();
-        $builder->getContainerBuilder()->getParameterBag()->add($config->getFlattened());
+        $builder->getContainerBuilder()->getParameterBag()->add($config->getAll(true));
         foreach ($this->plugins as $plugin) {
             $plugin->configureContainer($builder->getContainerBuilder(), $config);
         }
@@ -94,14 +105,45 @@ class ApplicationFactory
             ->in(__DIR__.'/../Plugins')
             ->name('*Plugin.php')
         ;
-
+        $dirs = $this->loadDirectoryFromAutoloader();
+        $finder->in($dirs);
         foreach ($finder->files() as $file) {
             $namespace = 'Dotfiles\\Plugins\\'.str_replace('Plugin.php', '', $file->getFileName());
             $className = $namespace.'\\'.str_replace('.php', '', $file->getFileName());
             if (class_exists($className)) {
+                /* @var \Dotfiles\Core\PluginInterface $plugin */
                 $plugin = new $className();
-                $this->plugins[$plugin->getName()] = $plugin;
+                if(!$this->hasPlugin($plugin->getName())){
+                    $this->plugins[$plugin->getName()] = $plugin;
+                }
             }
         }
+    }
+
+    private function loadDirectoryFromAutoloader()
+    {
+        $spl = spl_autoload_functions();
+
+        $dirs = array();
+        foreach($spl as $item){
+            $object = $item[0];
+            if(!$object instanceof ClassLoader){
+                continue;
+            }
+            $temp = array_merge($object->getPrefixes(),$object->getPrefixesPsr4());
+            foreach($temp as $name => $dir){
+                if(false === strpos($name,'Dotfiles')){
+                    continue;
+                }
+                foreach($dir as $num => $path){
+                    $path = realpath($path);
+                    if($path && is_dir($path) && !in_array($path,$dirs)){
+                        $dirs[] = $path;
+                    }
+                }
+            }
+        }
+
+        return $dirs;
     }
 }
