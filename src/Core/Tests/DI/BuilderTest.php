@@ -13,17 +13,13 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\DI;
 
-use Dotfiles\Core\Application;
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Builder;
-use Dotfiles\Core\Event\Dispatcher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Dumper\DumperInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class BuilderTest extends TestCase
 {
