@@ -48,18 +48,4 @@ class Configuration implements DefinitionInterface
 
         return $treeBuilder;
     }
-
-    private function getBaseRootNode($node): void
-    {
-        $node
-            ->children()
-                ->booleanNode('set_prompt')
-                    ->defaultTrue()
-                ->end()
-                ->booleanNode('rc_enable')
-                    ->defaultTrue()
-                ->end()
-            ->end()
-        ;
-    }
 }
