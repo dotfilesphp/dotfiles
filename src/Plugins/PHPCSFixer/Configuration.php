@@ -11,25 +11,25 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\Composer\Config;
+namespace Dotfiles\Plugins\PHPCSFixer;
 
 use Dotfiles\Core\Config\DefinitionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class Definition implements DefinitionInterface
+class Configuration implements DefinitionInterface
 {
     public function getConfigTreeBuilder()
     {
-        $tree = new TreeBuilder();
-        $root = $tree->root('composer');
+        $builder = new TreeBuilder();
+        $root = $builder->root('phpcs');
         $root
             ->children()
                 ->scalarNode('file_name')
-                    ->defaultValue('composer')
+                    ->defaultValue('phpcs')
                 ->end()
             ->end()
         ;
 
-        return $tree;
+        return $builder;
     }
 }

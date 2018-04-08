@@ -15,21 +15,21 @@ namespace Dotfiles\Core\Config;
 
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class Config
+ * Class Config.
  *
- * @package Dotfiles\Core\Config
  * @covers \Dotfiles\Core\Config\Config
  */
 class Config implements \ArrayAccess
 {
     /**
-     * @var DefinitionInterface[]
+     * @var ConfigurationInterface[]
      */
     private $definitions = array();
 
@@ -68,7 +68,7 @@ class Config implements \ArrayAccess
         unset($this->configs[$offset]);
     }
 
-    public function addDefinition(DefinitionInterface $config): self
+    public function addDefinition(ConfigurationInterface $config): self
     {
         $builder = $config->getConfigTreeBuilder();
         $name = $builder->buildTree()->getName();
@@ -80,6 +80,7 @@ class Config implements \ArrayAccess
 
     /**
      * @param $directory
+     *
      * @return Config
      */
     public function addConfigDir($directory): self
@@ -128,7 +129,7 @@ class Config implements \ArrayAccess
     }
 
     /**
-     * Load configuration from files and default value
+     * Load configuration from files and default value.
      */
     public function loadConfiguration(): void
     {
@@ -183,7 +184,7 @@ EOC;
 
     public function getAll($flattened = false)
     {
-        return $flattened ? $this->flattened:$this->configs;
+        return $flattened ? $this->flattened : $this->configs;
     }
 
     public function get($name)

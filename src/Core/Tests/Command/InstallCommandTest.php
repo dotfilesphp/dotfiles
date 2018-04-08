@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
- * (c) Anthonius Munthi <me@itstoni.com>
+ *     (c) Anthonius Munthi <me@itstoni.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,13 +13,12 @@
 
 namespace Dotfiles\Core\Tests\Command;
 
-
 use Dotfiles\Core\Command\BackupCommand;
 use Dotfiles\Core\Command\InstallCommand;
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Tests\CommandTester;
-use Dotfiles\Core\Event\Dispatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
@@ -48,14 +49,14 @@ class InstallCommandTest extends CommandTestCase
         $backupDir = sys_get_temp_dir().'/dotfiles/backup';
         $this->config->expects($this->any())
             ->method('get')
-            ->willReturnMap([
-                ['dotfiles.bin_dir',$binDir],
-                ['dotfiles.vendor_dir',$vendorDir],
-                ['dotfiles.base_dir',$baseDir],
-                ['dotfiles.machine_name',$machineName],
-                ['dotfiles.backup_dir',$backupDir],
-                ['dotfiles.home_dir',getenv('HOME')]
-            ])
+            ->willReturnMap(array(
+                array('dotfiles.bin_dir', $binDir),
+                array('dotfiles.vendor_dir', $vendorDir),
+                array('dotfiles.base_dir', $baseDir),
+                array('dotfiles.machine_name', $machineName),
+                array('dotfiles.backup_dir', $backupDir),
+                array('dotfiles.home_dir', getenv('HOME')),
+            ))
         ;
         $command = new InstallCommand(
             null,
@@ -69,12 +70,13 @@ class InstallCommandTest extends CommandTestCase
 
     /**
      * @return MockObject
+     *
      * @throws \ReflectionException
      */
     private function getBackupCommand()
     {
         $backup = $this->getMockBuilder(BackupCommand::class)
-            ->setMethods(['execute','isEnabled','getName','getDefinition','getAliases'])
+            ->setMethods(array('execute', 'isEnabled', 'getName', 'getDefinition', 'getAliases'))
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -92,14 +94,14 @@ class InstallCommandTest extends CommandTestCase
         ;
         $backup->expects($this->any())
             ->method('getAliases')
-            ->willReturn([])
+            ->willReturn(array())
         ;
+
         return $backup;
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
-
         $command = $this->getClassToTest();
 
         $backup = $this->getBackupCommand();
@@ -112,19 +114,19 @@ class InstallCommandTest extends CommandTestCase
         $app->add($backup);
         $command = $app->find('install');
         $tester = new CommandTester($command);
-        $tester->execute([]);
+        $tester->execute(array());
         $output = $tester->getDisplay(true);
 
-        $this->assertContains('Begin installing dotfiles',$output);
+        $this->assertContains('Begin installing dotfiles', $output);
     }
 
     /**
      * @dataProvider getTestProcessMachine
      */
-    public function testProcessMachine($machine)
+    public function testProcessMachine($machine): void
     {
         $fixturesDir = __DIR__.'/fixtures/default';
-        $command = $this->getClassToTest($fixturesDir,$machine);
+        $command = $this->getClassToTest($fixturesDir, $machine);
 
         $backup = $this->getBackupCommand();
         $app = $this->getApplication();
@@ -132,7 +134,7 @@ class InstallCommandTest extends CommandTestCase
         $app->add($backup);
         $command = $app->find('install');
         $tester = new CommandTester($command);
-        $tester->execute([]);
+        $tester->execute(array());
 
         $output = $tester->getDisplay(true);
         $home = getenv('HOME');
@@ -141,8 +143,8 @@ class InstallCommandTest extends CommandTestCase
         $this->assertFileExists($home.'/.'.$machine);
         $this->assertFileExists($binDir.'/default-bin');
         $this->assertFileExists($binDir."/{$machine}-bin");
-        $this->assertContains('default install hook',$output);
-        $this->assertContains("$machine install hook",$output);
+        $this->assertContains('default install hook', $output);
+        $this->assertContains("$machine install hook", $output);
 
         // testing patch
         $file = $home.'/.patch';
@@ -154,9 +156,9 @@ class InstallCommandTest extends CommandTestCase
 
     public function getTestProcessMachine()
     {
-        return [
-            ['zeus'],
-            ['athena']
-        ];
+        return array(
+            array('zeus'),
+            array('athena'),
+        );
     }
 }

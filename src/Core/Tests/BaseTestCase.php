@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
- * (c) Anthonius Munthi <me@itstoni.com>
+ *     (c) Anthonius Munthi <me@itstoni.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +19,7 @@ use Symfony\Component\Finder\Finder;
 
 abstract class BaseTestCase extends TestCase
 {
-    static public function setUpBeforeClass()/* The :void return type declaration that should be here would cause a BC issue */
+    public static function setUpBeforeClass(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         parent::setUpBeforeClass();
         $finder = Finder::create()

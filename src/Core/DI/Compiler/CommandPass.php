@@ -28,7 +28,7 @@ class CommandPass implements CompilerPassInterface
 
         foreach ($definitions as $definition) {
             $class = $definition->getClass();
-            if (!is_null($class) && class_exists($class)) {
+            if (null !== $class && class_exists($class)) {
                 $r = new \ReflectionClass($class);
                 if ($r->implementsInterface(CommandInterface::class)) {
                     $application->addMethodCall('add', array(new Reference($class)));

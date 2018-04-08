@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\DI;
 
 use Dotfiles\Core\DI\Compiler\CommandPass;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
@@ -21,7 +22,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\DumperInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Dotfiles\Core\Util\Toolkit;
 
 class Builder
 {
@@ -144,7 +144,7 @@ class Builder
     public function getContainer()
     {
         if (null === $this->container) {
-            if(!class_exists('CachedContainer')){
+            if (!class_exists('CachedContainer')) {
                 include_once $this->getCacheFileName();
             }
             $this->container = new \CachedContainer();

@@ -13,20 +13,22 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core;
 
-use Dotfiles\Core\Config\Config;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 
-abstract class Plugin implements PluginInterface
+abstract class Plugin extends Extension implements PluginInterface
 {
-    public function registerListeners(Emitter $emitter): void
+    public function getName(): string
     {
+        $class = get_class($this);
+        $exp = explode('\\', $class);
+        $baseClassName = $exp[count($exp) - 1];
+        $pluginName = strtolower(str_replace('Plugin', '', $baseClassName));
+
+        return $pluginName;
     }
 
-    public function setupConfiguration(Config $config): void
-    {
-    }
-
-    public function configureContainer(ContainerBuilder $container, Config $config): void
+    public function load(array $configs, ContainerBuilder $container): void
     {
     }
 }

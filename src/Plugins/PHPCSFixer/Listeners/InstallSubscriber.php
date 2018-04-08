@@ -83,6 +83,7 @@ class InstallSubscriber implements EventSubscriberInterface
         if (is_file($targetFile)) {
             $fs = new Filesystem();
             $fs->copy($targetFile, $installFile);
+            $fs->chmod($installFile, 0755);
             $this->output->writeln('PHP-CS-Fixer installed to: <comment>'.$installFile.'</comment>');
         }
     }

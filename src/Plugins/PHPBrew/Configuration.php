@@ -11,12 +11,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\PHPBrew\Config;
+namespace Dotfiles\Plugins\PHPBrew;
 
 use Dotfiles\Core\Config\DefinitionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class Definition implements DefinitionInterface
+class Configuration implements DefinitionInterface
 {
     public function getConfigTreeBuilder()
     {

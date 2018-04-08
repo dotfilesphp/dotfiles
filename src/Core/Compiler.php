@@ -15,7 +15,6 @@ namespace Dotfiles\Core;
 
 use Seld\PharUtils\Timestamps;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\Process;
 
 class Compiler
@@ -242,7 +241,7 @@ EOF;
     /**
      * @param $phar
      * @param \SplFileInfo $file
-     * @param bool $strip
+     * @param bool         $strip
      */
     private function addFile($phar, \SplFileInfo $file, $strip = true): void
     {

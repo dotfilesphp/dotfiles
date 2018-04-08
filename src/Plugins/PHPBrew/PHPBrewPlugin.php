@@ -13,25 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew;
 
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Plugin;
-use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
-use Dotfiles\Plugins\PHPBrew\Config\Definition;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class PHPBrewPlugin extends Plugin
 {
-    public function getName()
-    {
-        return 'PHPBrew';
-    }
-
-    public function setupConfiguration(Config $config): void
-    {
-        $config->addDefinition(new Definition());
-    }
-
-    public function configureContainer(ContainerBuilder $container, Config $config): void
-    {
-    }
 }

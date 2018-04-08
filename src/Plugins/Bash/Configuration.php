@@ -11,23 +11,21 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\PHPCSFixer\Config;
+namespace Dotfiles\Plugins\Bash;
 
 use Dotfiles\Core\Config\DefinitionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class Definition implements DefinitionInterface
+class Configuration implements DefinitionInterface
 {
+    /**
+     * @return TreeBuilder
+     */
     public function getConfigTreeBuilder()
     {
         $builder = new TreeBuilder();
-        $root = $builder->root('phpcs');
+        $root = $builder->root('bash');
         $root
-            ->children()
-                ->scalarNode('file_name')
-                    ->defaultValue('phpcs')
-                ->end()
-            ->end()
         ;
 
         return $builder;

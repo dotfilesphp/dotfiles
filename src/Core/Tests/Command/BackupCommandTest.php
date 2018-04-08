@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
- * (c) Anthonius Munthi <me@itstoni.com>
+ *     (c) Anthonius Munthi <me@itstoni.com>
  *
  * For the full copyright and license information, please view the LICENSE
- * file that was disstributed with this source code.
+ * file that was distributed with this source code.
  */
 
 namespace Dotfiles\Core\Tests\Command;
@@ -20,7 +22,8 @@ use Psr\Log\LoggerInterface;
 
 class BackupCommandTest extends CommandTestCase
 {
-    private $dirs = [];
+    private $dirs = array();
+
     public function getObjectToTest($config = array())
     {
         $defConfig = array(
@@ -30,24 +33,25 @@ class BackupCommandTest extends CommandTestCase
             'machine_name' => 'zeus',
         );
 
-        $this->dirs = $dirs = array_merge($defConfig,$config);
+        $this->dirs = $dirs = array_merge($defConfig, $config);
 
         $config = $this->createMock(Config::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $config->expects($this->any())
             ->method('get')
-            ->willReturnMap([
-                ['dotfiles.base_dir',$dirs['base_dir']],
-                ['dotfiles.backup_dir',$dirs['backup_dir']],
-                ['dotfiles.home_dir',$dirs['home_dir']],
-                ['dotfiles.machine_name',$dirs['machine_name']]
-            ])
+            ->willReturnMap(array(
+                array('dotfiles.base_dir', $dirs['base_dir']),
+                array('dotfiles.backup_dir', $dirs['backup_dir']),
+                array('dotfiles.home_dir', $dirs['home_dir']),
+                array('dotfiles.machine_name', $dirs['machine_name']),
+            ))
         ;
-        return new BackupCommand($config,$logger);
+
+        return new BackupCommand($config, $logger);
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $command = $this->getObjectToTest();
         $app = $this->getApplication();
@@ -57,19 +61,19 @@ class BackupCommandTest extends CommandTestCase
         Toolkit::ensureDir($backupDir);
         touch($backupDir.'/manifest.php');
         $tester = new CommandTester($command);
-        $tester->execute([]);
+        $tester->execute(array());
 
         $output = $tester->getDisplay(true);
-        $this->assertContains('Backup files already exists',$output);
+        $this->assertContains('Backup files already exists', $output);
         unlink($backupDir.'/manifest.php');
-        $tester->execute([]);
+        $tester->execute(array());
         $output = $tester->getDisplay(true);
-        $this->assertNotContains('Backup file already exists',$output);
+        $this->assertNotContains('Backup file already exists', $output);
         $this->assertFileExists($backupDir.'/.bashrc');
         $this->assertFileExists($backupDir.'/.zeus');
         $this->assertFileExists($backupDir.'/manifest.php');
 
         $manifest = include $backupDir.'/manifest.php';
-        $this->assertArrayHasKey('.bashrc',$manifest);
+        $this->assertArrayHasKey('.bashrc', $manifest);
     }
 }

@@ -10,7 +10,7 @@
         }
     ],
     "minimum-stability": "stable",
-    "repositories":{
+    "repositories": [
         {
             "type": "package",
             "package": {
@@ -22,6 +22,6 @@
                 }
             }
         }
-    },
+    ],
     "require": {}
 }
