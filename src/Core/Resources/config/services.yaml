@@ -10,11 +10,7 @@ services:
             - [setCachePath, ['%dotfiles.cache_dir%']]
     Dotfiles\Core\Command\InstallCommand: ~
     Dotfiles\Core\Command\BackupCommand: ~
-    Dotfiles\Core\Command\SelfUpdateCommand:
-        calls:
-            - [setDownloader,['@dotfiles.downloader']]
-            - [setTempDir,['%dotfiles.temp_dir%']]
-            - [setCacheDir,['%dotfiles.cache_dir%']]
+    Dotfiles\Core\Command\SelfUpdateCommand: ~
     Dotfiles\Core\Application: ~
 
     # aliasses

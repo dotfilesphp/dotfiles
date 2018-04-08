@@ -23,9 +23,42 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class SelfUpdateCommand extends Command implements CommandInterface
 {
-    public const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
+    const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
 
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var Downloader
+     */
+    private $downloader;
+
+    /**
+     * @var string
+     */
+    private $versionFile;
+
+    /**
+     * @var string
+     */
+    private $version;
+
+    /**
+     * @var string
+     */
     private $branchAlias;
+
+    /**
+     * @var string
+     */
+    private $date;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
 
     /**
      * @var string
@@ -33,27 +66,23 @@ class SelfUpdateCommand extends Command implements CommandInterface
     private $cacheDir;
 
     /**
-     * @var Config
-     */
-    private $config;
-
-    private $date;
-
-    /**
-     * @var Downloader
-     */
-    private $downloader;
-
-    private $pharFile;
-
-    /**
      * @var string
      */
-    private $tempDir;
+    private $pharFile;
 
-    private $version;
+    public function __construct(
+        ?string $name = null,
+        Downloader $downloader,
+        Config $config
+    )
+    {
+        parent::__construct($name);
 
-    private $versionFile;
+        $this->config       = $config;
+        $this->downloader   = $downloader;
+        $this->tempDir      = $config->get('dotfiles.temp_dir');
+        $this->cacheDir     = $config->get('dotfiles.cache_dir');
+    }
 
     public function configure(): void
     {
@@ -62,9 +91,12 @@ class SelfUpdateCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output): void
     {
+        $config = $this->config;
+        $tempDir = $config->get('dotfiles.temp_dir');
+
         $output->writeln('Start checking new version');
         $url = static::BASE_URL.'/dotfiles.phar.json';
-        $versionFile = $this->tempDir.'/update/dotfiles.phar.json';
+        $versionFile = $tempDir.'/update/dotfiles.phar.json';
         $downloader = $this->downloader;
         $downloader->run($url, $versionFile);
         $contents = file_get_contents($versionFile);
@@ -83,38 +115,6 @@ class SelfUpdateCommand extends Command implements CommandInterface
         } else {
             $output->writeln('You already have latest <comment>dotfiles</comment> version');
         }
-    }
-
-    /**
-     * @param string $cacheDir
-     *
-     * @return SelfUpdateCommand
-     */
-    public function setCacheDir(string $cacheDir): self
-    {
-        $this->cacheDir = $cacheDir;
-
-        return $this;
-    }
-
-    /**
-     * @param Downloader $downloader
-     */
-    public function setDownloader(Downloader $downloader): void
-    {
-        $this->downloader = $downloader;
-    }
-
-    /**
-     * @param string $tempDir
-     *
-     * @return SelfUpdateCommand
-     */
-    public function setTempDir(string $tempDir): self
-    {
-        $this->tempDir = $tempDir;
-
-        return $this;
     }
 
     private function doUpdate(OutputInterface $output): void
