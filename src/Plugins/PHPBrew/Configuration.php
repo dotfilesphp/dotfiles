@@ -7,6 +7,7 @@ namespace Dotfiles\Plugins\PHPBrew;
 use Dotfiles\Core\Config\DefinitionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
+
 class Configuration implements DefinitionInterface
 {
     public function getConfigTreeBuilder()
