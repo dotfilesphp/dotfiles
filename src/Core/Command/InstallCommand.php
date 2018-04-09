@@ -76,11 +76,11 @@ class InstallCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->dryRun = $input->hasOption('dry-run') ? $input->getOption('dry-run') : false;
         $this->getApplication()->get('backup')->execute($input, $output);
 
         $output->writeln('Begin installing <comment>dotfiles</comment>');
         $config = $this->config;
+        $this->dryRun = $config->get('dotfiles.dry_run');
         $this->output = $output;
 
         Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
@@ -92,10 +92,6 @@ class InstallCommand extends Command implements CommandInterface
         }
 
         $event = new InstallEvent();
-        $event
-            ->setDryRun($this->dryRun)
-            ->setOverwriteNewFiles($this->overwriteNewFiles)
-        ;
         $this->dispatcher->dispatch(InstallEvent::NAME, $event);
         $this->patches = array_merge($this->patches,$event->getPatches());
 

@@ -84,7 +84,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $this->cacheDir = $config->get('dotfiles.cache_dir');
     }
 
-    public function configure(): void
+    protected function configure(): void
     {
         $this
             ->setName('self-update')
@@ -98,7 +98,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
      *
      * @throws InstallFailedException when version file is invalid
      */
-    public function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $config = $this->config;
         $tempDir = $config->get('dotfiles.temp_dir');
@@ -122,7 +122,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         if (Application::VERSION !== $this->version) {
             $output->writeln("Begin update into <comment>{$this->version}</comment>");
             $this->doUpdate($output);
-            $this->getApplication()->get('clear-cache')->execute($input, $output);
+            $this->getApplication()->get('clear-cache')->run($input, $output);
         } else {
             $output->writeln('You already have latest <comment>dotfiles</comment> version');
         }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Application;
+use Dotfiles\Core\Command\ClearCacheCommand;
 use Dotfiles\Core\Command\SelfUpdateCommand;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Exceptions\InstallFailedException;
@@ -22,7 +23,9 @@ use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -58,6 +61,11 @@ class SelfUpdateCommandTest extends BaseTestCase
      */
     private $tempDir;
 
+    /**
+     * @var Application
+     */
+    private $application;
+
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         $this->config = $this->createMock(Config::class);
@@ -66,6 +74,7 @@ class SelfUpdateCommandTest extends BaseTestCase
         $this->output = $this->createMock(OutputInterface::class);
         $this->input = $this->createMock(InputInterface::class);
         $this->progressBar = new ProgressBar($this->output);
+        $this->application = new Application($this->config, $this->input,$this->output);
         static::cleanupTempDir();
     }
 
@@ -100,8 +109,26 @@ class SelfUpdateCommandTest extends BaseTestCase
                 $this->returnCallback(array($this, 'createFakeVersionFile'))
             )
         ;
+
+        $cache = $this->createMock(ClearCacheCommand::class);
+        $cache->expects($this->once())
+            ->method('isEnabled')
+            ->willReturn(true)
+        ;
+        $cache->expects($this->any())->method('getName')->willReturn('clear-cache');
+        $cache->expects($this->any())
+            ->method('getDefinition')
+            ->willReturn(new InputDefinition())
+        ;
+        $cache->expects($this->any())->method('getAliases')->willReturn(array());
+
+        $cache->expects($this->once())
+            ->method('run')
+        ;
+        $this->application->add($cache);
+
         $command = $this->getSUT();
-        $command->execute($this->input, $this->output);
+        $command->run($this->input, $this->output);
     }
 
     public function testExecuteOnLatestVersionPhar(): void
@@ -134,7 +161,7 @@ EOF;
             )
         ;
         $command = $this->getSUT();
-        $command->execute($this->input, $this->output);
+        $command->run($this->input, $this->output);
     }
 
     public function testExecuteThrowsOnEmptyVersionFile(): void
@@ -153,7 +180,7 @@ EOF;
         $this->expectException(InstallFailedException::class);
         $this->expectExceptionMessage('Can not parse dotfiles.phar.json file');
         $command = $this->getSUT();
-        $command->execute($this->input, $this->output);
+        $command->run($this->input, $this->output);
     }
 
     private function getSUT()
@@ -173,10 +200,13 @@ EOF;
             ->willReturn($this->progressBar)
         ;
 
-        return new SelfUpdateCommand(
+        $command = new SelfUpdateCommand(
             null,
             $this->downloader,
             $this->config
         );
+
+        $command->setApplication($this->application);
+        return $command;
     }
 }

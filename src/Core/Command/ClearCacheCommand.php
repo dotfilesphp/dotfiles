@@ -62,7 +62,7 @@ class ClearCacheCommand extends Command implements CommandInterface
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach($finder->files() as $file){
             $fs->remove($file);
-            $relPath = 'var/cache/'.$file->getRelativePathname();
+            $relPath = $file->getRelativePathname();
             $this->logger->debug("-removed <comment>$relPath</comment>");
         }
     }
