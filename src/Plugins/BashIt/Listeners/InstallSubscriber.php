@@ -27,6 +27,7 @@ class InstallSubscriber implements EventSubscriberInterface
      * @var Config
      */
     private $config;
+
     /**
      * @var Dispatcher
      */

@@ -24,6 +24,7 @@ use Symfony\Component\Process\Process;
 class Installer
 {
     public const SCRIPT_URL = 'https://getcomposer.org/installer';
+
     public const SIG_URL = 'https://composer.github.io/installer.sig';
 
     /**

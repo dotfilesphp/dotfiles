@@ -35,6 +35,7 @@ class Builder
      * @var ContainerInterface
      */
     private $container;
+
     /**
      * @var ContainerBuilder
      */

@@ -38,6 +38,7 @@ class Config implements \ArrayAccess
     private $configs = array();
 
     private $defaults = array();
+
     /**
      * @var ConfigurationInterface[]
      */

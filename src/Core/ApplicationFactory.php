@@ -39,6 +39,7 @@ class ApplicationFactory
      * @var Container
      */
     private $container;
+
     /**
      * @var PluginInterface[]
      */

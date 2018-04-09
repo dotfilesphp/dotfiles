@@ -28,6 +28,7 @@ class Compiler
      * @var string
      */
     private $branchAliasVersion = '';
+
     /**
      * @var string
      */

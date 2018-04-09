@@ -28,6 +28,7 @@ class InstallCommandTest extends CommandTestCase
      * @var MockObject
      */
     private $config;
+
     /**
      * @var MockObject
      */

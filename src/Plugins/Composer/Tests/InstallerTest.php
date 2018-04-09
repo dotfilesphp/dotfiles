@@ -46,6 +46,7 @@ class InstallerTest extends BaseTestCase
      * @var MockObject
      */
     private $logger;
+
     /**
      * @var MockObject
      */

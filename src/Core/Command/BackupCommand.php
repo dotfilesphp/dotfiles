@@ -25,6 +25,7 @@ use Symfony\Component\Finder\Finder;
 class BackupCommand extends Command implements CommandInterface
 {
     protected static $defaultName = 'backup';
+
     /**
      * @var Config
      */

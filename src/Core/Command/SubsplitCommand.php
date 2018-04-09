@@ -21,10 +21,12 @@ use Symfony\Component\Process\Process;
 class SubsplitCommand extends Command
 {
     public const SOURCE = 'git@github.com:kilip/dotfiles.git';
+
     /**
      * @var OutputInterface
      */
     private $output;
+
     private $workdir;
 
     public function handleProcessRun($type, $buffer): void

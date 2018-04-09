@@ -26,6 +26,7 @@ class InstallListener implements EventSubscriberInterface
      * @var Config
      */
     private $config;
+
     /**
      * @var Dispatcher
      */
