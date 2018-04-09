@@ -166,7 +166,6 @@ class Compiler
             ->name('*.yml')
             ->name('*.php')
             ->in(__DIR__.'/../Plugins')
-            ->exclude('BashIt')
             ->sort($finderSort)
         ;
         $this->doAddFile($phar, $finder);

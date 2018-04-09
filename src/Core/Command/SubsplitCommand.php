@@ -68,10 +68,6 @@ class SubsplitCommand extends Command
                 'path' => 'src/Plugins/PHPBrew',
                 'repo' => 'git@github.com:dotfilesphp/phpbrew-plugin.git',
             ),
-            'bashit' => array(
-                'path' => 'src/Plugins/BashIt',
-                'repo' => 'git@github.com:dotfilesphp/bashit-plugin.git',
-            ),
             'composer' => array(
                 'path' => 'src/Plugins/Composer',
                 'repo' => 'git@github.com:dotfilesphp/composer-plugin.git',

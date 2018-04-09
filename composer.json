@@ -1,6 +1,6 @@
 {
     "name": "dotfiles/dotfiles",
-    "description": "Dotfiles Installer",
+    "description": "Dotfiles Main Development Repository",
     "type": "project",
     "license": "MIT",
     "authors": [
@@ -9,49 +9,11 @@
             "email": "me@itstoni.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "vim/vundle",
-                "version": "0.10.2",
-                "dist": {
-                    "url": "https://github.com/VundleVim/Vundle.vim/archive/v0.10.2.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        {
-            "type": "package",
-            "package": {
-                "name": "bash-it/bash-it",
-                "version": "1.0.0",
-                "dist": {
-                    "url": "https://codeload.github.com/Bash-it/bash-it/zip/master",
-                    "type": "zip"
-                }
-            }
-        },
-        {
-            "type": "package",
-            "package": {
-                "name": "zsh/oh-my-zsh",
-                "version": "1.0.0",
-                "dist": {
-                    "url": "https://codeload.github.com/robbyrussell/oh-my-zsh/zip/master",
-                    "type": "zip"
-                }
-            }
-        }
-
-    ],
     "minimum-stability": "stable",
     "require": {
         "php": "^7.1 | ^7.2",
         "symfony/finder": "^4.0",
         "symfony/console": "^4.0",
-        "vim/vundle": "0.10.2",
-        "bash-it/bash-it": "^1.0",
         "symfony/filesystem": "^4.0",
         "symfony/process": "^4.0",
         "monolog/monolog": "^1.23",
@@ -59,7 +21,6 @@
         "symfony/config": "^4.0",
         "symfony/dependency-injection": "^4.0",
         "symfony/yaml": "^4.0",
-        "zsh/oh-my-zsh": "^1.0",
         "symfony/dotenv": "^4.0"
     },
     "require-dev": {
