@@ -128,6 +128,6 @@ class Toolkit
 
     public static function stripPath(string $path)
     {
-        return substr($path, strrpos($path, DIRECTORY_SEPARATOR), strlen($path));
+        return substr($path,-30);
     }
 }

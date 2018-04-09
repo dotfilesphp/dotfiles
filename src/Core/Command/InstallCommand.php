@@ -108,7 +108,7 @@ class InstallCommand extends Command implements CommandInterface
             }
             $this->debug(
                 sprintf(
-                    'Patching file: <comment>%s</comment>',
+                    '[patch] <comment>%s</comment>',
                             Toolkit::stripPath($target)
                 )
             );
@@ -122,7 +122,7 @@ class InstallCommand extends Command implements CommandInterface
             $fs->copy($origin, $target, array('overwriteNewerFiles' => $this->overwriteNewFiles));
         }
         $this->debug(sprintf(
-            'Copy files from <comment>%s</comment> to <comment>%s</comment>',
+            '[copy] <comment>%s</comment> to <comment>%s</comment>',
             Toolkit::stripPath($origin),
             Toolkit::stripPath($target)
         ));
@@ -130,7 +130,7 @@ class InstallCommand extends Command implements CommandInterface
 
     private function debug($message, $context = array()): void
     {
-        $this->logger->debug('install: '.$message, $context);
+        $this->logger->debug($message, $context);
     }
 
     private function doProcessBin($binDir): void
