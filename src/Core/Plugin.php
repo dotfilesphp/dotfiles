@@ -16,6 +16,11 @@ namespace Dotfiles\Core;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
+/**
+ * Class Plugin
+ *
+ * @package Dotfiles\Core
+ */
 abstract class Plugin extends Extension
 {
     public function getName(): string
@@ -28,7 +33,8 @@ abstract class Plugin extends Extension
         return $pluginName;
     }
 
-    public function load(array $configs, ContainerBuilder $container): void
-    {
-    }
+    /**
+     * {@inheritdoc}
+     */
+    public function load(array $configs, ContainerBuilder $container): void{}
 }

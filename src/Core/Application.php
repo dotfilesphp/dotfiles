@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core;
 
+use Dotfiles\Core\Config\Config;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Application extends BaseApplication
 {
@@ -26,26 +26,43 @@ class Application extends BaseApplication
     public const VERSION = '@package_version@';
 
     /**
-     * @var Container
+     * @var Config
      */
-    private $container;
+    private $config;
 
-    public function __construct()
+    /**
+     * @var InputInterface
+     */
+    private $input;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(
+        Config $config,
+        InputInterface $input,
+        OutputInterface $output
+    )
     {
         parent::__construct('dotfiles', static::VERSION);
+
+        $this->config = $config;
+        $this->input = $input;
+        $this->output = $output;
+
         $this->getDefinition()->addOption(
             new InputOption('dry-run', '-d', InputOption::VALUE_NONE, 'Only show which files would have been modified')
         );
     }
 
     /**
-     * @return Container
+     * {@inheritdoc}
      */
-    public function getContainer(): Container
-    {
-        return $this->container;
-    }
-
     public function getLongVersion()
     {
         return implode(' ', array(
@@ -55,23 +72,20 @@ class Application extends BaseApplication
         ));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
+        if(is_null($input)){
+            $input = $this->input;
+        }
+        if(is_null($output)) {
+            $output = $this->output;
+        }
         $dryRun = $input->hasParameterOption(array('--dry-run'), true);
-        $this->container->get('dotfiles.config')->set('dotfiles.dry_run', $dryRun);
+        $this->config->set('dotfiles.dry_run', $dryRun);
 
         return parent::run($input, $output);
-    }
-
-    /**
-     * @param ContainerInterface $container
-     *
-     * @return Application
-     */
-    public function setContainer(ContainerInterface $container): self
-    {
-        $this->container = $container;
-
-        return $this;
     }
 }

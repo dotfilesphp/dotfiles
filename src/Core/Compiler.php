@@ -17,6 +17,11 @@ use Seld\PharUtils\Timestamps;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class Compiler
+ * @package Dotfiles\Core
+ * @codeCoverageIgnore
+ */
 class Compiler
 {
     /**

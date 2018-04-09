@@ -15,6 +15,7 @@ namespace Dotfiles\Core\Command;
 
 use Dotfiles\Core\Application;
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Exceptions\InstallFailedException;
 use Dotfiles\Core\Util\Downloader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -89,6 +90,12 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $this->setName('self-update');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @throws InstallFailedException when version file is invalid
+     */
     public function execute(InputInterface $input, OutputInterface $output): void
     {
         $config = $this->config;
@@ -101,9 +108,10 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $downloader->run($url, $versionFile);
         $contents = file_get_contents($versionFile);
         if ('' === trim($contents)) {
-            throw new \Exception('Can not parse dotfiles.phar.json file');
+            throw new InstallFailedException('Can not parse dotfiles.phar.json file');
         }
         $json = json_decode($contents, true);
+
         $this->versionFile = $versionFile;
         $this->version = $json['version'];
         $this->branchAlias = $json['branch'];
@@ -120,7 +128,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
     private function doUpdate(OutputInterface $output): void
     {
         $fs = new Filesystem();
-        $tempDir = $this->tempDir.'/update/'.DIRECTORY_SEPARATOR.$this->version;
+        $tempDir = $this->tempDir.'/update/'.$this->version;
         $fs->copy($this->versionFile, $tempDir.DIRECTORY_SEPARATOR.'VERSION');
 
         $targetFile = $tempDir.DIRECTORY_SEPARATOR.'dotfiles.phar';
@@ -133,7 +141,10 @@ class SelfUpdateCommand extends Command implements CommandInterface
 
         $this->pharFile = $targetFile;
         $cacheDir = $this->cacheDir;
+
         // copy current phar into new dir
+        // we can't coverage or test phar environment
+        //@codeCoverageIgnoreStart
         $current = \Phar::running(false);
         $output->writeln($current);
         if (is_file($current)) {
@@ -143,5 +154,6 @@ class SelfUpdateCommand extends Command implements CommandInterface
             $fs->copy($this->pharFile, $current, $override);
             $output->writeln('Your <comment>dotfiles.phar</comment> is updated.');
         }
+        //@codeCoverageIgnoreEnd
     }
 }

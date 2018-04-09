@@ -12,8 +12,7 @@ try {
     $factory->boot();
     $container = $factory->getContainer();
     $app = $container->get('dotfiles.app');
-    $app->setContainer($container);
-    exit($app->run($container->get('dotfiles.input'), $container->get('dotfiles.output')));
+    exit($app->run());
 } catch (\Exception $e) {
     echo $e->getMessage()."\n";
     exit(1);

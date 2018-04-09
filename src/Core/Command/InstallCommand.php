@@ -81,12 +81,10 @@ class InstallCommand extends Command implements CommandInterface
         $output->writeln('Begin installing <comment>dotfiles</comment>');
         $config = $this->config;
         $this->output = $output;
-        if (!is_dir($dir = $config->get('dotfiles.bin_dir'))) {
-            mkdir($dir, 0755, true);
-        }
-        if (!is_dir($dir = $config->get('dotfiles.vendor_dir'))) {
-            mkdir($dir, 0755, true);
-        }
+
+        Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.vendor_dir'));
+
         $event = new InstallEvent();
         $event
             ->setDryRun($this->dryRun)
