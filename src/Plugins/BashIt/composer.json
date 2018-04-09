@@ -23,7 +23,7 @@
             }
         }
     ],
-    "require-dev": {
+    "require": {
         "dotfiles/core": "^1.0"
     },
     "autoload": {
