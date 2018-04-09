@@ -1,11 +1,6 @@
 language: php
-addons:
-  apt:
-    packages:
-    - vim
 
 cache:
-  yarn: true
   directories:
   - "$HOME/.composer/cache"
 
@@ -31,12 +26,17 @@ install:
 - composer install --prefer-dist --no-progress --no-suggest --ansi
 
 script:
-- ./vendor/bin/phpunit
+- |
+  if [[ $COVERAGE = yes  ]]; then
+    ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml;
+  else
+    ./vendor/bin/phpunit;
+  fi;
 
 after_script:
 - |
   if [[ $COVERAGE = yes ]]; then
-      bash <(curl -s https://codecov.io/bash) -s build/log/clover -f "*.xml";
+      bash <(curl -s https://codecov.io/bash) -s build/logs -f "*.xml";
       wget https://scrutinizer-ci.com/ocular.phar;
-      php ocular.phar code-coverage:upload --format=php-clover build/log/clover/clover.xml;
+      php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml;
   fi;
