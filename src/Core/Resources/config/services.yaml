@@ -12,15 +12,15 @@ services:
     Dotfiles\Core\Command\BackupCommand: ~
     Dotfiles\Core\Command\SelfUpdateCommand: ~
     Dotfiles\Core\Command\ClearCacheCommand: ~
+    Dotfiles\Core\Command\AddCommand: ~
     Dotfiles\Core\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
-    
+
     # aliasses
     Psr\Log\LoggerInterface:
         alias: dotfiles.logger
     Dotfiles\Core\Util\Downloader:
         alias: dotfiles.downloader
-        
     dotfiles.app:
         alias: Dotfiles\Core\Application
     dotfiles.config:
@@ -35,7 +35,7 @@ services:
     dotfiles.downloader:
         class: Dotfiles\Core\Util\Downloader
         arguments: ['@dotfiles.output','@dotfiles.logger']
-        
+
     Symfony\Component\Console\Input\InputInterface:
         alias: dotfiles.input
     Symfony\Component\Console\Output\OutputInterface:
