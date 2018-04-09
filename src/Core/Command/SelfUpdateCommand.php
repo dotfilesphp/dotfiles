@@ -24,7 +24,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class SelfUpdateCommand extends Command implements CommandInterface
 {
-    public const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
+    public const BASE_URL = 'https://raw.githubusercontent.com/dotfilesphp/dotfiles/phar';
 
     /**
      * @var string
@@ -86,7 +86,10 @@ class SelfUpdateCommand extends Command implements CommandInterface
 
     public function configure(): void
     {
-        $this->setName('self-update');
+        $this
+            ->setName('self-update')
+            ->setAliases(['selfupdate'])
+        ;
     }
 
     /**
@@ -119,6 +122,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         if (Application::VERSION !== $this->version) {
             $output->writeln("Begin update into <comment>{$this->version}</comment>");
             $this->doUpdate($output);
+            $this->getApplication()->get('clear-cache')->execute($input, $output);
         } else {
             $output->writeln('You already have latest <comment>dotfiles</comment> version');
         }

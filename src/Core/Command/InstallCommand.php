@@ -86,17 +86,19 @@ class InstallCommand extends Command implements CommandInterface
         Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
         Toolkit::ensureDir($config->get('dotfiles.vendor_dir'));
 
+        $this->processSection($output, 'defaults');
+        if (null !== ($machineName = $config->get('dotfiles.machine_name'))) {
+            $this->processSection($output, 'machines/'.$machineName);
+        }
+
         $event = new InstallEvent();
         $event
             ->setDryRun($this->dryRun)
             ->setOverwriteNewFiles($this->overwriteNewFiles)
         ;
         $this->dispatcher->dispatch(InstallEvent::NAME, $event);
-        $this->patches = $event->getPatches();
-        $this->processSection($output, 'defaults');
-        if (null !== ($machineName = $config->get('dotfiles.machine_name'))) {
-            $this->processSection($output, 'machines/'.$machineName);
-        }
+        $this->patches = array_merge($this->patches,$event->getPatches());
+
         $this->applyPatch();
     }
 
