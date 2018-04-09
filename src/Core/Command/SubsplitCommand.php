@@ -40,7 +40,7 @@ class SubsplitCommand extends Command
         if(!is_dir($dir = $workdir.'/.subsplit')){
             $this->runCommand('git subsplit --debug init '.static::SOURCE);
         }else{
-            //$this->runCommand('git subsplit --debug update '.static::SOURCE);
+            $this->runCommand('git subsplit --debug update '.static::SOURCE);
         }
 
         $tree = [
@@ -104,9 +104,9 @@ class SubsplitCommand extends Command
     public function handleProcessRun($type,$buffer)
     {
         $contents = '<info>output:</info> '.$buffer;
-        if(Process::ERR === $type){
+        if(Process::ERR == $type){
             $contents = '<error>error:</error> '.$buffer;
         }
-        $this->output->writeln($contents);
+        $this->output->write($contents);
     }
 }
