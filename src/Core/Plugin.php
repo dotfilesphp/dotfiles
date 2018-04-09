@@ -17,9 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
 /**
- * Class Plugin
- *
- * @package Dotfiles\Core
+ * Class Plugin.
  */
 abstract class Plugin extends Extension
 {
@@ -36,5 +34,7 @@ abstract class Plugin extends Extension
     /**
      * {@inheritdoc}
      */
-    public function load(array $configs, ContainerBuilder $container): void{}
+    public function load(array $configs, ContainerBuilder $container): void
+    {
+    }
 }

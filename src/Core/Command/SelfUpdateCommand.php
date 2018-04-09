@@ -24,27 +24,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class SelfUpdateCommand extends Command implements CommandInterface
 {
-    const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var Downloader
-     */
-    private $downloader;
-
-    /**
-     * @var string
-     */
-    private $versionFile;
-
-    /**
-     * @var string
-     */
-    private $version;
+    public const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
 
     /**
      * @var string
@@ -54,7 +34,27 @@ class SelfUpdateCommand extends Command implements CommandInterface
     /**
      * @var string
      */
+    private $cacheDir;
+
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var string
+     */
     private $date;
+
+    /**
+     * @var Downloader
+     */
+    private $downloader;
+
+    /**
+     * @var string
+     */
+    private $pharFile;
 
     /**
      * @var string
@@ -64,25 +64,24 @@ class SelfUpdateCommand extends Command implements CommandInterface
     /**
      * @var string
      */
-    private $cacheDir;
+    private $version;
 
     /**
      * @var string
      */
-    private $pharFile;
+    private $versionFile;
 
     public function __construct(
         ?string $name = null,
         Downloader $downloader,
         Config $config
-    )
-    {
+    ) {
         parent::__construct($name);
 
-        $this->config       = $config;
-        $this->downloader   = $downloader;
-        $this->tempDir      = $config->get('dotfiles.temp_dir');
-        $this->cacheDir     = $config->get('dotfiles.cache_dir');
+        $this->config = $config;
+        $this->downloader = $downloader;
+        $this->tempDir = $config->get('dotfiles.temp_dir');
+        $this->cacheDir = $config->get('dotfiles.cache_dir');
     }
 
     public function configure(): void
@@ -91,7 +90,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @throws InstallFailedException when version file is invalid

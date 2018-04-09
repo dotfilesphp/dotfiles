@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
- * (c) Anthonius Munthi <me@itstoni.com>
+ *     (c) Anthonius Munthi <me@itstoni.com>
  *
  * For the full copyright and license information, please view the LICENSE
- * file that was disstributed with this source code.
+ * file that was distributed with this source code.
  */
 
 namespace Dotfiles\Core\Tests\Command;
@@ -37,16 +39,6 @@ class SelfUpdateCommandTest extends BaseTestCase
     private $downloader;
 
     /**
-     * @var string
-     */
-    private $tempDir;
-
-    /**
-     * @var ProgressBar
-     */
-    private $progressBar;
-
-    /**
      * @var InputInterface
      */
     private $input;
@@ -56,20 +48,43 @@ class SelfUpdateCommandTest extends BaseTestCase
      */
     private $output;
 
+    /**
+     * @var ProgressBar
+     */
+    private $progressBar;
+
+    /**
+     * @var string
+     */
+    private $tempDir;
+
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
-        $this->config       = $this->createMock(Config::class);
-        $this->downloader   = $this->createMock(Downloader::class);
-        $this->tempDir      = sys_get_temp_dir().'/dotfiles';
-        $this->output       = $this->createMock(OutputInterface::class);
-        $this->input        = $this->createMock(InputInterface::class);
-        $this->progressBar  =  new ProgressBar($this->output);
+        $this->config = $this->createMock(Config::class);
+        $this->downloader = $this->createMock(Downloader::class);
+        $this->tempDir = sys_get_temp_dir().'/dotfiles';
+        $this->output = $this->createMock(OutputInterface::class);
+        $this->input = $this->createMock(InputInterface::class);
+        $this->progressBar = new ProgressBar($this->output);
         static::cleanupTempDir();
     }
 
-    public function testExecute()
+    public function createFakeVersionFile($url, $target): void
     {
-        $tempDir    = $this->tempDir;
+        if (false !== strpos($url, 'dotfiles.phar.json')) {
+            $origin = __DIR__.'/fixtures/dotfiles.phar.json';
+        } else {
+            $origin = __DIR__.'/fixtures/dotfiles.phar';
+        }
+        $fs = new Filesystem();
+        $fs->copy($origin, $target);
+
+        return;
+    }
+
+    public function testExecute(): void
+    {
+        $tempDir = $this->tempDir;
         $versionFile = $tempDir.'/temp/update/dotfiles.phar.json';
         $pharFile = $tempDir.'/temp/update/test/dotfiles.phar';
 
@@ -78,18 +93,18 @@ class SelfUpdateCommandTest extends BaseTestCase
         $this->downloader->expects($this->exactly(2))
             ->method('run')
             ->withConsecutive(
-                [SelfUpdateCommand::BASE_URL.'/dotfiles.phar.json',$versionFile],
-                [SelfUpdateCommand::BASE_URL.'/dotfiles.phar',$pharFile]
+                array(SelfUpdateCommand::BASE_URL.'/dotfiles.phar.json', $versionFile),
+                array(SelfUpdateCommand::BASE_URL.'/dotfiles.phar', $pharFile)
             )
             ->will(
-                $this->returnCallback([$this,'createFakeVersionFile'])
+                $this->returnCallback(array($this, 'createFakeVersionFile'))
             )
         ;
-        $command    = $this->getSUT();
-        $command->execute($this->input,$this->output);
+        $command = $this->getSUT();
+        $command->execute($this->input, $this->output);
     }
 
-    public function testExecuteOnLatestVersionPhar()
+    public function testExecuteOnLatestVersionPhar(): void
     {
         $version = Application::VERSION;
         $versionFile = <<<EOF
@@ -105,8 +120,8 @@ EOF;
             ->method('run')
             ->will(
                 $this->returnCallback(
-                    function($url,$target) use ($versionFile){
-                        file_put_contents($target,$versionFile,LOCK_EX);
+                    function ($url, $target) use ($versionFile): void {
+                        file_put_contents($target, $versionFile, LOCK_EX);
                     }
                 )
             )
@@ -114,21 +129,21 @@ EOF;
         $this->output->expects($this->exactly(2))
             ->method('writeln')
             ->withConsecutive(
-                [$this->stringContains('Start checking new version')],
-                [$this->stringContains('You already have latest')]
+                array($this->stringContains('Start checking new version')),
+                array($this->stringContains('You already have latest'))
             )
         ;
         $command = $this->getSUT();
-        $command->execute($this->input,$this->output);
+        $command->execute($this->input, $this->output);
     }
 
-    public function testExecuteThrowsOnEmptyVersionFile()
+    public function testExecuteThrowsOnEmptyVersionFile(): void
     {
         $this->downloader->expects($this->once())
             ->method('run')
             ->will(
                 $this->returnCallback(
-                    function($url,$target){
+                    function ($url, $target): void {
                         touch($target);
                     }
                 )
@@ -138,19 +153,7 @@ EOF;
         $this->expectException(InstallFailedException::class);
         $this->expectExceptionMessage('Can not parse dotfiles.phar.json file');
         $command = $this->getSUT();
-        $command->execute($this->input,$this->output);
-    }
-
-    public function createFakeVersionFile($url,$target)
-    {
-        if(false !== strpos($url,'dotfiles.phar.json')){
-            $origin = __DIR__.'/fixtures/dotfiles.phar.json';
-        }else{
-            $origin =__DIR__.'/fixtures/dotfiles.phar';
-        }
-        $fs = new Filesystem();
-        $fs->copy($origin,$target);
-        return;
+        $command->execute($this->input, $this->output);
     }
 
     private function getSUT()
@@ -159,16 +162,17 @@ EOF;
 
         $this->config->expects($this->any())
             ->method('get')
-            ->willReturnMap([
-                ['dotfiles.temp_dir',$tempDir.'/temp'],
-                ['dotfiles.cache_dir', $tempDir.'/cache'],
-                ['dotfiles.dry_run',false]
-            ])
+            ->willReturnMap(array(
+                array('dotfiles.temp_dir', $tempDir.'/temp'),
+                array('dotfiles.cache_dir', $tempDir.'/cache'),
+                array('dotfiles.dry_run', false),
+            ))
         ;
         $this->downloader->expects($this->any())
             ->method('getProgressBar')
             ->willReturn($this->progressBar)
         ;
+
         return new SelfUpdateCommand(
             null,
             $this->downloader,

@@ -47,8 +47,7 @@ class Application extends BaseApplication
         Config $config,
         InputInterface $input,
         OutputInterface $output
-    )
-    {
+    ) {
         parent::__construct('dotfiles', static::VERSION);
 
         $this->config = $config;
@@ -77,10 +76,10 @@ class Application extends BaseApplication
      */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
-        if(is_null($input)){
+        if (null === $input) {
             $input = $this->input;
         }
-        if(is_null($output)) {
+        if (null === $output) {
             $output = $this->output;
         }
         $dryRun = $input->hasParameterOption(array('--dry-run'), true);

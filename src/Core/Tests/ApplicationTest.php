@@ -17,8 +17,6 @@ use Dotfiles\Core\Application;
 use Dotfiles\Core\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -44,11 +42,22 @@ class ApplicationTest extends TestCase
      */
     private $output;
 
-    protected function setUp()/* The :void return type declaration that should be here would cause a BC issue */
+    protected function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
-        $this->config     = $this->createMock(Config::class);
-        $this->input      = $this->createMock(InputInterface::class);
-        $this->output     = $this->createMock(OutputInterface::class);
+        $this->config = $this->createMock(Config::class);
+        $this->input = $this->createMock(InputInterface::class);
+        $this->output = $this->createMock(OutputInterface::class);
+    }
+
+    public function testRun(): void
+    {
+        $this->config->expects($this->once())
+            ->method('set')
+            ->with('dotfiles.dry_run', false)
+        ;
+        $app = $this->getSUT();
+        $app->setAutoExit(false);
+        $app->run();
     }
 
     public function testVersion(): void
@@ -64,19 +73,8 @@ class ApplicationTest extends TestCase
         $this->assertEquals($expected, $app->getLongVersion());
     }
 
-    public function testRun()
-    {
-        $this->config->expects($this->once())
-            ->method('set')
-            ->with('dotfiles.dry_run',false)
-        ;
-        $app = $this->getSUT();
-        $app->setAutoExit(false);
-        $app->run();
-    }
-
     private function getSUT()
     {
-        return new Application($this->config,$this->input,$this->output);
+        return new Application($this->config, $this->input, $this->output);
     }
 }
