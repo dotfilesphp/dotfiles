@@ -7,3 +7,4 @@ bin/phpbrew
 /dotfiles.phar
 /var
 .php_cs.cache
+.subsplit

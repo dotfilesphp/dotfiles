@@ -156,21 +156,33 @@ EOC;
         require $cachePath;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function offsetExists($offset)
     {
         return isset($this->configs[$offset]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function offsetGet($offset)
     {
         return $this->configs[$offset];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function offsetSet($offset, $value): void
     {
         $this->configs[$offset] = $value;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function offsetUnset($offset): void
     {
         unset($this->configs[$offset]);
