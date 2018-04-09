@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
- * (c) Anthonius Munthi <me@itstoni.com>
+ *     (c) Anthonius Munthi <me@itstoni.com>
  *
  * For the full copyright and license information, please view the LICENSE
- * file that was disstributed with this source code.
+ * file that was distributed with this source code.
  */
 
 namespace Dotfiles\Core\Command;
-
 
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Util\Filesystem;
@@ -39,15 +40,15 @@ class ClearCacheCommand extends Command implements CommandInterface
         $this->logger = $logger;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('clear-cache')
-            ->setAliases(['cc'])
+            ->setAliases(array('cc'))
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $config = $this->config;
         $cacheDir = $config->get('dotfiles.cache_dir');
@@ -60,7 +61,7 @@ class ClearCacheCommand extends Command implements CommandInterface
         $fs = new Filesystem();
 
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach($finder->files() as $file){
+        foreach ($finder->files() as $file) {
             $fs->remove($file);
             $relPath = $file->getRelativePathname();
             $this->logger->debug("-removed <comment>$relPath</comment>");

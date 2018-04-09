@@ -93,7 +93,7 @@ class InstallCommand extends Command implements CommandInterface
 
         $event = new InstallEvent();
         $this->dispatcher->dispatch(InstallEvent::NAME, $event);
-        $this->patches = array_merge($this->patches,$event->getPatches());
+        $this->patches = array_merge($this->patches, $event->getPatches());
 
         $this->applyPatch();
     }

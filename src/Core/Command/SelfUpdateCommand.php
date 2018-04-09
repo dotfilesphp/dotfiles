@@ -88,7 +88,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
     {
         $this
             ->setName('self-update')
-            ->setAliases(['selfupdate'])
+            ->setAliases(array('selfupdate'))
         ;
     }
 

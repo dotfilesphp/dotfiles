@@ -23,7 +23,6 @@ use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,6 +30,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SelfUpdateCommandTest extends BaseTestCase
 {
+    /**
+     * @var Application
+     */
+    private $application;
     /**
      * @var MockObject
      */
@@ -61,11 +64,6 @@ class SelfUpdateCommandTest extends BaseTestCase
      */
     private $tempDir;
 
-    /**
-     * @var Application
-     */
-    private $application;
-
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         $this->config = $this->createMock(Config::class);
@@ -74,7 +72,7 @@ class SelfUpdateCommandTest extends BaseTestCase
         $this->output = $this->createMock(OutputInterface::class);
         $this->input = $this->createMock(InputInterface::class);
         $this->progressBar = new ProgressBar($this->output);
-        $this->application = new Application($this->config, $this->input,$this->output);
+        $this->application = new Application($this->config, $this->input, $this->output);
         static::cleanupTempDir();
     }
 
@@ -207,6 +205,7 @@ EOF;
         );
 
         $command->setApplication($this->application);
+
         return $command;
     }
 }
