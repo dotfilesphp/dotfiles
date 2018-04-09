@@ -10,6 +10,19 @@
         }
     ],
     "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "bash-it/bash-it",
+                "version": "1.0.0",
+                "dist": {
+                    "url": "https://codeload.github.com/Bash-it/bash-it/zip/master",
+                    "type": "zip"
+                }
+            }
+        }
+    ],
     "require": {
         "dotfiles/core": "@1.0-dev"
     },
