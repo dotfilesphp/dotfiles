@@ -1,0 +1,42 @@
+language: php
+addons:
+  apt:
+    packages:
+    - vim
+
+cache:
+  yarn: true
+  directories:
+  - "$HOME/.composer/cache"
+
+matrix:
+  include:
+  - php: '7.1'
+  - php: '7.2'
+  - php: '7.2'
+    env: COVERAGE=yes
+  allow_failures:
+  - php: '7.2'
+    env: COVERAGE=yes
+  fast_finish: true
+
+before_install:
+- echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+- |
+  if [[ $COVERAGE != yes ]]; then
+    phpenv config-rm xdebug.ini || echo "xdebug not available";
+  fi;
+
+install:
+- composer install --prefer-dist --no-progress --no-suggest --ansi
+
+script:
+- ./vendor/bin/phpunit
+
+after_script:
+- |
+  if [[ $COVERAGE = yes ]]; then
+      bash <(curl -s https://codecov.io/bash) -s build/log/clover -f "*.xml";
+      wget https://scrutinizer-ci.com/ocular.phar;
+      php ocular.phar code-coverage:upload --format=php-clover build/log/clover/clover.xml;
+  fi;

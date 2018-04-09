@@ -115,7 +115,7 @@ class ApplicationFactory
         $container = $builder->getContainer();
         $container->set(Config::class, $config);
 
-        if(getenv('DOTFILES_ENV') === 'dev'){
+        if ('dev' === getenv('DOTFILES_ENV')) {
             $app = $container->get('dotfiles.app');
             $app->add(new SubsplitCommand());
         }
@@ -160,7 +160,7 @@ class ApplicationFactory
         $finder
             ->name('*Plugin.php')
         ;
-        if(is_dir($dir = __DIR__.'/../Plugins')){
+        if (is_dir($dir = __DIR__.'/../Plugins')) {
             $finder->in(__DIR__.'/../Plugins');
         }
         $dirs = $this->loadDirectoryFromAutoloader();

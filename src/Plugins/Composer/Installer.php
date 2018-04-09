@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
- * (c) Anthonius Munthi <me@itstoni.com>
+ *     (c) Anthonius Munthi <me@itstoni.com>
  *
  * For the full copyright and license information, please view the LICENSE
- * file that was disstributed with this source code.
+ * file that was distributed with this source code.
  */
 
 namespace Dotfiles\Plugins\Composer;
 
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Util\CommandProcessor;
 use Dotfiles\Core\Util\Downloader;
-use Dotfiles\Core\Config\Config;
-use Symfony\Component\Process\Process;
 use Dotfiles\Core\Util\Toolkit;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 class Installer
 {
@@ -63,7 +65,7 @@ class Installer
         $this->processor = $processor;
     }
 
-    public function run()
+    public function run(): void
     {
         $config = $this->config;
         $targetDir = $config->get('dotfiles.bin_dir');
@@ -74,6 +76,7 @@ class Installer
         $this->debug('checking existing composer installation');
         if (is_file($targetFile)) {
             $this->output->writeln('Composer already installed, skipping');
+
             return;
         }
 

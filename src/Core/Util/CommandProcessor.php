@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the dotfiles project.
  *
- * (c) Anthonius Munthi <me@itstoni.com>
+ *     (c) Anthonius Munthi <me@itstoni.com>
  *
  * For the full copyright and license information, please view the LICENSE
- * file that was disstributed with this source code.
+ * file that was distributed with this source code.
  */
 
 namespace Dotfiles\Core\Util;
-
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Exception\RuntimeException;
@@ -25,8 +26,7 @@ class CommandProcessor
 
     public function __construct(
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->logger = $logger;
     }
 
@@ -43,14 +43,15 @@ class CommandProcessor
      */
     public function create($commandline, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
     {
-        $process = new Process($commandline,$cwd,$env,$input,$timeout);
+        $process = new Process($commandline, $cwd, $env, $input, $timeout);
         $this->debug($commandline);
+
         return $process;
     }
 
-    private function debug($message, $context = array())
+    private function debug($message, $context = array()): void
     {
         $message = '<comment>[command]</comment> '.$message;
-        $this->logger->debug($message,$context);
+        $this->logger->debug($message, $context);
     }
 }
