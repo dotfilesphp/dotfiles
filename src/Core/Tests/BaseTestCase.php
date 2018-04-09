@@ -27,10 +27,12 @@ abstract class BaseTestCase extends TestCase
 
     public static function cleanupTempDir(): void
     {
-        $finder = Finder::create()
-            ->in(sys_get_temp_dir().'/dotfiles')
-        ;
-        $fs = new Filesystem();
-        $fs->remove($finder->files());
+        if(is_dir($dir = sys_get_temp_dir().'/dotfiles')){
+            $finder = Finder::create()
+                ->in($dir)
+            ;
+            $fs = new Filesystem();
+            $fs->remove($finder->files());
+        }
     }
 }

@@ -165,20 +165,7 @@ class Compiler
             ->name('*.yml')
             ->name('*.php')
             ->in(__DIR__.'/../Plugins')
-            ->sort($finderSort)
-        ;
-
-        $this->doAddFile($phar, $finder);
-
-        // bash-it
-        $finder->files()
-            ->ignoreVCS(true)
-            ->exclude('test')
-            ->exclude('test_lib')
-            ->name('*.bash')
-            ->name('*.sh')
-            ->name('LICENSE')
-            ->in(__DIR__.'/../../vendor/bash-it')
+            ->exclude('BashIt')
             ->sort($finderSort)
         ;
         $this->doAddFile($phar, $finder);
