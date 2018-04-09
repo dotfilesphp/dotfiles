@@ -158,9 +158,11 @@ class ApplicationFactory
     {
         $finder = Finder::create();
         $finder
-            ->in(__DIR__.'/../Plugins')
             ->name('*Plugin.php')
         ;
+        if(is_dir($dir = __DIR__.'/../Plugins')){
+            $finder->in(__DIR__.'/../Plugins');
+        }
         $dirs = $this->loadDirectoryFromAutoloader();
         $finder->in($dirs);
         foreach ($finder->files() as $file) {

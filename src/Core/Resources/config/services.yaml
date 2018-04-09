@@ -12,6 +12,8 @@ services:
     Dotfiles\Core\Command\BackupCommand: ~
     Dotfiles\Core\Command\SelfUpdateCommand: ~
     Dotfiles\Core\Application: ~
+    Dotfiles\Core\Util\CommandProcessor: ~
+    
     # aliasses
     Psr\Log\LoggerInterface:
         alias: dotfiles.logger
