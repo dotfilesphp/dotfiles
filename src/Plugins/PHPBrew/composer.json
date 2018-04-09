@@ -10,8 +10,8 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {
-        "dotfiles/core": "@1.0-dev"
+    "require-dev": {
+        "dotfiles/core": "^1.0"
     },
     "autoload": {
         "psr-4": { "Dotfiles\\Plugins\\PHPBrew\\": "" },
