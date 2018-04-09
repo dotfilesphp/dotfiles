@@ -1,6 +1,6 @@
 {
-    "name": "dotfiles/bash-plugin",
-    "description": "Dotfiles Bash Plugin",
+    "name": "dotfiles/composer-plugin",
+    "description": "Dotfiles Composer Plugin",
     "type": "dotfiles-plugin",
     "license": "MIT",
     "authors": [
@@ -14,7 +14,7 @@
         "dotfiles/core": "@1.0-dev"
     },
     "autoload": {
-        "psr-4": { "Dotfiles\\Plugins\\Bash\\": "" },
+        "psr-4": { "Dotfiles\\Plugins\\Composer\\": "" },
         "exclude-from-classmap": [
             "/Tests/"
         ]
