@@ -23,6 +23,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Finder\Finder;
 
 class InitCommand extends Command
 {
@@ -182,7 +183,14 @@ EOF;
     private function initRepoDir($repoDir): void
     {
         Toolkit::ensureDir($repoDir);
+        $origin = __DIR__.'/../Resources/templates/repo';
+
+        $finder = Finder::create()
+            ->ignoreVCS(true)
+            ->ignoreDotFiles(false)
+            ->files()
+        ;
         $fs = new Filesystem();
-        $fs->mirror(__DIR__.'/../Resources/templates/repo', $repoDir);
+        $fs->mirror($origin, $repoDir,$finder);
     }
 }
