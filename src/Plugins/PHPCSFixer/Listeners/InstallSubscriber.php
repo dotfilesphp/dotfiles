@@ -64,7 +64,7 @@ class InstallSubscriber implements EventSubscriberInterface
     {
         $config = $this->config;
         $downloader = $this->downloader;
-        $dryRun = $event->isDryRun();
+        $dryRun = $config->get('dotfiles.dry_run');
         $tempDir = $config->get('dotfiles.temp_dir');
         $targetFile = $tempDir.'/phpcs/php-cs-fixer.phar';
         $installDir = $config->get('dotfiles.bin_dir');

@@ -32,6 +32,7 @@ class InstallCommand extends Command implements CommandInterface
      * @var Config
      */
     private $config;
+
     /**
      * @var Dispatcher
      */
@@ -75,27 +76,25 @@ class InstallCommand extends Command implements CommandInterface
 
     public function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->dryRun = $input->hasOption('dry-run') ? $input->getOption('dry-run') : false;
         $this->getApplication()->get('backup')->execute($input, $output);
 
         $output->writeln('Begin installing <comment>dotfiles</comment>');
         $config = $this->config;
+        $this->dryRun = $config->get('dotfiles.dry_run');
         $this->output = $output;
 
         Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
         Toolkit::ensureDir($config->get('dotfiles.vendor_dir'));
 
-        $event = new InstallEvent();
-        $event
-            ->setDryRun($this->dryRun)
-            ->setOverwriteNewFiles($this->overwriteNewFiles)
-        ;
-        $this->dispatcher->dispatch(InstallEvent::NAME, $event);
-        $this->patches = $event->getPatches();
         $this->processSection($output, 'defaults');
         if (null !== ($machineName = $config->get('dotfiles.machine_name'))) {
             $this->processSection($output, 'machines/'.$machineName);
         }
+
+        $event = new InstallEvent();
+        $this->dispatcher->dispatch(InstallEvent::NAME, $event);
+        $this->patches = array_merge($this->patches, $event->getPatches());
+
         $this->applyPatch();
     }
 
@@ -109,7 +108,7 @@ class InstallCommand extends Command implements CommandInterface
             }
             $this->debug(
                 sprintf(
-                    'Patching file: <comment>%s</comment>',
+                    '[patch] <comment>%s</comment>',
                             Toolkit::stripPath($target)
                 )
             );
@@ -123,7 +122,7 @@ class InstallCommand extends Command implements CommandInterface
             $fs->copy($origin, $target, array('overwriteNewerFiles' => $this->overwriteNewFiles));
         }
         $this->debug(sprintf(
-            'Copy files from <comment>%s</comment> to <comment>%s</comment>',
+            '[copy] <comment>%s</comment> to <comment>%s</comment>',
             Toolkit::stripPath($origin),
             Toolkit::stripPath($target)
         ));
@@ -131,7 +130,7 @@ class InstallCommand extends Command implements CommandInterface
 
     private function debug($message, $context = array()): void
     {
-        $this->logger->debug('install: '.$message, $context);
+        $this->logger->debug($message, $context);
     }
 
     private function doProcessBin($binDir): void

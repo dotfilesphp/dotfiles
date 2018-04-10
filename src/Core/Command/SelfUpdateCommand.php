@@ -17,6 +17,7 @@ use Dotfiles\Core\Application;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Exceptions\InstallFailedException;
 use Dotfiles\Core\Util\Downloader;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,7 +25,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class SelfUpdateCommand extends Command implements CommandInterface
 {
-    public const BASE_URL = 'https://raw.githubusercontent.com/kilip/dotfiles/phar';
+    public const BASE_URL = 'https://raw.githubusercontent.com/dotfilesphp/dotfiles/phar';
 
     /**
      * @var string
@@ -84,9 +85,12 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $this->cacheDir = $config->get('dotfiles.cache_dir');
     }
 
-    public function configure(): void
+    protected function configure(): void
     {
-        $this->setName('self-update');
+        $this
+            ->setName('self-update')
+            ->setAliases(array('selfupdate'))
+        ;
     }
 
     /**
@@ -95,7 +99,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
      *
      * @throws InstallFailedException when version file is invalid
      */
-    public function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $config = $this->config;
         $tempDir = $config->get('dotfiles.temp_dir');
@@ -103,6 +107,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $output->writeln('Start checking new version');
         $url = static::BASE_URL.'/dotfiles.phar.json';
         $versionFile = $tempDir.'/update/dotfiles.phar.json';
+        Toolkit::ensureFileDir($versionFile);
         $downloader = $this->downloader;
         $downloader->run($url, $versionFile);
         $contents = file_get_contents($versionFile);
@@ -119,6 +124,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         if (Application::VERSION !== $this->version) {
             $output->writeln("Begin update into <comment>{$this->version}</comment>");
             $this->doUpdate($output);
+            $this->getApplication()->get('clear-cache')->run($input, $output);
         } else {
             $output->writeln('You already have latest <comment>dotfiles</comment> version');
         }

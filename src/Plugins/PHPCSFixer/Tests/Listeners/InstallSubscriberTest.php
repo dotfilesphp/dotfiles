@@ -38,11 +38,6 @@ class InstallSubscriberTest extends BaseTestCase
         $logger = $this->createMock(LoggerInterface::class);
         $output = $this->createMock(OutputInterface::class);
 
-        $event->expects($this->exactly(2))
-            ->method('isDryRun')
-            ->willReturn(false)
-        ;
-
         $config->expects($this->any())
             ->method('get')
             ->willReturnMap(array(

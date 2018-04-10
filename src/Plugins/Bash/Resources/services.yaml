@@ -4,8 +4,6 @@ services:
         autoconfigure: true
         public: true
     Dotfiles\Plugins\Bash\Listeners\InstallListener:
-        calls:
-            - [setInstallDir, ['%dotfiles.install_dir%']]
         tags:
             - { name: "event_subscribers" }
 

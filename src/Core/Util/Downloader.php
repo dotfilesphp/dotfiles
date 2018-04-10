@@ -88,17 +88,21 @@ class Downloader
                 break;
             case STREAM_NOTIFY_REDIRECTED:
                 $this->progressBar->clear();
+
                 break;
             case STREAM_NOTIFY_FILE_SIZE_IS:
                 $this->progressBar->start($bytesMax);
                 $this->bytesMax = $bytesMax;
+
                 break;
             case STREAM_NOTIFY_PROGRESS:
                 $this->progressBar->setProgress($bytesTransferred);
+
                 break;
             case STREAM_NOTIFY_COMPLETED:
                 $this->progressBar->setProgress($bytesMax);
                 $this->progressBar->clear();
+
                 break;
         }
     }

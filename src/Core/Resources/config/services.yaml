@@ -8,33 +8,34 @@ services:
         synthetic: true
         calls:
             - [setCachePath, ['%dotfiles.cache_dir%']]
-    Dotfiles\Core\Command\InstallCommand: ~
-    Dotfiles\Core\Command\BackupCommand: ~
     Dotfiles\Core\Command\SelfUpdateCommand: ~
+    Dotfiles\Core\Command\ClearCacheCommand: ~
+    Dotfiles\Core\Command\AddCommand: ~
+    Dotfiles\Core\Command\InitCommand: ~
     Dotfiles\Core\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
-    
+    Dotfiles\Core\Util\Filesystem: ~
+
     # aliasses
     Psr\Log\LoggerInterface:
         alias: dotfiles.logger
     Dotfiles\Core\Util\Downloader:
         alias: dotfiles.downloader
-        
     dotfiles.app:
         alias: Dotfiles\Core\Application
     dotfiles.config:
         alias: Dotfiles\Core\Config\Config
     dotfiles.input:
-        class: Symfony\Component\Console\Input\ArgvInput
+        class: Dotfiles\Core\Console\Input
     dotfiles.output:
-        class: Symfony\Component\Console\Output\ConsoleOutput
+        class: Dotfiles\Core\Console\Output
     dotfiles.logger:
         class: Symfony\Component\Console\Logger\ConsoleLogger
         arguments: ['@dotfiles.output']
     dotfiles.downloader:
         class: Dotfiles\Core\Util\Downloader
         arguments: ['@dotfiles.output','@dotfiles.logger']
-        
+
     Symfony\Component\Console\Input\InputInterface:
         alias: dotfiles.input
     Symfony\Component\Console\Output\OutputInterface:

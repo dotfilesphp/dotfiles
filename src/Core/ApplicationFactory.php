@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core;
 
 use Composer\Autoload\ClassLoader;
+use Dotfiles\Core\Command\CompileCommand;
 use Dotfiles\Core\Command\SubsplitCommand;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Config\Definition;
@@ -39,6 +40,7 @@ class ApplicationFactory
      * @var Container
      */
     private $container;
+
     /**
      * @var PluginInterface[]
      */
@@ -49,8 +51,8 @@ class ApplicationFactory
      */
     public function boot(): self
     {
-        $this->builder = new Builder();
         $this->config = new Config();
+        $this->builder = new Builder($this->config);
 
         $this->addAutoload();
         $this->loadPlugins();
@@ -104,6 +106,7 @@ class ApplicationFactory
 
         // start build container
         $builder = $this->builder;
+        $builder->setConfig($config);
         $builder->getContainerBuilder()->getParameterBag()->add($config->getAll(true));
 
         /* @var Plugin $plugin */
@@ -118,8 +121,19 @@ class ApplicationFactory
         if ('dev' === getenv('DOTFILES_ENV')) {
             $app = $container->get('dotfiles.app');
             $app->add(new SubsplitCommand());
+            $app->add(new CompileCommand());
         }
+
         $this->container = $container;
+        $this->ensureDirectories($config);
+    }
+
+    private function ensureDirectories(Config $config): void
+    {
+        Toolkit::ensureDir($config->get('dotfiles.temp_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.cache_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.log_dir'));
     }
 
     /**
@@ -154,6 +168,9 @@ class ApplicationFactory
         return $dirs;
     }
 
+    /**
+     * Load available plugins.
+     */
     private function loadPlugins(): void
     {
         $finder = Finder::create();

@@ -23,9 +23,25 @@ class Definition implements DefinitionInterface
         $builder = new TreeBuilder();
         $baseDir = Toolkit::getBaseDir();
         $tempDir = sys_get_temp_dir().'/dotfiles/temp';
+
+        $repoDir = getenv('DOTFILES_REPO_DIR');
+        $varDir = $repoDir.'/var';
+        if (false === $repoDir) {
+            $varDir = sys_get_temp_dir().'/dotfiles/var';
+        }
+        $homeDir = getenv('HOME');
+
+        if ('dev' === getenv('DOTFILES_ENV')) {
+            $homeDir = sys_get_temp_dir().'/dotfiles/home';
+            $varDir = sys_get_temp_dir().'/dotfiles/var';
+        }
+
         $root = $builder->root('dotfiles');
         $root
             ->children()
+                ->scalarNode('repo_dir')
+                    ->defaultValue($repoDir)
+                ->end()
                 ->scalarNode('env')
                     ->defaultValue(getenv('DOTFILES_ENV'))
                 ->end()
@@ -36,7 +52,7 @@ class Definition implements DefinitionInterface
                     ->defaultValue(getenv('DOTFILES_MACHINE_NAME'))
                 ->end()
                 ->scalarNode('home_dir')
-                    ->defaultValue(getenv('HOME'))
+                    ->defaultValue($homeDir)
                 ->end()
                 ->booleanNode('debug')
                     ->defaultFalse()
@@ -48,16 +64,16 @@ class Definition implements DefinitionInterface
                     ->defaultValue('%dotfiles.home_dir%/.dotfiles')
                 ->end()
                 ->scalarNode('log_dir')
-                    ->defaultValue('%dotfiles.base_dir%/var/log')
+                    ->defaultValue($varDir.'/log')
                 ->end()
                 ->scalarNode('cache_dir')
-                    ->defaultValue('%dotfiles.base_dir%/var/cache')
+                    ->defaultValue($varDir.'/cache')
                 ->end()
                 ->scalarNode('temp_dir')
                     ->defaultValue($tempDir)
                 ->end()
                 ->scalarNode('backup_dir')
-                    ->defaultValue('%dotfiles.base_dir%/var/backup')
+                    ->defaultValue($varDir.'/backup')
                 ->end()
                 ->scalarNode('bin_dir')
                     ->defaultValue('%dotfiles.install_dir%/bin')

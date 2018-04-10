@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Util;
 
 use Dotfiles\Core\Util\Filesystem;
+use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\TestCase;
 
 class FilesystemTest extends TestCase
@@ -27,6 +28,7 @@ export FOO="BAR"
 
 EOC;
         $target = getenv('HOME').'/somefile';
+        Toolkit::ensureFileDir($target);
         file_put_contents($target, $current, LOCK_EX);
         $patch = <<<'EOC'
 

@@ -38,6 +38,7 @@ class Config implements \ArrayAccess
     private $configs = array();
 
     private $defaults = array();
+
     /**
      * @var ConfigurationInterface[]
      */
@@ -96,7 +97,11 @@ class Config implements \ArrayAccess
     public function getCachePath(): ?string
     {
         if (null === $this->cachePath) {
-            $this->cachePath = getcwd().'/var/cache/config.php';
+            $cachePath = sys_get_temp_dir().'/dotfiles/var/cache/config.php';
+            if (false !== getenv('DOTFILES_REPO_DIR')) {
+                $cachePath = getenv('DOTFILES_REPO_DIR').'/var/cache/config.php';
+            }
+            $this->cachePath = $cachePath;
         }
 
         return $this->cachePath;

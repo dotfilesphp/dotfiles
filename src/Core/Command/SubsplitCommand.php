@@ -18,13 +18,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class SubsplitCommand.
+ *
+ * @codeCoverageIgnore
+ */
 class SubsplitCommand extends Command
 {
     public const SOURCE = 'git@github.com:kilip/dotfiles.git';
+
     /**
      * @var OutputInterface
      */
     private $output;
+
     private $workdir;
 
     public function handleProcessRun($type, $buffer): void
@@ -65,10 +72,6 @@ class SubsplitCommand extends Command
             'phpbrew' => array(
                 'path' => 'src/Plugins/PHPBrew',
                 'repo' => 'git@github.com:dotfilesphp/phpbrew-plugin.git',
-            ),
-            'bashit' => array(
-                'path' => 'src/Plugins/BashIt',
-                'repo' => 'git@github.com:dotfilesphp/bashit-plugin.git',
             ),
             'composer' => array(
                 'path' => 'src/Plugins/Composer',

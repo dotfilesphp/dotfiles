@@ -11,23 +11,43 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core;
+namespace Dotfiles\Core\Command;
 
 use Seld\PharUtils\Timestamps;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
 /**
- * Class Compiler.
+ * Class CompileCommand.
  *
  * @codeCoverageIgnore
  */
-class Compiler
+class CompileCommand extends Command
 {
     /**
      * @var string
      */
+    private $baseDir;
+
+    /**
+     * @var string
+     */
     private $branchAliasVersion = '';
+
+    /**
+     * @var array
+     */
+    private $files = array();
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
     /**
      * @var string
      */
@@ -72,9 +92,38 @@ class Compiler
         return $this->versionDate;
     }
 
+    protected function configure(): void
+    {
+        $this
+            ->setName('compile')
+            ->setDescription('generate new dotfiles.phar')
+            ->addArgument('target', InputArgument::OPTIONAL, 'Compile dotfiles.phar into this directory', getcwd().'/build')
+        ;
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): void
+    {
+        $cwd = getcwd();
+        chdir(dirname(__DIR__.'/../../../../'));
+
+        $this->baseDir = getcwd();
+        $this->output = $output;
+
+        // start compiling process
+        $targetDir = realpath($input->getArgument('target'));
+        $target = $targetDir.'/dotfiles.phar';
+        $this->compile($target);
+        $this->generateVersionFile($targetDir);
+        chmod($target, 0755);
+
+        chdir($cwd);
+
+        $output->writeln("Completed! dotfiles.phar generated in <comment>$target</comment>");
+    }
+
     private function addDotfilesBin($phar): void
     {
-        $content = file_get_contents(__DIR__.'/../../bin/dotfiles');
+        $content = file_get_contents($this->baseDir.'/bin/dotfiles');
         $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
         $phar->addFromString('bin/dotfiles', $content);
     }
@@ -102,39 +151,27 @@ class Compiler
         $phar->addFromString($path, $content);
     }
 
-    private function doAddFile($phar, $finder): void
-    {
-        foreach ($finder as $file) {
-            $this->addFile($phar, $file);
-        }
-    }
-
     private function generatePhar($pharFile = 'dotfiles.phar'): void
     {
-        $phar = new \Phar($pharFile, 0, 'dotfiles.phar');
-        $phar->setSignatureAlgorithm(\Phar::SHA1);
-        $phar->startBuffering();
-
         $finderSort = function ($a, $b) {
             return strcmp(strtr($a->getRealPath(), '\\', '/'), strtr($b->getRealPath(), '\\', '/'));
         };
 
+        $this->output->writeln("Start registering files in <comment>{$this->baseDir}</comment>");
         $finder = new Finder();
         $finder->files()
             ->ignoreVCS(true)
-            ->name('*.php')
-            ->name('*.yaml')
-            ->name('*.yml')
+            ->ignoreDotFiles(false)
             ->exclude(array(
                 'Tests',
             ))
             ->notName('Compiler.php')
-            ->in(__DIR__)
+            ->notName('SubsplitCommand.php')
+            ->notName('CompilerCommand.php')
+            ->in($this->baseDir.'/src/Core')
             ->sort($finderSort)
         ;
-        foreach ($finder as $file) {
-            $this->addFile($phar, $file);
-        }
+        $this->registerFiles($finder);
 
         $finder = new Finder();
         $finder->files()
@@ -144,17 +181,14 @@ class Compiler
             ->exclude('Tests')
             ->exclude('tests')
             ->exclude('docs')
-            ->in(__DIR__.'/../../vendor/symfony')
-            ->in(__DIR__.'/../../vendor/composer')
-            ->in(__DIR__.'/../../vendor/myclabs')
-            ->in(__DIR__.'/../../vendor/psr')
-            ->in(__DIR__.'/../../vendor/monolog')
+            ->in($this->baseDir.'/vendor/symfony')
+            ->in($this->baseDir.'/vendor/composer')
+            ->in($this->baseDir.'/vendor/myclabs')
+            ->in($this->baseDir.'/vendor/psr')
+            ->in($this->baseDir.'/vendor/monolog')
             ->sort($finderSort)
         ;
-
-        foreach ($finder as $file) {
-            $this->addFile($phar, $file);
-        }
+        $this->registerFiles($finder);
 
         $finder->files()
             ->ignoreVCS(true)
@@ -164,13 +198,21 @@ class Compiler
             ->name('*.yaml')
             ->name('*.yml')
             ->name('*.php')
-            ->in(__DIR__.'/../Plugins')
-            ->exclude('BashIt')
+            ->in($this->baseDir.'/src/Plugins')
             ->sort($finderSort)
         ;
-        $this->doAddFile($phar, $finder);
 
-        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/autoload.php'));
+        $this->registerFiles($finder);
+        $this->files[] = new \SplFileInfo($this->baseDir.'/vendor/autoload.php');
+
+        $phar = new \Phar($pharFile, 0, 'dotfiles.phar');
+        $phar->setSignatureAlgorithm(\Phar::SHA1);
+        $phar->startBuffering();
+
+        $count = count($this->files);
+        $this->output->writeln("Start processing <comment>{$count} files</comment>");
+        $this->processFiles($phar);
+        $this->output->writeln('');
         $this->addDotfilesBin($phar);
         $phar->setStub($this->getStub());
         $phar->stopBuffering();
@@ -182,6 +224,26 @@ class Compiler
         $util->save($pharFile, \Phar::SHA1);
     }
 
+    private function generateVersionFile($targetDir): void
+    {
+        $version = $this->version;
+        $branchAlias = $this->branchAliasVersion;
+        $date = $this->versionDate->format('Y-m-d H:i:s');
+        $sha256 = trim(shell_exec('sha256sum '.$targetDir.'/dotfiles.phar'));
+        $sha256 = trim(str_replace($targetDir.'/dotfiles.phar', '', $sha256));
+
+        $contents = <<<EOC
+{
+    "version": "${version}",
+    "branch": "${branchAlias}",
+    "date": "${date}",
+    "sha256": "${sha256}"
+}
+
+EOC;
+        file_put_contents($targetDir.'/dotfiles.phar.json', $contents, LOCK_EX);
+    }
+
     /**
      * @param \SplFileInfo $file
      *
@@ -190,7 +252,7 @@ class Compiler
     private function getRelativeFilePath($file)
     {
         $realPath = $file->getRealPath();
-        $pathPrefix = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR;
+        $pathPrefix = $this->baseDir.'/';
         $pos = strpos($realPath, $pathPrefix);
         $relativePath = (false !== $pos) ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
 
@@ -221,6 +283,8 @@ if (extension_loaded('apc') && ini_get('apc.enable_cli') && ini_get('apc.cache_b
     }
 }
 
+define('DOTFILES_PHAR_MODE', true);
+
 Phar::mapPhar('dotfiles.phar');
 
 EOF;
@@ -236,6 +300,32 @@ require 'phar://dotfiles.phar/bin/dotfiles';
 
 __HALT_COMPILER();
 EOF;
+    }
+
+    private function processFiles($phar): void
+    {
+        $files = $this->files;
+        $progressBar = new ProgressBar($this->output, count($files));
+
+        $progressBar->start();
+        foreach ($files as $key => $file) {
+            $this->addFile($phar, $file);
+            $progressBar->advance();
+        }
+
+        $progressBar->finish();
+    }
+
+    /**
+     * @param Finder $finder
+     */
+    private function registerFiles(Finder $finder): void
+    {
+        foreach ($finder as $file) {
+            if (!in_array($file, $this->files)) {
+                $this->files[] = $file;
+            }
+        }
     }
 
     private function setupVersion(): void
@@ -258,7 +348,7 @@ EOF;
             $this->version = trim($process->getOutput());
         } else {
             // get branch-alias defined in composer.json for dev-master (if any)
-            $localConfig = __DIR__.'/../../composer.json';
+            $localConfig = getcwd().'/composer.json';
             $contents = file_get_contents($localConfig);
             $json = json_decode($contents, true);
             if (isset($json['extra']['branch-alias']['dev-master'])) {

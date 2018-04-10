@@ -20,6 +20,11 @@ use Dotfiles\Core\Tests\CommandTester;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class BackupCommandTest.
+ *
+ * @covers \Dotfiles\Core\Command\BackupCommand
+ */
 class BackupCommandTest extends CommandTestCase
 {
     private $dirs = array();

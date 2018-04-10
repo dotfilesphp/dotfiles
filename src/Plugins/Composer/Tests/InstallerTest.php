@@ -46,6 +46,7 @@ class InstallerTest extends BaseTestCase
      * @var MockObject
      */
     private $logger;
+
     /**
      * @var MockObject
      */
@@ -94,7 +95,9 @@ class InstallerTest extends BaseTestCase
         $process->expects($this->once())
             ->method('run')
             ->will($this->returnCallback(function () {
-                touch($this->tempDir.'/bin/composer.phar');
+                $file = $this->tempDir.'/bin/composer.phar';
+                Toolkit::ensureFileDir($file);
+                touch($file);
 
                 return 0;
             }))

@@ -11,12 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/../vendor/autoload.php';
-define('DOTFILES_PHAR_MODE', false);
-\Dotfiles\Core\Util\Toolkit::loadDotEnv();
+namespace Dotfiles\Core\Command;
 
-$home = sys_get_temp_dir().'/dotfiles/home';
-if (!is_dir($home)) {
-    mkdir($home, 0755, true);
+use Symfony\Component\Console\Command\Command as BaseCommand;
+
+abstract class Command extends BaseCommand implements CommandInterface
+{
 }
-putenv("HOME=${home}");

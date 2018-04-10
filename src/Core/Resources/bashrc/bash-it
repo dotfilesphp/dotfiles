@@ -1,8 +1,0 @@
-export THEME_SHOW_SUDO=true
-export THEME_SHOW_SCM=true
-export THEME_SHOW_CLOCK=false
-export THEME_SHOW_EXITCODE=true
-export THEME_SHOW_RUBY=false
-export BASH_IT_THEME='{{BASH_IT_THEME}}'
-export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
-export GIT_HOSTING='git@bitbucket.org'
