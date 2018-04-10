@@ -120,7 +120,7 @@ class Toolkit
             $files[] = $file;
         }
 
-        if(DOTFILES_PHAR_MODE){
+        if (DOTFILES_PHAR_MODE) {
             if (is_file($file = getenv('HOME').'/.dotfiles/.env')) {
                 $files[] = $file;
             }

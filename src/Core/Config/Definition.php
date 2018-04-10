@@ -26,12 +26,12 @@ class Definition implements DefinitionInterface
 
         $repoDir = getenv('DOTFILES_REPO_DIR');
         $varDir = $repoDir.'/var';
-        if(false === $repoDir){
+        if (false === $repoDir) {
             $varDir = sys_get_temp_dir().'/dotfiles/var';
         }
         $homeDir = getenv('HOME');
 
-        if('dev' === getenv('DOTFILES_ENV')){
+        if ('dev' === getenv('DOTFILES_ENV')) {
             $homeDir = sys_get_temp_dir().'/dotfiles/home';
             $varDir = sys_get_temp_dir().'/dotfiles/var';
         }

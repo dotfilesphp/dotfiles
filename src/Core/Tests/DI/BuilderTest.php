@@ -25,14 +25,12 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
 class BuilderTest extends TestCase
 {
-
     /**
      * @var MockObject
      */
     private $config;
 
-
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = $this->createMock(Config::class);
     }
@@ -42,10 +40,11 @@ class BuilderTest extends TestCase
         $tempDir = sys_get_temp_dir().'/dotfiles/tests/builder';
         $this->config->expects($this->any())
             ->method('get')
-            ->willReturnMap([
-                ['dotfiles.cache_dir',$tempDir.'/var/cache']
-            ])
+            ->willReturnMap(array(
+                array('dotfiles.cache_dir', $tempDir.'/var/cache'),
+            ))
         ;
+
         return new Builder($this->config);
     }
 

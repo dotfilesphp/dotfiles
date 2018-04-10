@@ -31,17 +31,16 @@ class InitCommandTest extends CommandTestCase
     /**
      * @var MockObject
      */
+    private $config;
+    /**
+     * @var MockObject
+     */
     private $process;
 
     /**
      * @var MockObject
      */
     private $processor;
-
-    /**
-     * @var MockObject
-     */
-    private $config;
 
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
@@ -103,14 +102,14 @@ class InitCommandTest extends CommandTestCase
     {
         $this->config->expects($this->any())
             ->method('get')
-            ->willReturnMap([
-                ['dotfiles.home_dir',sys_get_temp_dir().'/dotfiles/home'],
-            ])
+            ->willReturnMap(array(
+                array('dotfiles.home_dir', sys_get_temp_dir().'/dotfiles/home'),
+            ))
         ;
         $this->processor->expects($this->any())
             ->method('create')
             ->willReturn($this->process)
         ;
-        $this->command = new InitCommand(null, $this->processor,$this->config);
+        $this->command = new InitCommand(null, $this->processor, $this->config);
     }
 }

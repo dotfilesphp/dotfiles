@@ -98,7 +98,7 @@ class Config implements \ArrayAccess
     {
         if (null === $this->cachePath) {
             $cachePath = sys_get_temp_dir().'/dotfiles/var/cache/config.php';
-            if(false !== getenv('DOTFILES_REPO_DIR')){
+            if (false !== getenv('DOTFILES_REPO_DIR')) {
                 $cachePath = getenv('DOTFILES_REPO_DIR').'/var/cache/config.php';
             }
             $this->cachePath = $cachePath;

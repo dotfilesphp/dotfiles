@@ -18,7 +18,6 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Symfony\Component\Console\Tests\Command\createClosure;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 

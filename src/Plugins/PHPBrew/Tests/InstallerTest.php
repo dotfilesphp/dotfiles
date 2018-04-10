@@ -77,7 +77,7 @@ class InstallerTest extends BaseTestCase
 
     public function testRunOnAlreadyInstalled(): void
     {
-        Toolkit::ensureFileDir($file=$this->tempDir.'/bin/phpbrew');
+        Toolkit::ensureFileDir($file = $this->tempDir.'/bin/phpbrew');
         touch($file);
         $this->output->expects($this->once())
             ->method('writeln')

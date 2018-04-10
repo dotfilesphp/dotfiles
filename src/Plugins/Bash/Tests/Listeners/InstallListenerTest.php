@@ -33,10 +33,10 @@ class InstallListenerTest extends TestCase
         $tempDir = sys_get_temp_dir().'/dotfiles/tests/bash';
         $config->expects($this->any())
             ->method('get')
-            ->willReturnMap([
-                ['dotfiles.home_dir',$tempDir.'/home'],
-                ['dotfiles.install_dir',$tempDir.'/.dotfiles']
-            ])
+            ->willReturnMap(array(
+                array('dotfiles.home_dir', $tempDir.'/home'),
+                array('dotfiles.install_dir', $tempDir.'/.dotfiles'),
+            ))
         ;
         $dispatcher->expects($this->once())
             ->method('dispatch')

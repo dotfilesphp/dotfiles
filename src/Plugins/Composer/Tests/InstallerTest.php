@@ -98,6 +98,7 @@ class InstallerTest extends BaseTestCase
                 $file = $this->tempDir.'/bin/composer.phar';
                 Toolkit::ensureFileDir($file);
                 touch($file);
+
                 return 0;
             }))
         ;

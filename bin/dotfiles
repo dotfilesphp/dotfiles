@@ -7,8 +7,8 @@ use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Util\Toolkit;
 
 try {
-    if(!defined('DOTFILES_PHAR_MODE')){
-        define('DOTFILES_PHAR_MODE',false);
+    if (!defined('DOTFILES_PHAR_MODE')) {
+        define('DOTFILES_PHAR_MODE', false);
     }
     Toolkit::loadDotEnv();
     $factory = new ApplicationFactory();

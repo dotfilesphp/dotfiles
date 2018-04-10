@@ -89,9 +89,10 @@ class Application extends BaseApplication
         $dryRun = $input->hasParameterOption(array('--dry-run'), true);
         $this->config->set('dotfiles.dry_run', $dryRun);
 
-        if(!getenv('DOTFILES_REPO_DIR') && ('dev' !== getenv('DOTFILES_ENV'))){
+        if (!getenv('DOTFILES_REPO_DIR') && ('dev' !== getenv('DOTFILES_ENV'))) {
             $input = new StringInput('init');
         }
+
         return parent::run($input, $output);
     }
 }

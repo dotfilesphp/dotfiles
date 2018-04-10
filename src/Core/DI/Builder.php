@@ -16,7 +16,6 @@ namespace Dotfiles\Core\DI;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Compiler\CommandPass;
 use Dotfiles\Core\DI\Compiler\ListenerPass;
-use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
@@ -33,6 +32,11 @@ class Builder
     private $cacheFileName;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * @var ContainerInterface
      */
     private $container;
@@ -47,33 +51,9 @@ class Builder
      */
     private $dumper;
 
-    /**
-     * @var Config
-     */
-    private $config;
-
     public function __construct(Config $config)
     {
         $this->config = $config;
-    }
-
-    /**
-     * @param Config $config
-     * @return Builder
-     */
-    public function setConfig(Config $config): self
-    {
-        $this->config = $config;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCacheFileName():string
-    {
-        return $this->config->get('dotfiles.cache_dir').'/container.php';
     }
 
     /**
@@ -96,6 +76,14 @@ class Builder
             //file_put_contents($target,$dumper->dump(['class'=>'CachedContainer']), LOCK_EX);
             $cache->write($dumper->dump(array('class' => 'CachedContainer')), $builder->getResources());
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheFileName(): string
+    {
+        return $this->config->get('dotfiles.cache_dir').'/container.php';
     }
 
     /**
@@ -148,6 +136,18 @@ class Builder
             mkdir($dir, 0755, true);
         }
         $this->cacheFileName = $cacheFileName;
+
+        return $this;
+    }
+
+    /**
+     * @param Config $config
+     *
+     * @return Builder
+     */
+    public function setConfig(Config $config): self
+    {
+        $this->config = $config;
 
         return $this;
     }

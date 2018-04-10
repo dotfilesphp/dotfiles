@@ -128,6 +128,14 @@ class ApplicationFactory
         $this->ensureDirectories($config);
     }
 
+    private function ensureDirectories(Config $config): void
+    {
+        Toolkit::ensureDir($config->get('dotfiles.temp_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.cache_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.log_dir'));
+    }
+
     /**
      * Load available plugins directory.
      *
@@ -161,7 +169,7 @@ class ApplicationFactory
     }
 
     /**
-     * Load available plugins
+     * Load available plugins.
      */
     private function loadPlugins(): void
     {
@@ -201,13 +209,5 @@ class ApplicationFactory
         if ($config instanceof ConfigurationInterface) {
             $this->config->addDefinition($config);
         }
-    }
-
-    private function ensureDirectories(Config $config)
-    {
-        Toolkit::ensureDir($config->get('dotfiles.temp_dir'));
-        Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
-        Toolkit::ensureDir($config->get('dotfiles.cache_dir'));
-        Toolkit::ensureDir($config->get('dotfiles.log_dir'));
     }
 }

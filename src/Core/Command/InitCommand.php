@@ -33,16 +33,6 @@ class InitCommand extends Command
     private $commandProcessor;
 
     /**
-     * @var InputInterface
-     */
-    private $input;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
      * @var Config
      */
     private $config;
@@ -56,6 +46,16 @@ class InitCommand extends Command
      * @var string
      */
     private $defaultRepoDir;
+
+    /**
+     * @var InputInterface
+     */
+    private $input;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
 
     public function __construct(?string $name = null, CommandProcessor $processor, Config $config)
     {
@@ -90,7 +90,7 @@ class InitCommand extends Command
 
         /* @var \Symfony\Component\Console\Helper\FormatterHelper $formatter */
         $formatter = $this->getHelper('formatter');
-        $message = <<<EOF
+        $message = <<<'EOF'
 
 Please initialize dotfiles project first to start using dotfiles
 
@@ -123,7 +123,7 @@ EOF;
         $output = $this->output;
         $helper = $this->getHelper('question');
         $default = $this->defaultHomeDir;
-        $question = new Question(sprintf('Please enter your home directory (<comment>%s</comment>):',$default),$default);
+        $question = new Question(sprintf('Please enter your home directory (<comment>%s</comment>):', $default), $default);
 
         return $helper->ask($input, $output, $question);
     }
@@ -144,8 +144,8 @@ EOF;
         $input = $this->input;
         $output = $this->output;
         $helper = $this->getHelper('question');
-        $default = getenv('DOTFILES_ENV') === 'dev' ? sys_get_temp_dir().'/dotfiles/repo':getcwd();
-        $question = new Question("Please enter local repository dir (<comment>$default</comment>): ",$default);
+        $default = 'dev' === getenv('DOTFILES_ENV') ? sys_get_temp_dir().'/dotfiles/repo' : getcwd();
+        $question = new Question("Please enter local repository dir (<comment>$default</comment>): ", $default);
         $question->setValidator(function ($answer) {
             if (null === $answer) {
                 throw new InvalidOperationException('You have to define local repository directory');
@@ -192,6 +192,6 @@ EOF;
             ->files()
         ;
         $fs = new Filesystem();
-        $fs->mirror($origin, $repoDir,$finder);
+        $fs->mirror($origin, $repoDir, $finder);
     }
 }
