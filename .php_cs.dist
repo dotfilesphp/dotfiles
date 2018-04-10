@@ -41,6 +41,8 @@ return PhpCsFixer\Config::create()
         'heredoc_to_nowdoc' => true,
         'ordered_class_elements' => array('sortAlgorithm' => 'alpha'),
         'method_separation' => true,
+        'no_extra_blank_lines' => array('tokens' => array('break', 'continue', 'extra', 'return', 'throw', 'use', 'parenthesis_brace_block', 'square_brace_block', 'curly_brace_block')),
+        'blank_line_before_statement' => true,
     ))
     ->setRiskyAllowed(true)
     ->setFinder(

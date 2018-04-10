@@ -135,14 +135,14 @@ class InitCommand extends Command
     {
         $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
         Toolkit::ensureDir($dotfilesDir);
-        $templateDir = __DIR__.'/../Resources/templates/dotfiles';
+        $templateDir = __DIR__.'/../Resources/templates/dotfiles/';
         $finder = Finder::create()
             ->in($templateDir)
             ->ignoreDotFiles(false)
             ->files()
         ;
         $fs = new Filesystem();
-        $fs->mirror($templateDir, $dotfilesDir,$finder);
+        $fs->mirror($templateDir, $dotfilesDir, $finder);
 
         $envFile = $dotfilesDir.DIRECTORY_SEPARATOR.'.env';
         $contents = file_get_contents($envFile);
