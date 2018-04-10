@@ -23,26 +23,26 @@ use PHPUnit\Framework\TestCase;
  */
 class ApplicationFactoryTest extends TestCase
 {
-    static $cwd;
-    static public function setUpBeforeClass()/* The :void return type declaration that should be here would cause a BC issue */
+    public static $cwd;
+
+    public static function setUpBeforeClass(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         parent::setUpBeforeClass();
         static::$cwd = getcwd();
         chdir(__DIR__.'/fixtures/base');
     }
 
+    public static function tearDownAfterClass(): void/* The :void return type declaration that should be here would cause a BC issue */
+    {
+        parent::tearDownAfterClass();
+        chdir(static::$cwd);
+    }
+
     public function testCreateApplication(): void
     {
-
         $factory = new ApplicationFactory();
         $factory->boot();
         $this->assertTrue(class_exists('Dotfiles\Plugins\Foo\FooPlugin', true));
         $this->assertTrue($factory->hasPlugin('foo'));
-    }
-
-    public static function tearDownAfterClass()/* The :void return type declaration that should be here would cause a BC issue */
-    {
-        parent::tearDownAfterClass();
-        chdir(static::$cwd);
     }
 }

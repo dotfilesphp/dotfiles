@@ -30,6 +30,7 @@ class InitCommand extends Command
      * @var CommandProcessor
      */
     private $commandProcessor;
+
     /**
      * @var InputInterface
      */
@@ -62,8 +63,6 @@ class InitCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|null|void
-     *
-     * @throws InvalidOperationException when git is not installed
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -156,8 +155,9 @@ class InitCommand extends Command
 
     private function initRepoDir($repoDir): void
     {
+        $base = Toolkit::getBaseDir();
         Toolkit::ensureDir($repoDir);
         $fs = new Filesystem();
-        $fs->mirror(__DIR__.'/../Resources/templates/repo', $repoDir);
+        $fs->mirror($base.'/Resources/templates/repo', $repoDir);
     }
 }
