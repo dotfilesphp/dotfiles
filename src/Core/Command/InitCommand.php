@@ -188,6 +188,7 @@ EOF;
         $finder = Finder::create()
             ->ignoreVCS(true)
             ->ignoreDotFiles(false)
+            ->in($origin)
             ->files()
         ;
         $fs = new Filesystem();
