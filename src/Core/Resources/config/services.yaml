@@ -8,8 +8,6 @@ services:
         synthetic: true
         calls:
             - [setCachePath, ['%dotfiles.cache_dir%']]
-    Dotfiles\Core\Command\InstallCommand: ~
-    Dotfiles\Core\Command\BackupCommand: ~
     Dotfiles\Core\Command\SelfUpdateCommand: ~
     Dotfiles\Core\Command\ClearCacheCommand: ~
     Dotfiles\Core\Command\AddCommand: ~

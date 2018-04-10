@@ -100,7 +100,8 @@ class InitCommand extends Command
         $input = $this->input;
         $output = $this->output;
         $helper = $this->getHelper('question');
-        $question = new Question(sprintf('Please enter your machine name (default: <comment>%s</comment>):', gethostname()), gethostname());
+        $default = gethostname();
+        $question = new Question(sprintf('Please enter your machine name (<comment>%s</comment>):', $default), $default);
 
         return $helper->ask($input, $output, $question);
     }
@@ -110,7 +111,8 @@ class InitCommand extends Command
         $input = $this->input;
         $output = $this->output;
         $helper = $this->getHelper('question');
-        $question = new Question('Please enter local repository dir: ');
+        $default = getcwd();
+        $question = new Question("Please enter local repository dir (<comment>$default</comment>): ",$default);
         $question->setValidator(function ($answer) {
             if (null === $answer) {
                 throw new InvalidOperationException('You have to define local repository directory');
