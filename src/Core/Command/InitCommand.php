@@ -135,7 +135,7 @@ class InitCommand extends Command
     {
         $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
         Toolkit::ensureDir($dotfilesDir);
-        $templateDir = realpath(__DIR__.'/../Resources/templates/.dotfiles');
+        $templateDir = __DIR__.'/../Resources/templates/dotfiles';
         $finder = Finder::create()
             ->in($templateDir)
             ->ignoreDotFiles(false)
