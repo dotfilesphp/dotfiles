@@ -19,6 +19,11 @@ use Dotfiles\Core\Util\CommandProcessor;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class InitCommandTest.
+ *
+ * @covers \Dotfiles\Core\Command\InitCommand
+ */
 class InitCommandTest extends CommandTestCase
 {
     /**

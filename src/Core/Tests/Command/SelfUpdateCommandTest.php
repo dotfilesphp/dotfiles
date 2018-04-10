@@ -28,6 +28,11 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class SelfUpdateCommandTest.
+ *
+ * @covers \Dotfiles\Core\Command\SelfUpdateCommand
+ */
 class SelfUpdateCommandTest extends BaseTestCase
 {
     /**

@@ -18,6 +18,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class SubsplitCommand.
+ *
+ * @codeCoverageIgnore
+ */
 class SubsplitCommand extends Command
 {
     public const SOURCE = 'git@github.com:kilip/dotfiles.git';

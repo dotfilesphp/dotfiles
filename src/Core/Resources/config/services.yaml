@@ -28,9 +28,9 @@ services:
     dotfiles.config:
         alias: Dotfiles\Core\Config\Config
     dotfiles.input:
-        class: Symfony\Component\Console\Input\ArgvInput
+        class: Dotfiles\Core\Console\Input
     dotfiles.output:
-        class: Symfony\Component\Console\Output\ConsoleOutput
+        class: Dotfiles\Core\Console\Output
     dotfiles.logger:
         class: Symfony\Component\Console\Logger\ConsoleLogger
         arguments: ['@dotfiles.output']

@@ -130,6 +130,8 @@ class Compiler
                 'Tests',
             ))
             ->notName('Compiler.php')
+            ->notName('SubsplitCommand.php')
+            ->notName('CompilerCommand.php')
             ->in(__DIR__)
             ->sort($finderSort)
         ;

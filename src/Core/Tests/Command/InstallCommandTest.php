@@ -22,6 +22,11 @@ use Dotfiles\Core\Tests\CommandTester;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class InstallCommandTest.
+ *
+ * @covers \Dotfiles\Core\Command\InstallCommand
+ */
 class InstallCommandTest extends CommandTestCase
 {
     /**

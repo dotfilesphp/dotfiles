@@ -22,6 +22,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class ClearCacheCommandTest.
+ *
+ * @covers \Dotfiles\Core\Command\ClearCacheCommand
+ */
 class ClearCacheCommandTest extends BaseTestCase
 {
     /**
