@@ -69,6 +69,23 @@ class InitCommandTest extends CommandTestCase
 
     public function testRepoDirQuestion(): void
     {
+        $repoDir = sys_get_temp_dir().'/dotfiles';
+        $this->configureInitCommand();
+        $tester = $this->getTester('init');
+        $tester->setInputs(array(
+            null,
+            '/foo/bar/hello',
+            $repoDir,
+            null,
+            null,
+            null,
+        ));
+
+        $tester->execute(array());
+        $output = $tester->getDisplay(array(true));
+        $this->assertContains('have to define', $output);
+        $this->assertContains('/foo/bar', $output);
+        $this->assertContains('home directory', $output);
     }
 
     private function configureInitCommand(): void
