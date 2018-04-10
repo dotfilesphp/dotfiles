@@ -11,10 +11,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Command;
+namespace Dotfiles\Core\Exceptions;
 
-use Symfony\Component\Console\Command\Command as BaseCommand;
-
-abstract class Command extends BaseCommand implements CommandInterface
+class InvalidOperationException extends \Exception
 {
 }

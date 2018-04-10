@@ -15,6 +15,7 @@ services:
     Dotfiles\Core\Command\AddCommand: ~
     Dotfiles\Core\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
+    Dotfiles\Core\Util\Filesystem: ~
 
     # aliasses
     Psr\Log\LoggerInterface:

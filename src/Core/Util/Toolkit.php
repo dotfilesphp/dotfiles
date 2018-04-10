@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Util;
 
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Finder\SplFileInfo;
 
 class Toolkit
 {
@@ -86,6 +87,29 @@ class Toolkit
         return $baseDir;
     }
 
+    /**
+     * @param string $path
+     *
+     * @return SplFileInfo
+     */
+    public static function getFileInfo(string $path)
+    {
+        $homeDir = getenv('HOME');
+        $repoDir = getenv('REPO_DIR');
+        $cwd = getcwd();
+        if (false !== strpos($path, $homeDir)) {
+            $relativePath = $homeDir;
+        } elseif (false !== strpos($path, $repoDir)) {
+            $relativePath = $repoDir;
+        } elseif (false !== strpos($path, $cwd)) {
+            $relativePath = $cwd;
+        } else {
+            $relativePath = dirname($path);
+        }
+
+        return new SplFileInfo($path, $relativePath, $relativePath.DIRECTORY_SEPARATOR.basename($path));
+    }
+
     public static function loadDotEnv(): void
     {
         $cwd = static::getBaseDir();
@@ -126,8 +150,14 @@ class Toolkit
         return $values;
     }
 
-    public static function stripPath(string $path)
+    public static function stripPath(string $path, $additionalPath = array())
     {
-        return substr($path,-30);
+        $defaults = array(
+            getenv('HOME') => '',
+            getcwd() => '',
+        );
+        $path = strtr($path, array_merge($defaults, $additionalPath));
+
+        return $path;
     }
 }

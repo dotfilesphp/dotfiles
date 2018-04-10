@@ -26,6 +26,9 @@ class Definition implements DefinitionInterface
         $root = $builder->root('dotfiles');
         $root
             ->children()
+                ->scalarNode('repo_dir')
+                    ->defaultValue(getcwd())
+                ->end()
                 ->scalarNode('env')
                     ->defaultValue(getenv('DOTFILES_ENV'))
                 ->end()
