@@ -32,6 +32,7 @@ class CompileCommand extends Command
      * @var string
      */
     private $baseDir;
+
     /**
      * @var string
      */

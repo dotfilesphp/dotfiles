@@ -12,7 +12,7 @@ declare(strict_types=1);
  */
 
 require __DIR__.'/../vendor/autoload.php';
-define('DOTFILES_PHAR_MODE',false);
+define('DOTFILES_PHAR_MODE', false);
 \Dotfiles\Core\Util\Toolkit::loadDotEnv();
 
 $home = sys_get_temp_dir().'/dotfiles/home';
