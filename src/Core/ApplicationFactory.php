@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core;
 
 use Composer\Autoload\ClassLoader;
+use Dotfiles\Core\Command\CompileCommand;
 use Dotfiles\Core\Command\SubsplitCommand;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Config\Definition;
@@ -119,6 +120,7 @@ class ApplicationFactory
         if ('dev' === getenv('DOTFILES_ENV')) {
             $app = $container->get('dotfiles.app');
             $app->add(new SubsplitCommand());
+            $app->add(new CompileCommand());
         }
         $this->container = $container;
     }

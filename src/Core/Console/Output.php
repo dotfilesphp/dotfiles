@@ -50,10 +50,12 @@ class Output extends ConsoleOutput
         $config = $this->config;
         $dirs = array(
             $config->get('dotfiles.home_dir') => '$home_dir',
-            $config->get('dotfiles.repo_dir') => '$repo_dir',
             $config->get('dotfiles.temp_dir') => '$temp_dir',
             $config->get('dotfiles.bin_dir') => '$dotfiles_dir/bin',
         );
+        if (getcwd() !== ($dir = $config->get('dotfiles.repo_dir'))) {
+            $dirs[$dir] = '$repo_dir';
+        }
 
         $messages = strtr($messages, $dirs);
 

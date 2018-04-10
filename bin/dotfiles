@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-umask(0000);
+umask(0022);
 require __DIR__.'/../vendor/autoload.php';
 use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Util\Toolkit;

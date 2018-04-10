@@ -28,7 +28,7 @@ class DefinitionTest extends TestCase
     public function getTestConfigTreeBuilderData()
     {
         return array(
-            array('machine_name', false),
+            array('machine_name', getenv('DOTFILES_MACHINE_NAME')),
             array('home_dir', getenv('HOME')),
             array('debug', false),
             array('base_dir', Toolkit::getBaseDir()),
