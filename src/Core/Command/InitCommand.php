@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Finder\Finder;
 
 class InitCommand extends Command
 {
@@ -134,9 +135,14 @@ class InitCommand extends Command
     {
         $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
         Toolkit::ensureDir($dotfilesDir);
-
+        $templateDir = realpath(__DIR__.'/../Resources/templates/.dotfiles');
+        $finder = Finder::create()
+            ->in($templateDir)
+            ->ignoreDotFiles(false)
+            ->files()
+        ;
         $fs = new Filesystem();
-        $fs->mirror(__DIR__.'/../Resources/templates/.dotfiles', $dotfilesDir);
+        $fs->mirror($templateDir, $dotfilesDir,$finder);
 
         $envFile = $dotfilesDir.DIRECTORY_SEPARATOR.'.env';
         $contents = file_get_contents($envFile);
