@@ -21,6 +21,11 @@ use Dotfiles\Core\Tests\CommandTester;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class AddCommandTest.
+ *
+ * @covers \Dotfiles\Core\Command\AddCommand
+ */
 class AddCommandTest extends CommandTestCase
 {
     /**

@@ -13,6 +13,7 @@ services:
     Dotfiles\Core\Command\SelfUpdateCommand: ~
     Dotfiles\Core\Command\ClearCacheCommand: ~
     Dotfiles\Core\Command\AddCommand: ~
+    Dotfiles\Core\Command\InitCommand: ~
     Dotfiles\Core\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
     Dotfiles\Core\Util\Filesystem: ~

@@ -13,9 +13,29 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests;
 
+use Dotfiles\Core\Command\Command;
+
 class CommandTestCase extends BaseTestCase
 {
-    private $application;
+    protected $application;
+
+    /**
+     * @var Command
+     */
+    protected $command;
+
+    /**
+     * @param string $commandName
+     *
+     * @return CommandTester
+     */
+    public function getTester(string $commandName): CommandTester
+    {
+        $this->getApplication()->add($this->command);
+        $cmd = $this->getApplication()->find($commandName);
+
+        return new CommandTester($cmd);
+    }
 
     /**
      * @return Application
