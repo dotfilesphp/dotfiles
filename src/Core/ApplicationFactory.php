@@ -125,6 +125,7 @@ class ApplicationFactory
         }
 
         $this->container = $container;
+        $this->ensureDirectories($config);
     }
 
     /**
@@ -200,5 +201,13 @@ class ApplicationFactory
         if ($config instanceof ConfigurationInterface) {
             $this->config->addDefinition($config);
         }
+    }
+
+    private function ensureDirectories(Config $config)
+    {
+        Toolkit::ensureDir($config->get('dotfiles.temp_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.bin_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.cache_dir'));
+        Toolkit::ensureDir($config->get('dotfiles.log_dir'));
     }
 }

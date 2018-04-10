@@ -16,6 +16,7 @@ namespace Dotfiles\Plugins\Bash\Listeners;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\InstallEvent;
+use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -61,17 +62,9 @@ class InstallListener implements EventSubscriberInterface
         $event->addPatch($target, "source \"${installDir}/bashrc\"");
     }
 
-    /**
-     * @param mixed $installDir
-     */
-    public function setInstallDir($installDir): void
-    {
-        $this->installDir = $installDir;
-    }
-
     private function generateDotfilesConfig($bashConfig): void
     {
-        $installDir = $this->installDir;
+        $installDir = $this->config->get('dotfiles.install_dir');
 
         $uname = php_uname();
         if (false !== strpos('darwin', $uname)) {
@@ -92,7 +85,7 @@ $bashConfig
 # END DOTFILES CONFIG
 
 EOC;
-
-        file_put_contents($installDir.DIRECTORY_SEPARATOR.$fileName, $contents, LOCK_EX);
+        Toolkit::ensureFileDir($file=$installDir.DIRECTORY_SEPARATOR.$fileName);
+        file_put_contents($file, $contents, LOCK_EX);
     }
 }

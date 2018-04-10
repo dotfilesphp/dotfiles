@@ -119,8 +119,11 @@ class Toolkit
         if (is_file($file = $cwd.'/.env')) {
             $files[] = $file;
         }
-        if (is_file($file = getenv('HOME').'/.dotfiles/.env')) {
-            $files[] = $file;
+
+        if(DOTFILES_PHAR_MODE){
+            if (is_file($file = getenv('HOME').'/.dotfiles/.env')) {
+                $files[] = $file;
+            }
         }
 
         if (count($files) > 0) {

@@ -33,6 +33,7 @@ abstract class BaseTestCase extends TestCase
             ;
             $fs = new Filesystem();
             $fs->remove($finder->files());
+            $fs->remove($finder->directories());
         }
     }
 }

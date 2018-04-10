@@ -33,13 +33,14 @@ class Definition implements DefinitionInterface
 
         if('dev' === getenv('DOTFILES_ENV')){
             $homeDir = sys_get_temp_dir().'/dotfiles/home';
+            $varDir = sys_get_temp_dir().'/dotfiles/var';
         }
 
         $root = $builder->root('dotfiles');
         $root
             ->children()
                 ->scalarNode('repo_dir')
-                    ->defaultValue(getcwd())
+                    ->defaultValue($repoDir)
                 ->end()
                 ->scalarNode('env')
                     ->defaultValue(getenv('DOTFILES_ENV'))

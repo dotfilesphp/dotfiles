@@ -17,6 +17,7 @@ use Dotfiles\Core\Application;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Exceptions\InstallFailedException;
 use Dotfiles\Core\Util\Downloader;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -106,6 +107,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
         $output->writeln('Start checking new version');
         $url = static::BASE_URL.'/dotfiles.phar.json';
         $versionFile = $tempDir.'/update/dotfiles.phar.json';
+        Toolkit::ensureFileDir($versionFile);
         $downloader = $this->downloader;
         $downloader->run($url, $versionFile);
         $contents = file_get_contents($versionFile);

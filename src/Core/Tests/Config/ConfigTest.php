@@ -44,7 +44,7 @@ class ConfigTest extends TestCase
         $config->addConfigDir($dir);
         $this->assertContains($dir, $config->getConfigDirs());
 
-        $this->assertContains(getcwd(), $config->getCachePath());
+        $this->assertContains('/tmp/dotfiles/var/cache/config', $config->getCachePath());
         $this->expectException(\InvalidArgumentException::class);
         $config->addConfigDir('foo/bar');
     }

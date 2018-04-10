@@ -17,6 +17,7 @@ use Dotfiles\Core\Command\InitCommand;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Util\CommandProcessor;
+use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Process\Process;
 
@@ -53,12 +54,14 @@ class InitCommandTest extends CommandTestCase
     public function testInitSuccessfully(): void
     {
         $repoDir = '/tmp/dotfiles/tests/init';
+        Toolkit::ensureDir(dirname($repoDir));
         $this->configureInitCommand();
 
         $tester = $this->getTester('init');
         $tester->setInputs(array(
             $repoDir,
             'some-machine',
+            null,
             null,
             null,
         ));

@@ -16,6 +16,7 @@ namespace Dotfiles\Plugins\PHPBrew\Tests;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
+use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\PHPBrew\Installer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
@@ -76,7 +77,8 @@ class InstallerTest extends BaseTestCase
 
     public function testRunOnAlreadyInstalled(): void
     {
-        touch($this->tempDir.'/bin/phpbrew');
+        Toolkit::ensureFileDir($file=$this->tempDir.'/bin/phpbrew');
+        touch($file);
         $this->output->expects($this->once())
             ->method('writeln')
             ->with($this->stringContains('already installed'))
@@ -87,7 +89,8 @@ class InstallerTest extends BaseTestCase
 
     public function testRunWhenFileDownloaded(): void
     {
-        touch($file = $this->tempDir.'/temp/phpbrew');
+        Toolkit::ensureFileDir($file = $this->tempDir.'/temp/phpbrew');
+        touch($file);
         $this->logger->expects($this->once())
             ->method('debug')
             ->with($this->stringContains('file already downloaded'))
