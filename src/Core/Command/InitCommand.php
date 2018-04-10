@@ -133,9 +133,10 @@ class InitCommand extends Command
 
     private function initDotFilesDir(string $homeDir, $repoDir, $machine): void
     {
+        $base = Toolkit::getBaseDir();
         $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
         Toolkit::ensureDir($dotfilesDir);
-        $templateDir = __DIR__.'/../Resources/templates/dotfiles/';
+        $templateDir = $base.'/Resources/templates/dotfiles/';
         $finder = Finder::create()
             ->in($templateDir)
             ->ignoreDotFiles(false)
