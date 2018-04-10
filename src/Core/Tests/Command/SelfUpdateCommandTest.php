@@ -34,6 +34,7 @@ class SelfUpdateCommandTest extends BaseTestCase
      * @var Application
      */
     private $application;
+
     /**
      * @var MockObject
      */

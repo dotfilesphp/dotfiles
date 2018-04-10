@@ -135,7 +135,7 @@ class InitCommand extends Command
         $base = Toolkit::getBaseDir();
         $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
         Toolkit::ensureDir($dotfilesDir);
-        $templateDir = $base.'/Resources/templates/dotfiles/';
+        $templateDir = $base.'/src/Core/Resources/templates/dotfiles/';
         $finder = Finder::create()
             ->in($templateDir)
             ->ignoreDotFiles(false)
@@ -158,6 +158,6 @@ class InitCommand extends Command
         $base = Toolkit::getBaseDir();
         Toolkit::ensureDir($repoDir);
         $fs = new Filesystem();
-        $fs->mirror($base.'/Resources/templates/repo', $repoDir);
+        $fs->mirror($base.'/src/Core/Resources/templates/repo', $repoDir);
     }
 }

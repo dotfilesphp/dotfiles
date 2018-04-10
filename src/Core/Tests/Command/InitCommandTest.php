@@ -25,6 +25,7 @@ class InitCommandTest extends CommandTestCase
      * @var MockObject
      */
     private $process;
+
     /**
      * @var MockObject
      */

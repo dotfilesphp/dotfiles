@@ -32,6 +32,7 @@ class AddCommandTest extends CommandTestCase
      * @var MockObject
      */
     private $config;
+
     /**
      * @var MockObject
      */
