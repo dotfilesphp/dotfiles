@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\InitCommand;
+use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Util\CommandProcessor;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,10 +37,16 @@ class InitCommandTest extends CommandTestCase
      */
     private $processor;
 
+    /**
+     * @var MockObject
+     */
+    private $config;
+
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         $this->processor = $this->createMock(CommandProcessor::class);
         $this->process = $this->createMock(Process::class);
+        $this->config = $this->createMock(Config::class);
         static::cleanupTempDir();
     }
 
@@ -75,13 +82,10 @@ class InitCommandTest extends CommandTestCase
 
     public function testRepoDirQuestion(): void
     {
-        $repoDir = sys_get_temp_dir().'/dotfiles';
         $this->configureInitCommand();
         $tester = $this->getTester('init');
         $tester->setInputs(array(
             null,
-            '/foo/bar/hello',
-            $repoDir,
             null,
             null,
             null,
@@ -89,17 +93,21 @@ class InitCommandTest extends CommandTestCase
 
         $tester->execute(array());
         $output = $tester->getDisplay(array(true));
-        $this->assertContains('have to define', $output);
-        $this->assertContains('/foo/bar', $output);
         $this->assertContains('home directory', $output);
     }
 
     private function configureInitCommand(): void
     {
+        $this->config->expects($this->any())
+            ->method('get')
+            ->willReturnMap([
+                ['dotfiles.home_dir',sys_get_temp_dir().'/dotfiles/home'],
+            ])
+        ;
         $this->processor->expects($this->any())
             ->method('create')
             ->willReturn($this->process)
         ;
-        $this->command = new InitCommand(null, $this->processor);
+        $this->command = new InitCommand(null, $this->processor,$this->config);
     }
 }

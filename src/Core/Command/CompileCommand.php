@@ -283,6 +283,8 @@ if (extension_loaded('apc') && ini_get('apc.enable_cli') && ini_get('apc.cache_b
     }
 }
 
+define('DOTFILES_PHAR_MODE', true);
+
 Phar::mapPhar('dotfiles.phar');
 
 EOF;

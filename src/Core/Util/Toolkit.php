@@ -78,10 +78,9 @@ class Toolkit
 
     public static function getBaseDir()
     {
-        //$baseDir = realpath(dirname(__DIR__.'/../../../src'));
         $baseDir = getcwd();
-        if (false !== strpos($dir = \Phar::running(), 'phar:///')) {
-            $baseDir = str_replace('/dotfiles.phar', '', \Phar::running(false));
+        if (DOTFILES_PHAR_MODE) {
+            $baseDir = str_replace(__FILE__, '', \Phar::running(false));
         }
 
         return $baseDir;

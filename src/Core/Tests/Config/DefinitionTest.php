@@ -33,10 +33,10 @@ class DefinitionTest extends TestCase
             array('debug', false),
             array('base_dir', Toolkit::getBaseDir()),
             array('install_dir', '%dotfiles.home_dir%/.dotfiles'),
-            array('log_dir', '%dotfiles.base_dir%/var/log'),
-            array('cache_dir', '%dotfiles.base_dir%/var/cache'),
+            array('log_dir', '/tmp/dotfiles/var/log'),
+            array('cache_dir', '/tmp/dotfiles/var/cache'),
             array('temp_dir', sys_get_temp_dir().'/dotfiles/temp'),
-            array('backup_dir', '%dotfiles.base_dir%/var/backup'),
+            array('backup_dir', '/tmp/dotfiles/var/backup'),
             array('bin_dir', '%dotfiles.install_dir%/bin'),
             array('vendor_dir', '%dotfiles.install_dir%/vendor'),
         );
@@ -54,6 +54,6 @@ class DefinitionTest extends TestCase
         $config = $processor->process($definition->getConfigTreeBuilder()->buildTree(), array());
 
         $this->assertArrayHasKey($key, $config);
-        $this->assertEquals($config[$key], $default);
+        $this->assertEquals($default, $config[$key]);
     }
 }

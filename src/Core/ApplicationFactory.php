@@ -51,8 +51,8 @@ class ApplicationFactory
      */
     public function boot(): self
     {
-        $this->builder = new Builder();
         $this->config = new Config();
+        $this->builder = new Builder($this->config);
 
         $this->addAutoload();
         $this->loadPlugins();
@@ -106,6 +106,7 @@ class ApplicationFactory
 
         // start build container
         $builder = $this->builder;
+        $builder->setConfig($config);
         $builder->getContainerBuilder()->getParameterBag()->add($config->getAll(true));
 
         /* @var Plugin $plugin */
@@ -122,6 +123,7 @@ class ApplicationFactory
             $app->add(new SubsplitCommand());
             $app->add(new CompileCommand());
         }
+
         $this->container = $container;
     }
 
@@ -157,6 +159,9 @@ class ApplicationFactory
         return $dirs;
     }
 
+    /**
+     * Load available plugins
+     */
     private function loadPlugins(): void
     {
         $finder = Finder::create();

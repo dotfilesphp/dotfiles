@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\DI;
 
+use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Builder;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,19 +25,35 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
 class BuilderTest extends TestCase
 {
+
+    /**
+     * @var MockObject
+     */
+    private $config;
+
+
+    public function setUp()
+    {
+        $this->config = $this->createMock(Config::class);
+    }
+
+    public function getBuilder()
+    {
+        $tempDir = sys_get_temp_dir().'/dotfiles/tests/builder';
+        $this->config->expects($this->any())
+            ->method('get')
+            ->willReturnMap([
+                ['dotfiles.cache_dir',$tempDir.'/var/cache']
+            ])
+        ;
+        return new Builder($this->config);
+    }
+
     public function testCacheFileName(): void
     {
         // check default cache file generation
-        $builder = new Builder();
-        $this->assertContains(getcwd(), $builder->getCacheFileName());
-
-        // check if directory should be created when not exists
-        $dir = sys_get_temp_dir().'/dotfiles/test/cache/some-dir';
-        if (is_dir($dir)) {
-            rmdir($dir);
-        }
-        $builder->setCacheFileName($dir.'/some-file.php');
-        $this->assertDirectoryExists($dir);
+        $builder = $this->getBuilder();
+        $this->assertContains('var/cache', $builder->getCacheFileName());
     }
 
     public function testCompile(): void
@@ -62,8 +80,8 @@ EOC;
             ->with(array('class' => 'CachedContainer'))
             ->willReturn($contents)
         ;
-        $cacheFileName = sys_get_temp_dir().'/dotfiles/test/container.php';
-        $builder = new Builder();
+        $cacheFileName = sys_get_temp_dir().'/dotfiles/tests/builder/var/cache/container.php';
+        $builder = $this->getBuilder();
         $builder->setCacheFileName($cacheFileName);
         $builder->setContainerBuilder($cb)
             ->setDumper($dumper)
@@ -77,7 +95,7 @@ EOC;
 
     public function testDefaults(): void
     {
-        $builder = new Builder();
+        $builder = $this->getBuilder();
         $this->assertInstanceOf(ContainerBuilder::class, $builder->getContainerBuilder());
 
         $cb = $this->createMock(ContainerBuilder::class);

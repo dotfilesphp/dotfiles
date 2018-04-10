@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Command;
 
+use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
 use Dotfiles\Core\Util\CommandProcessor;
 use Dotfiles\Core\Util\Filesystem;
@@ -22,7 +23,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Finder\Finder;
 
 class InitCommand extends Command
 {
@@ -41,10 +41,28 @@ class InitCommand extends Command
      */
     private $output;
 
-    public function __construct(?string $name = null, CommandProcessor $processor)
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var string
+     */
+    private $defaultHomeDir;
+
+    /**
+     * @var string
+     */
+    private $defaultRepoDir;
+
+    public function __construct(?string $name = null, CommandProcessor $processor, Config $config)
     {
         parent::__construct($name);
         $this->commandProcessor = $processor;
+        $this->config = $config;
+        $this->defaultHomeDir = $config->get('dotfiles.home_dir');
+        $this->defaultRepoDir = $config->get('dotfiles.repo_dir');
     }
 
     protected function configure(): void
@@ -69,6 +87,19 @@ class InitCommand extends Command
         $this->input = $input;
         $this->output = $output;
 
+        /* @var \Symfony\Component\Console\Helper\FormatterHelper $formatter */
+        $formatter = $this->getHelper('formatter');
+        $message = <<<EOF
+
+Please initialize dotfiles project first to start using dotfiles
+
+EOF;
+
+        $block = $formatter->formatBlock(
+            $message,
+            'info'
+        );
+        $output->writeln($block);
         if (null === ($repoDir = $input->getArgument('repo-dir'))) {
             $repoDir = $this->doAskRepoDir();
         }
@@ -90,7 +121,8 @@ class InitCommand extends Command
         $input = $this->input;
         $output = $this->output;
         $helper = $this->getHelper('question');
-        $question = new Question(sprintf('Please enter your home directory (default: <comment>%s</comment>):', getenv('HOME')), getenv('HOME'));
+        $default = $this->defaultHomeDir;
+        $question = new Question(sprintf('Please enter your home directory (<comment>%s</comment>):',$default),$default);
 
         return $helper->ask($input, $output, $question);
     }
@@ -111,7 +143,7 @@ class InitCommand extends Command
         $input = $this->input;
         $output = $this->output;
         $helper = $this->getHelper('question');
-        $default = getcwd();
+        $default = getenv('DOTFILES_ENV') === 'dev' ? sys_get_temp_dir().'/dotfiles/repo':getcwd();
         $question = new Question("Please enter local repository dir (<comment>$default</comment>): ",$default);
         $question->setValidator(function ($answer) {
             if (null === $answer) {
@@ -132,25 +164,18 @@ class InitCommand extends Command
         return $helper->ask($input, $output, $question);
     }
 
-    private function initDotFilesDir(string $homeDir, $repoDir, $machine): void
+    private function initDotFilesDir(string $homeDir, string $repoDir, string $machine): void
     {
         $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
         Toolkit::ensureDir($dotfilesDir);
-        $templateDir = __DIR__.'/../Resources/templates/dotfiles';
-        $finder = Finder::create()
-            ->in($templateDir)
-            ->ignoreDotFiles(false)
-            ->files()
-        ;
-        $fs = new Filesystem();
-        $fs->mirror($templateDir, $dotfilesDir, $finder);
-
         $envFile = $dotfilesDir.DIRECTORY_SEPARATOR.'.env';
-        $contents = file_get_contents($envFile);
-        $contents = strtr($contents, array(
-            '{{machine_name}}' => $machine,
-            '{{repo_dir}}' => $repoDir,
-        ));
+        $contents = <<<EOF
+
+DOTFILES_MACHINE_NAME=$machine
+DOTFILES_REPO_DIR=$repoDir
+
+EOF;
+
         file_put_contents($envFile, $contents, LOCK_EX);
     }
 
