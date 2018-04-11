@@ -86,6 +86,19 @@ class Toolkit
         return $baseDir;
     }
 
+    public static function getCachePathPrefix()
+    {
+        // using argv command to differ each dotfiles executable file
+        global $argv;
+        $command = $argv[0];
+        $cachePath = sys_get_temp_dir().'/dotfiles/var/cache';
+        if (false !== getenv('DOTFILES_REPO_DIR')) {
+            $cachePath = getenv('DOTFILES_REPO_DIR').'/var/cache';
+        }
+
+        return $cachePath.DIRECTORY_SEPARATOR.crc32($command);
+    }
+
     /**
      * @param string $path
      *
@@ -155,6 +168,14 @@ class Toolkit
         return $values;
     }
 
+    /**
+     * @param string $path
+     * @param array  $additionalPath
+     *
+     * @return string
+     *
+     * @deprecated Will be automatically strip by Output
+     */
     public static function stripPath(string $path, $additionalPath = array())
     {
         $defaults = array(

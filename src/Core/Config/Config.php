@@ -92,22 +92,6 @@ class Config implements \ArrayAccess
     }
 
     /**
-     * @return null|string
-     */
-    public function getCachePath(): ?string
-    {
-        if (null === $this->cachePath) {
-            $cachePath = sys_get_temp_dir().'/dotfiles/var/cache/config.php';
-            if (false !== getenv('DOTFILES_REPO_DIR')) {
-                $cachePath = getenv('DOTFILES_REPO_DIR').'/var/cache/config.php';
-            }
-            $this->cachePath = $cachePath;
-        }
-
-        return $this->cachePath;
-    }
-
-    /**
      * @return array
      */
     public function getConfigDirs(): array
@@ -120,7 +104,7 @@ class Config implements \ArrayAccess
      */
     public function loadConfiguration(): void
     {
-        $cachePath = $this->getCachePath();
+        $cachePath = Toolkit::getCachePathPrefix().'/config.php';
         $cache = new ConfigCache($cachePath, true);
         $env = getenv('DOTFILES_ENV');
         if (!$cache->isFresh() || 'dev' === $env) {
@@ -196,19 +180,6 @@ EOC;
     public function set($name, $value): void
     {
         $this->flattened[$name] = $value;
-    }
-
-    /**
-     * @param string $cachePath
-     *
-     * @return Config
-     */
-    public function setCachePath(string $cachePath): self
-    {
-        Toolkit::ensureFileDir($cachePath);
-        $this->cachePath = $cachePath;
-
-        return $this;
     }
 
     private function normalizeConfig($flattened, &$config): void

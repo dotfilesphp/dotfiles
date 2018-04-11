@@ -110,6 +110,18 @@ class AddCommandTest extends CommandTestCase
             '-m' => 'zeus',
         ));
         $this->assertFileExists($this->repoDir.'/src/zeus/home/bashrc');
+
+        $tester->execute(array(
+            'path' => __DIR__.'/fixtures/home/.bashrc',
+            '-m' => 'complete-path',
+        ));
+        $this->assertFileExists($this->repoDir.'/src/complete-path/home/bashrc');
+
+        $tester->execute(array(
+            'path' => 'bashrc',
+            '-m' => 'no-dot',
+        ));
+        $this->assertFileExists($this->repoDir.'/src/no-dot/home/bashrc');
     }
 
     public function testAddNonExistingPath(): void
@@ -119,7 +131,7 @@ class AddCommandTest extends CommandTestCase
         $app->add($command);
 
         $this->expectException(InvalidOperationException::class);
-        $this->expectExceptionMessageRegExp('/not exists/is');
+        $this->expectExceptionMessageRegExp('/Can not find/is');
 
         $cmd = $app->find('add');
         $tester = new CommandTester($cmd);
