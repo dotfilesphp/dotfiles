@@ -40,7 +40,7 @@ install:
     cp docker/custom.ini.dist docker/custom.ini;
     docker-compose build;
     docker-compose up -d;
-    wait 4;
+    sleep 5;
   fi;
 
 script:
