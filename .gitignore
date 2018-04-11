@@ -1,10 +1,4 @@
-vim/bundle
-!.gitkeep
-bin/composer
-bin/phpbrew
-/vendor/
-.env
-/dotfiles.phar
-/var
+var/*
+!var/.gitkeep
+vendor
 .php_cs.cache
-.subsplit

@@ -74,16 +74,16 @@ class AddCommand extends Command implements CommandInterface
     {
         $this->output = $output;
         $config = $this->config;
+        $homeDir = $config->get('dotfiles.home_dir');
         $recursive = $input->getOption('recursive');
         $machine = $input->getOption('machine');
         $repoDir = $config->get('dotfiles.repo_dir')."/src/$machine/home";
-        $sourcePath = $input->getArgument('path');
-        $originPath = $config->get('dotfiles.home_dir').DIRECTORY_SEPARATOR.$sourcePath;
+        $sourcePath = str_replace($homeDir.DIRECTORY_SEPARATOR, '', $input->getArgument('path'));
+
+        // detect source path
+        $originPath = $this->detectPath($sourcePath);
         $targetPath = $repoDir.'/'.str_replace('.', '', $sourcePath);
 
-        if (!is_file($originPath) && !is_dir($originPath)) {
-            throw new InvalidOperationException("Path <comment>$sourcePath</comment> not exists");
-        }
         Toolkit::ensureDir($repoDir);
 
         $basename = basename($sourcePath);
@@ -96,6 +96,25 @@ class AddCommand extends Command implements CommandInterface
         } else {
             $this->doAddFile($originPath, $targetPath);
         }
+    }
+
+    private function detectPath($path)
+    {
+        if ($this->ensureDirOrFile($path)) {
+            return $path;
+        }
+
+        $homeDir = $this->config->get('dotfiles.home_dir');
+        $test = $homeDir.DIRECTORY_SEPARATOR.$path;
+        if ($this->ensureDirOrFile($test)) {
+            return $test;
+        }
+
+        if ($this->ensureDirOrFile($test = $homeDir.DIRECTORY_SEPARATOR.'.'.$path)) {
+            return $test;
+        }
+
+        throw new InvalidOperationException("Can not find directory or file to process. Please make sure that $path is exists");
     }
 
     /**
@@ -140,5 +159,10 @@ class AddCommand extends Command implements CommandInterface
                 $target
             )
         );
+    }
+
+    private function ensureDirOrFile($path)
+    {
+        return is_file($path) || is_dir($path);
     }
 }
