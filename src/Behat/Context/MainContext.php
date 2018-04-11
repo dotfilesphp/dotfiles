@@ -21,11 +21,10 @@ use Webmozart\Assert\Assert;
 
 class MainContext implements Context
 {
+    private $commandPrefix;
     private $output;
 
     private $stream;
-
-    private $commandPrefix;
 
     public function __construct(string $commandPrefix)
     {
