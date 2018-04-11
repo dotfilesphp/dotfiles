@@ -72,7 +72,6 @@ class InitCommand extends Command
             ->setName('init')
             ->setDescription('Initialize new Dotfiles project.')
             ->addArgument('repo-dir', InputArgument::OPTIONAL, 'Local repository directory')
-            ->addOption('home-dir', 'hd', InputOption::VALUE_OPTIONAL, 'Home directory')
             ->addOption('machine', 'm', InputOption::VALUE_OPTIONAL, 'Machine name')
         ;
     }
@@ -88,19 +87,6 @@ class InitCommand extends Command
         $this->input = $input;
         $this->output = $output;
 
-        /* @var \Symfony\Component\Console\Helper\FormatterHelper $formatter */
-        $formatter = $this->getHelper('formatter');
-        $message = <<<'EOF'
-
-Please initialize dotfiles project first to start using dotfiles
-
-EOF;
-
-        $block = $formatter->formatBlock(
-            $message,
-            'info'
-        );
-        $output->writeln($block);
         if (null === ($repoDir = $input->getArgument('repo-dir'))) {
             $repoDir = $this->doAskRepoDir();
         }
@@ -109,23 +95,8 @@ EOF;
             $machine = $this->doAskMachineName();
         }
 
-        if (null === ($homeDir = $input->getOption('home-dir'))) {
-            $homeDir = $this->doAskHomeDir();
-        }
-
-        $this->initDotfilesDir($homeDir, $repoDir, $machine);
+        $this->initDotfilesDir($repoDir, $machine);
         $this->initRepoDir($repoDir);
-    }
-
-    private function doAskHomeDir()
-    {
-        $input = $this->input;
-        $output = $this->output;
-        $helper = $this->getHelper('question');
-        $default = $this->defaultHomeDir;
-        $question = new Question(sprintf('Please enter your home directory (<comment>%s</comment>):', $default), $default);
-
-        return $helper->ask($input, $output, $question);
     }
 
     private function doAskMachineName()
@@ -165,9 +136,9 @@ EOF;
         return $helper->ask($input, $output, $question);
     }
 
-    private function initDotFilesDir(string $homeDir, string $repoDir, string $machine): void
+    private function initDotFilesDir(string $repoDir, string $machine): void
     {
-        $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
+        $dotfilesDir = $this->defaultHomeDir.DIRECTORY_SEPARATOR.'.dotfiles';
         Toolkit::ensureDir($dotfilesDir);
         $envFile = $dotfilesDir.DIRECTORY_SEPARATOR.'.env';
         $contents = <<<EOF

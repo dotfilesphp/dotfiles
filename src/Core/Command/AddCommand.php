@@ -57,7 +57,7 @@ class AddCommand extends Command implements CommandInterface
             ->setName('add')
             ->setDescription('Add new file into dotfiles manager')
             ->addArgument('path', InputArgument::REQUIRED, 'A file or directory name to add. This file must be exists in $HOME directory')
-            ->addOption('machine', '-m', InputOption::VALUE_OPTIONAL, 'Add this file/directory into machine registry', 'default')
+            ->addOption('machine', '-m', InputOption::VALUE_OPTIONAL, 'Add this file/directory into machine registry', 'defaults')
             ->addOption('recursive', '-r', InputOption::VALUE_NONE, 'Import all directory contents recursively')
         ;
     }

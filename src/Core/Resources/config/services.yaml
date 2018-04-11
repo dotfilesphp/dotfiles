@@ -3,6 +3,9 @@ services:
         autowire: true
         autoconfigure: true
         public: true
+                
+    Dotfiles\Core\Processor\Restore:
+        alias: dotfiles.restore
     Dotfiles\Core\Event\Dispatcher: ~
     Dotfiles\Core\Config\Config:
         synthetic: true
@@ -12,6 +15,7 @@ services:
     Dotfiles\Core\Command\ClearCacheCommand: ~
     Dotfiles\Core\Command\AddCommand: ~
     Dotfiles\Core\Command\InitCommand: ~
+    Dotfiles\Core\Command\RestoreCommand: ~
     Dotfiles\Core\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
     Dotfiles\Core\Util\Filesystem: ~
@@ -35,6 +39,8 @@ services:
     dotfiles.downloader:
         class: Dotfiles\Core\Util\Downloader
         arguments: ['@dotfiles.output','@dotfiles.logger']
+    dotfiles.restore:
+        class: Dotfiles\Core\Processor\Restore
 
     Symfony\Component\Console\Input\InputInterface:
         alias: dotfiles.input

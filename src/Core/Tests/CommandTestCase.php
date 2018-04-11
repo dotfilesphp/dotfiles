@@ -15,7 +15,7 @@ namespace Dotfiles\Core\Tests;
 
 use Dotfiles\Core\Command\Command;
 
-class CommandTestCase extends BaseTestCase
+abstract class CommandTestCase extends BaseTestCase
 {
     protected $application;
 
@@ -31,11 +31,14 @@ class CommandTestCase extends BaseTestCase
      */
     public function getTester(string $commandName): CommandTester
     {
+        $this->configureCommand();
         $this->getApplication()->add($this->command);
         $cmd = $this->getApplication()->find($commandName);
 
         return new CommandTester($cmd);
     }
+
+    abstract protected function configureCommand();
 
     /**
      * @return Application

@@ -73,7 +73,7 @@ class Definition implements DefinitionInterface
                     ->defaultValue($tempDir)
                 ->end()
                 ->scalarNode('backup_dir')
-                    ->defaultValue($varDir.'/backup')
+                    ->defaultValue('%dotfiles.repo_dir%')
                 ->end()
                 ->scalarNode('bin_dir')
                     ->defaultValue('%dotfiles.install_dir%/bin')

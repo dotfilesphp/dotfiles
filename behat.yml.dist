@@ -1,0 +1,11 @@
+default:
+    suites:
+        default:
+            paths:
+                - features
+            contexts:
+                - Dotfiles\Behat\Context\MainContext:
+                    commandPrefix: '%dotfiles.command_prefix%'
+                - Dotfiles\Behat\Context\FileContext
+    extensions:
+        Dotfiles\Behat\DotfilesExtension: ~

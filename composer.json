@@ -25,11 +25,18 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0",
-        "seld/phar-utils": "^1.0"
+        "seld/phar-utils": "^1.0",
+        "behat/behat": "^3.4"
     },
     "autoload": {
         "psr-4": {
-            "Dotfiles\\": "src/"
+            "Dotfiles\\Core\\": "src/Core",
+            "Dotfiles\\Plugins\\": "src/Plugins"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dotfiles\\Behat\\": "src/Behat"
         }
     },
     "extra": {

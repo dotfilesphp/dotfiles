@@ -17,7 +17,6 @@ use Dotfiles\Core\Config\Config;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends BaseApplication
@@ -89,8 +88,14 @@ class Application extends BaseApplication
         $dryRun = $input->hasParameterOption(array('--dry-run'), true);
         $this->config->set('dotfiles.dry_run', $dryRun);
 
-        if (!getenv('DOTFILES_REPO_DIR') && ('dev' !== getenv('DOTFILES_ENV'))) {
-            $input = new StringInput('init');
+        global $argv;
+        $isCompile = 'compile' === $argv[1] || '--version' == $argv[1] ? true : false;
+        if (
+            !getenv('DOTFILES_REPO_DIR')
+            && ('dev' !== getenv('DOTFILES_ENV'))
+            && !$isCompile
+        ) {
+            return $this->find('init')->run($input, $output);
         }
 
         return parent::run($input, $output);

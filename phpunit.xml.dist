@@ -9,6 +9,8 @@
 >
     <php>
         <ini name="error_reporting" value="-1" />
+        <env name="DOTFILES_MACHINE_NAME" value="dotfiles"/>
+        <env name="DOTFILES_ENV" value="dev"/>
     </php>
 
     <testsuites>

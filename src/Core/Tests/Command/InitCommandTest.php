@@ -55,7 +55,6 @@ class InitCommandTest extends CommandTestCase
     {
         $repoDir = '/tmp/dotfiles/tests/init';
         Toolkit::ensureDir(dirname($repoDir));
-        $this->configureInitCommand();
 
         $tester = $this->getTester('init');
         $tester->setInputs(array(
@@ -85,7 +84,6 @@ class InitCommandTest extends CommandTestCase
 
     public function testRepoDirQuestion(): void
     {
-        $this->configureInitCommand();
         $tester = $this->getTester('init');
         $tester->setInputs(array(
             null,
@@ -99,7 +97,7 @@ class InitCommandTest extends CommandTestCase
         $this->assertContains('home directory', $output);
     }
 
-    private function configureInitCommand(): void
+    protected function configureCommand(): void
     {
         $this->config->expects($this->any())
             ->method('get')

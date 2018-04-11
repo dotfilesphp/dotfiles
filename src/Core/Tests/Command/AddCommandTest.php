@@ -140,6 +140,11 @@ class AddCommandTest extends CommandTestCase
         ));
     }
 
+    protected function configureCommand(): void
+    {
+        // TODO: Implement configureCommand() method.
+    }
+
     private function getAddCommand()
     {
         $this->config->expects($this->any())
