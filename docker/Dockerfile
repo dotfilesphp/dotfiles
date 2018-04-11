@@ -13,7 +13,7 @@ RUN pecl install xdebug
 
 #RUN apk del .build-deps
 
-COPY 99-custom.ini /usr/local/etc/php/conf.d/99-custom.ini
+COPY custom.ini /usr/local/etc/php/conf.d/99-custom.ini
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint

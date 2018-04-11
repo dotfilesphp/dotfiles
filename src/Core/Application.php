@@ -89,7 +89,10 @@ class Application extends BaseApplication
         $this->config->set('dotfiles.dry_run', $dryRun);
 
         global $argv;
-        $isCompile = 'compile' === $argv[1] || '--version' == $argv[1] ? true : false;
+        $isCompile = false;
+        if (isset($argv[1])) {
+            $isCompile = 'compile' === $argv[1] || '--version' == $argv[1] ? true : false;
+        }
         if (
             !getenv('DOTFILES_REPO_DIR')
             && ('dev' !== getenv('DOTFILES_ENV'))

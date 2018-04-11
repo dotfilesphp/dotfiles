@@ -22,6 +22,7 @@ use Webmozart\Assert\Assert;
 class MainContext implements Context
 {
     private $commandPrefix;
+
     private $output;
 
     private $stream;
