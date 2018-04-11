@@ -37,7 +37,7 @@ install:
 - composer install --prefer-dist --no-progress --no-suggest --ansi
 - |
   if [[ $INTEGRATION = yes ]]; then
-    cp docker/custom.ini.dist docker/custom.ini
+    cp docker/custom.ini.dist docker/custom.ini;
     docker-compose build;
     docker-compose up -d;
     wait 4;

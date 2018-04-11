@@ -61,13 +61,9 @@ class InitCommandTest extends CommandTestCase
             $repoDir,
             'some-machine',
             null,
-            null,
-            null,
         ));
         $tester->execute(array('command' => 'init'));
-        $output = $tester->getDisplay(true);
 
-        $this->assertContains(getenv('HOME'), $output);
         $this->assertDirectoryIsWritable($repoDir);
         $this->assertDirectoryExists(getenv('HOME').'/.dotfiles');
         $this->assertFileExists($envFile = getenv('HOME').'/.dotfiles/.env');
@@ -94,7 +90,8 @@ class InitCommandTest extends CommandTestCase
 
         $tester->execute(array());
         $output = $tester->getDisplay(array(true));
-        $this->assertContains('home directory', $output);
+        $this->assertContains('local repository dir', $output);
+        $this->assertContains('your machine name', $output);
     }
 
     protected function configureCommand(): void

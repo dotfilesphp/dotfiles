@@ -36,7 +36,7 @@ class DefinitionTest extends TestCase
             array('log_dir', '/tmp/dotfiles/var/log'),
             array('cache_dir', '/tmp/dotfiles/var/cache'),
             array('temp_dir', sys_get_temp_dir().'/dotfiles/temp'),
-            array('backup_dir', '/tmp/dotfiles/var/backup'),
+            array('backup_dir', '%dotfiles.repo_dir%'),
             array('bin_dir', '%dotfiles.install_dir%/bin'),
             array('vendor_dir', '%dotfiles.install_dir%/vendor'),
         );

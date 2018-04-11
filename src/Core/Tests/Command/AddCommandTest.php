@@ -67,8 +67,8 @@ class AddCommandTest extends CommandTestCase
         $output = $tester->getDisplay(true);
 
         $this->assertContains('ssh', $output);
-        $this->assertFileExists($this->repoDir.'/src/default/home/ssh/id_rsa');
-        $this->assertFileExists($this->repoDir.'/src/default/home/ssh/id_rsa.pub');
+        $this->assertFileExists($this->repoDir.'/src/defaults/home/ssh/id_rsa');
+        $this->assertFileExists($this->repoDir.'/src/defaults/home/ssh/id_rsa.pub');
 
         // test with recursive option
         $tester->execute(array(
@@ -103,7 +103,7 @@ class AddCommandTest extends CommandTestCase
         $output = $tester->getDisplay(true);
 
         $this->assertContains('bashrc', $output);
-        $this->assertFileExists($this->repoDir.'/src/default/home/bashrc');
+        $this->assertFileExists($this->repoDir.'/src/defaults/home/bashrc');
 
         $tester->execute(array(
             'path' => '.bashrc',
