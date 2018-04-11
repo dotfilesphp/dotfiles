@@ -28,11 +28,6 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class Builder
 {
     /**
-     * @var string
-     */
-    private $cacheFileName;
-
-    /**
      * @var Config
      */
     private $config;
