@@ -22,19 +22,9 @@ use Symfony\Component\Config\Definition\NodeInterface;
 
 class ConfigTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private $cachePath;
-
     protected function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         parent::setUp();
-        $cachePath = sys_get_temp_dir().'/dotfiles/test/cache/config.php';
-        if (is_file($cachePath)) {
-            unlink($cachePath);
-        }
-        $this->cachePath = $cachePath;
     }
 
     public function testAddConfigAndCacheDir(): void
@@ -43,8 +33,6 @@ class ConfigTest extends TestCase
         $dir = __DIR__.'/fixtures/config';
         $config->addConfigDir($dir);
         $this->assertContains($dir, $config->getConfigDirs());
-
-        $this->assertContains('/tmp/dotfiles/var/cache/config', $config->getCachePath());
         $this->expectException(\InvalidArgumentException::class);
         $config->addConfigDir('foo/bar');
     }
@@ -82,7 +70,6 @@ class ConfigTest extends TestCase
     public function testLoadConfigurationProcessConfigFiles(): void
     {
         $config = new Config();
-        $config->setCachePath($this->cachePath);
 
         $config->addConfigDir(__DIR__.'/fixtures/config');
         $config->addDefinition(new TestDefinition());
@@ -95,7 +82,6 @@ class ConfigTest extends TestCase
     public function testLoadConfigurationProcessDefaultValue(): void
     {
         $config = new Config();
-        $config->setCachePath($this->cachePath);
 
         $config->addDefinition(new TestDefinition());
         $config->loadConfiguration();
@@ -118,7 +104,6 @@ class ConfigTest extends TestCase
         $config = new Config();
         $config
             ->addDefinition(new TestDefinition())
-            ->setCachePath($this->cachePath)
             ->addConfigDir(__DIR__.'/fixtures/error')
         ;
         $this->expectException(InvalidConfigurationException::class);

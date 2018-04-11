@@ -15,15 +15,20 @@ namespace Dotfiles\Core\Tests\DI;
 
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Builder;
+use Dotfiles\Core\Tests\BaseTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Dumper\DumperInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
-class BuilderTest extends TestCase
+/**
+ * Class BuilderTest.
+ *
+ * @covers \Dotfiles\Core\DI\Builder
+ */
+class BuilderTest extends BaseTestCase
 {
     /**
      * @var MockObject
@@ -79,9 +84,8 @@ EOC;
             ->with(array('class' => 'CachedContainer'))
             ->willReturn($contents)
         ;
-        $cacheFileName = sys_get_temp_dir().'/dotfiles/tests/builder/var/cache/container.php';
         $builder = $this->getBuilder();
-        $builder->setCacheFileName($cacheFileName);
+        $cacheFileName = $builder->getCacheFileName();
         $builder->setContainerBuilder($cb)
             ->setDumper($dumper)
         ;

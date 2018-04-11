@@ -16,6 +16,7 @@ namespace Dotfiles\Core\DI;
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Compiler\CommandPass;
 use Dotfiles\Core\DI\Compiler\ListenerPass;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
@@ -78,12 +79,9 @@ class Builder
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getCacheFileName(): string
+    public function getCacheFileName()
     {
-        return $this->config->get('dotfiles.cache_dir').'/container.php';
+        return Toolkit::getCachePathPrefix().'/container.php';
     }
 
     /**
@@ -123,21 +121,6 @@ class Builder
         }
 
         return $this->dumper;
-    }
-
-    /**
-     * @param string $cacheFileName
-     *
-     * @return self
-     */
-    public function setCacheFileName(string $cacheFileName): self
-    {
-        if (!is_dir($dir = dirname($cacheFileName))) {
-            mkdir($dir, 0755, true);
-        }
-        $this->cacheFileName = $cacheFileName;
-
-        return $this;
     }
 
     /**
