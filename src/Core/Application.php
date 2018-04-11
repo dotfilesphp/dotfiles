@@ -90,7 +90,7 @@ class Application extends BaseApplication
 
         global $argv;
         $isCompile = false;
-        if(isset($argv[1])){
+        if (isset($argv[1])) {
             $isCompile = 'compile' === $argv[1] || '--version' == $argv[1] ? true : false;
         }
         if (

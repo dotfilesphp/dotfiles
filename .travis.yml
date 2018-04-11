@@ -46,7 +46,7 @@ install:
 script:
 - |
   if [[ $INTEGRATION = yes ]]; then
-    ./bin/run-behat -fpretty
+    ./bin/run-behat -fprogress
   elif [[ $COVERAGE = yes  ]]; then
     ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml;
   else
