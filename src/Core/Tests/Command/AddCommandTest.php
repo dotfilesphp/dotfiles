@@ -32,6 +32,7 @@ class AddCommandTest extends CommandTestCase
      * @var string
      */
     private $backupDir;
+
     /**
      * @var MockObject
      */

@@ -31,6 +31,7 @@ class Hooks
      * @var Dispatcher
      */
     private $dispatcher;
+
     /**
      * @var array
      */

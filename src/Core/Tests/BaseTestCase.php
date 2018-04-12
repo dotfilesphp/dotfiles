@@ -26,6 +26,7 @@ abstract class BaseTestCase extends TestCase
      * @var ContainerInterface
      */
     private $container;
+
     /**
      * @var bool
      */

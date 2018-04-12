@@ -30,6 +30,7 @@ class RestoreCommand extends Command
      * @var Patcher
      */
     private $patcher;
+
     /**
      * @var Template
      */
