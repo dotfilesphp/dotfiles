@@ -66,7 +66,10 @@ class Installer
         $this->processor = $processor;
     }
 
-    public function run(): void
+    /**
+     * @param bool $force
+     */
+    public function run($force = false): void
     {
         $config = $this->config;
         $targetDir = $config->get('dotfiles.bin_dir');
@@ -75,7 +78,7 @@ class Installer
         $this->debug('target file: '.$targetFile);
 
         $this->debug('checking existing composer installation');
-        if (is_file($targetFile)) {
+        if (is_file($targetFile) && !$force) {
             $this->output->writeln('Composer already installed, skipping');
 
             return;

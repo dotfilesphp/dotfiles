@@ -92,8 +92,8 @@ class Toolkit
         global $argv;
         $command = $argv[0];
         $cachePath = sys_get_temp_dir().'/dotfiles/var/cache';
-        if (false !== getenv('DOTFILES_REPO_DIR')) {
-            $cachePath = getenv('DOTFILES_REPO_DIR').'/var/cache';
+        if (false !== getenv('DOTFILES_BACKUP_DIR')) {
+            $cachePath = getenv('DOTFILES_BACKUP_DIR').'/var/cache';
         }
 
         return $cachePath.DIRECTORY_SEPARATOR.crc32($command);

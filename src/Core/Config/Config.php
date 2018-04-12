@@ -28,11 +28,6 @@ use Symfony\Component\Yaml\Yaml;
  */
 class Config implements \ArrayAccess
 {
-    /**
-     * @var null|string
-     */
-    private $cachePath = null;
-
     private $configDirs = array();
 
     private $configs = array();

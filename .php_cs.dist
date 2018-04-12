@@ -59,5 +59,6 @@ return PhpCsFixer\Config::create()
                 'Spec',
                 'fixtures',
             ))
+            ->notName('Constant.php')
     )
 ;

@@ -16,25 +16,4 @@ namespace Dotfiles\Core\Event;
 class InstallEvent extends AbstractEvent
 {
     public const NAME = 'dotfiles.install';
-
-    /**
-     * @var array
-     */
-    private $patches = array();
-
-    public function addPatch($target, $patch): void
-    {
-        if (!isset($this->patches[$target])) {
-            $this->patches[$target] = array();
-        }
-        $this->patches[$target][] = $patch;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPatches(): array
-    {
-        return $this->patches;
-    }
 }

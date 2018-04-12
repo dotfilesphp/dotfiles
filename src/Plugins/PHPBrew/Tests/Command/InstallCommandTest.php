@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests\Command;
 
+use Dotfiles\Core\Processor\Patcher;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Plugins\PHPBrew\Command\InstallCommand;
 use Dotfiles\Plugins\PHPBrew\Installer;
@@ -29,13 +30,19 @@ class InstallCommandTest extends BaseTestCase
     public function testExecute(): void
     {
         $installer = $this->createMock(Installer::class);
+        $patcher = $this->createMock(Patcher::class);
         $input = $this->createMock(InputInterface::class);
         $output = $this->createMock(OutputInterface::class);
 
+        $input->expects($this->once())
+            ->method('getOption')
+            ->with('force')
+            ->willReturn(false)
+        ;
         $installer->expects($this->once())
             ->method('run')
         ;
-        $command = new InstallCommand(null, $installer);
+        $command = new InstallCommand(null, $installer, $patcher);
         $command->execute($input, $output);
     }
 }

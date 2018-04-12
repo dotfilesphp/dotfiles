@@ -3,6 +3,8 @@ services:
         autowire: true
         autoconfigure: true
         public: true
+                    
+    
     Dotfiles\Core\Event\Dispatcher: ~
     Dotfiles\Core\Config\Config:
         synthetic: true
@@ -12,6 +14,8 @@ services:
     Dotfiles\Core\Command\ClearCacheCommand: ~
     Dotfiles\Core\Command\AddCommand: ~
     Dotfiles\Core\Command\InitCommand: ~
+    Dotfiles\Core\Command\RestoreCommand: ~
+    Dotfiles\Core\Command\ConfigCommand: ~
     Dotfiles\Core\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
     Dotfiles\Core\Util\Filesystem: ~
@@ -40,3 +44,17 @@ services:
         alias: dotfiles.input
     Symfony\Component\Console\Output\OutputInterface:
         alias: dotfiles.output
+        
+    # processor service
+    dotfiles.hooks:
+        class: Dotfiles\Core\Processor\Hooks
+    dotfiles.template:
+        class: Dotfiles\Core\Processor\Template
+    dotfiles.patcher:
+        class: Dotfiles\Core\Processor\Patcher
+    Dotfiles\Core\Processor\Patcher:
+        alias: dotfiles.patcher
+    Dotfiles\Core\Processor\Hooks:
+        alias: dotfiles.hooks
+    Dotfiles\Core\Processor\Template:
+        alias: dotfiles.template

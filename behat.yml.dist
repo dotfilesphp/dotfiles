@@ -1,0 +1,14 @@
+default:
+    formatters:
+        progress: true
+    suites:
+        default:
+            paths:
+                - features
+                - "%paths.base%/src/Plugins/PHPBrew/Resources/features"
+            contexts:
+                - Dotfiles\Behat\Context\CommandContext:
+                    commandPrefix: '%dotfiles.command_prefix%'
+                - Dotfiles\Behat\Context\FileContext
+    extensions:
+        Dotfiles\Behat\DotfilesExtension: ~

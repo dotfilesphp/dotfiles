@@ -76,19 +76,22 @@ class Installer
 
     /**
      * Run PHPBrew installation.
+     *
+     * @param bool $force
      */
-    public function run(): void
+    public function run(bool $force = false): void
     {
         $config = $this->config;
         $toFile = $config->get('dotfiles.temp_dir').DIRECTORY_SEPARATOR.'phpbrew';
         $installToFile = $config->get('dotfiles.bin_dir').DIRECTORY_SEPARATOR.'phpbrew';
         Toolkit::ensureFileDir($toFile);
 
-        if (is_file($installToFile)) {
+        if (is_file($installToFile) && !$force) {
             $this->output->writeln('<comment>PHPBrew</comment> already installed, skipping');
 
             return;
         }
+
         if (!is_file($toFile)) {
             $downloader = $this->downloader;
             $downloader->run(static::DOWNLOAD_URL, $toFile);

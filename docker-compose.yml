@@ -1,9 +1,9 @@
 version: "2"
 services:
     php:
-        container_name: dotfiles_php
+        container_name: dotfiles.php
         build:
             context: docker
         volumes:
             - ./:/app:rw
-            - /app/var
+            - /app/build

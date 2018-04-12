@@ -306,7 +306,7 @@ EOF;
     {
         $files = $this->files;
         $progressBar = new ProgressBar($this->output, count($files));
-
+        $progressBar->setFormat('Compiling <comment>%percent%%</comment>');
         $progressBar->start();
         foreach ($files as $key => $file) {
             $this->addFile($phar, $file);

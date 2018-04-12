@@ -9,6 +9,8 @@
 >
     <php>
         <ini name="error_reporting" value="-1" />
+        <env name="DOTFILES_MACHINE_NAME" value="dotfiles"/>
+        <env name="DOTFILES_ENV" value="dev"/>
     </php>
 
     <testsuites>
@@ -22,6 +24,7 @@
         <whitelist>
             <directory>./src</directory>
             <exclude>
+                <directory>./src/Behat</directory>
                 <directory>./src/*/Resources</directory>
                 <directory>./src/*/Tests</directory>
                 <directory>./src/*/*/Resources</directory>

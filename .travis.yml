@@ -1,8 +1,13 @@
 language: php
 
+env:
+  - DOCKER_CACHE=/var/lib/docker/containers
+
 cache:
   directories:
   - "$HOME/.composer/cache"
+  - $DOCKER_CACHE
+
 
 matrix:
   include:
@@ -10,9 +15,15 @@ matrix:
   - php: '7.2'
   - php: '7.2'
     env: COVERAGE=yes
+  - php: '7.2'
+    env: INTEGRATION=yes
+    services:
+    - docker
   allow_failures:
   - php: '7.2'
     env: COVERAGE=yes
+  - php: '7.2'
+    env: INTEGRATION=yes
   fast_finish: true
 
 before_install:
@@ -24,10 +35,19 @@ before_install:
 
 install:
 - composer install --prefer-dist --no-progress --no-suggest --ansi
+- |
+  if [[ $INTEGRATION = yes ]]; then
+    cp docker/custom.ini.dist docker/custom.ini;
+    docker-compose build;
+    docker-compose up -d;
+    sleep 5;
+  fi;
 
 script:
 - |
-  if [[ $COVERAGE = yes  ]]; then
+  if [[ $INTEGRATION = yes ]]; then
+    ./bin/run-behat -fprogress
+  elif [[ $COVERAGE = yes  ]]; then
     ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml;
   else
     ./vendor/bin/phpunit;

@@ -28,8 +28,8 @@ class ListenerPass implements CompilerPassInterface
 
         $definition = $container->findDefinition(Dispatcher::class);
 
-        // find all service IDs with the event_subscribers tag
-        $taggedServices = $container->findTaggedServiceIds('event_subscribers');
+        // find all service IDs with the event_subscriber tag
+        $taggedServices = $container->findTaggedServiceIds('event_subscriber');
         foreach ($taggedServices as $id => $tags) {
             $definition->addMethodCall('addSubscriber', array(new Reference($id)));
         }

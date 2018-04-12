@@ -40,12 +40,12 @@ class InitCommand extends Command
     /**
      * @var string
      */
-    private $defaultHomeDir;
+    private $defaultBackupDir;
 
     /**
      * @var string
      */
-    private $defaultRepoDir;
+    private $defaultHomeDir;
 
     /**
      * @var InputInterface
@@ -63,7 +63,7 @@ class InitCommand extends Command
         $this->commandProcessor = $processor;
         $this->config = $config;
         $this->defaultHomeDir = $config->get('dotfiles.home_dir');
-        $this->defaultRepoDir = $config->get('dotfiles.repo_dir');
+        $this->defaultBackupDir = $config->get('dotfiles.backup_dir');
     }
 
     protected function configure(): void
@@ -71,8 +71,7 @@ class InitCommand extends Command
         $this
             ->setName('init')
             ->setDescription('Initialize new Dotfiles project.')
-            ->addArgument('repo-dir', InputArgument::OPTIONAL, 'Local repository directory')
-            ->addOption('home-dir', 'hd', InputOption::VALUE_OPTIONAL, 'Home directory')
+            ->addArgument('backup-dir', InputArgument::OPTIONAL, 'Local repository directory')
             ->addOption('machine', 'm', InputOption::VALUE_OPTIONAL, 'Machine name')
         ;
     }
@@ -88,44 +87,16 @@ class InitCommand extends Command
         $this->input = $input;
         $this->output = $output;
 
-        /* @var \Symfony\Component\Console\Helper\FormatterHelper $formatter */
-        $formatter = $this->getHelper('formatter');
-        $message = <<<'EOF'
-
-Please initialize dotfiles project first to start using dotfiles
-
-EOF;
-
-        $block = $formatter->formatBlock(
-            $message,
-            'info'
-        );
-        $output->writeln($block);
-        if (null === ($repoDir = $input->getArgument('repo-dir'))) {
-            $repoDir = $this->doAskRepoDir();
+        if (null === ($backupDir = $input->getArgument('backup-dir'))) {
+            $backupDir = $this->doBackupRepoDir();
         }
 
         if (null === ($machine = $input->getOption('machine'))) {
             $machine = $this->doAskMachineName();
         }
 
-        if (null === ($homeDir = $input->getOption('home-dir'))) {
-            $homeDir = $this->doAskHomeDir();
-        }
-
-        $this->initDotfilesDir($homeDir, $repoDir, $machine);
-        $this->initRepoDir($repoDir);
-    }
-
-    private function doAskHomeDir()
-    {
-        $input = $this->input;
-        $output = $this->output;
-        $helper = $this->getHelper('question');
-        $default = $this->defaultHomeDir;
-        $question = new Question(sprintf('Please enter your home directory (<comment>%s</comment>):', $default), $default);
-
-        return $helper->ask($input, $output, $question);
+        $this->initDotfilesDir($backupDir, $machine);
+        $this->initBackupDir($backupDir);
     }
 
     private function doAskMachineName()
@@ -139,16 +110,16 @@ EOF;
         return $helper->ask($input, $output, $question);
     }
 
-    private function doAskRepoDir()
+    private function doBackupRepoDir()
     {
         $input = $this->input;
         $output = $this->output;
         $helper = $this->getHelper('question');
-        $default = 'dev' === getenv('DOTFILES_ENV') ? sys_get_temp_dir().'/dotfiles/repo' : getcwd();
-        $question = new Question("Please enter local repository dir (<comment>$default</comment>): ", $default);
+        $default = 'dev' === getenv('DOTFILES_ENV') ? sys_get_temp_dir().'/dotfiles/backup' : getcwd();
+        $question = new Question("Please enter local backup dir (<comment>$default</comment>): ", $default);
         $question->setValidator(function ($answer) {
             if (null === $answer) {
-                throw new InvalidOperationException('You have to define local repository directory');
+                throw new InvalidOperationException('You have to define local backup directory');
             }
             $parent = dirname($answer);
             if (!is_dir($parent) || !is_writable($parent)) {
@@ -165,25 +136,10 @@ EOF;
         return $helper->ask($input, $output, $question);
     }
 
-    private function initDotFilesDir(string $homeDir, string $repoDir, string $machine): void
+    private function initBackupDir($backupDir): void
     {
-        $dotfilesDir = $homeDir.DIRECTORY_SEPARATOR.'.dotfiles';
-        Toolkit::ensureDir($dotfilesDir);
-        $envFile = $dotfilesDir.DIRECTORY_SEPARATOR.'.env';
-        $contents = <<<EOF
-
-DOTFILES_MACHINE_NAME=$machine
-DOTFILES_REPO_DIR=$repoDir
-
-EOF;
-
-        file_put_contents($envFile, $contents, LOCK_EX);
-    }
-
-    private function initRepoDir($repoDir): void
-    {
-        Toolkit::ensureDir($repoDir);
-        $origin = __DIR__.'/../Resources/templates/repo';
+        Toolkit::ensureDir($backupDir);
+        $origin = __DIR__.'/../Resources/templates/backup';
 
         $finder = Finder::create()
             ->ignoreVCS(true)
@@ -192,6 +148,21 @@ EOF;
             ->files()
         ;
         $fs = new Filesystem();
-        $fs->mirror($origin, $repoDir, $finder);
+        $fs->mirror($origin, $backupDir, $finder);
+    }
+
+    private function initDotFilesDir(string $backupDir, string $machine): void
+    {
+        $dotfilesDir = $this->defaultHomeDir.DIRECTORY_SEPARATOR.'.dotfiles';
+        Toolkit::ensureDir($dotfilesDir);
+        $envFile = $dotfilesDir.DIRECTORY_SEPARATOR.'.env';
+        $contents = <<<EOF
+
+DOTFILES_MACHINE_NAME=$machine
+DOTFILES_BACKUP_DIR=$backupDir
+
+EOF;
+
+        file_put_contents($envFile, $contents, LOCK_EX);
     }
 }
