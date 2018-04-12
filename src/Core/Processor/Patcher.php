@@ -63,20 +63,20 @@ class Patcher
         // begin to writting patch
         $this->debug('dispatching '.Constant::EVENT_PRE_PATCH);
         $dispatcher->dispatch(Constant::EVENT_PRE_PATCH, $patchEvent);
-        $this->patches = $patchEvent->getPatches();
-        $this->applyPatch();
+        $patches = $patchEvent->getPatches();
+        $this->applyPatch($patches);
         $this->debug('dispatching '.Constant::EVENT_POST_PATCH);
         $dispatcher->dispatch(Constant::EVENT_POST_PATCH, $patchEvent);
     }
 
     /**
      * Processing all registered patch.
+     *
+     * @param array $patches
      */
-    private function applyPatch(): void
+    private function applyPatch($patches): void
     {
-        $event = new PatchEvent($this->patches);
         $this->debug('start applying patch');
-        $patches = $event->getPatches();
         $homeDir = $this->config->get('dotfiles.home_dir');
         $fs = new Filesystem();
         foreach ($patches as $relPath => $patch) {

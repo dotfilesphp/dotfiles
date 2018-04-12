@@ -47,10 +47,10 @@ class EventSubscriber implements EventSubscriberInterface
     {
         return array(
             Constant::EVENT_PRE_PATCH => array(
-                array('onPrePatchEvent', 1000),
+                array('onPrePatchEvent', -999),
             ),
             Constant::EVENT_POST_RESTORE => array(
-                array('onPostRestore', 1000),
+                array('onPostRestore', -999),
             ),
         );
     }
@@ -77,7 +77,7 @@ class EventSubscriber implements EventSubscriberInterface
         $this->generateDotfilesConfig($reloadEvent->getBashConfig());
 
         $installDir = $this->config->get('dotfiles.install_dir');
-        $target = $this->config->get('dotfiles.home_dir').'/.bashrc';
+        $target = '.bashrc';
 
         $event->setPatch($target, array("source \"${installDir}/bashrc\""));
     }
@@ -95,6 +95,7 @@ class EventSubscriber implements EventSubscriberInterface
 
         // write config into dotfiles location
         $contents = <<<EOC
+
 # WARNING!!!
 # This file is generated automatically by DOTFILES installer
 # All changes in this file will be overwrite later with DOTFILES

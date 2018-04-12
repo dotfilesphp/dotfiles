@@ -30,7 +30,30 @@ Feature: Add dotfiles to backup list
         And I execute add command with "bashrc"
         When I execute restore command
         Then I should see "+patch .bashrc"
-        And Dotfile ".bashrc" should contain "Patch defaults"
-        And Dotfile ".bashrc" should contain "this is bash rc content"
         And Dotfile ".bashrc" should contain "> dotfiles-patch"
         And Dotfile ".bashrc" should contain "< dotfiles-patch"
+
+    Scenario: Multiple bashrc files patch
+        Given I have dotfile ".bashrc" with:
+        """
+        #
+        # Default bashrc
+        #
+        """
+        And  I have backup defaults patch "bashrc" with:
+        """
+        # Patch Defaults
+        """
+        And I have backup machine patch "bashrc" with:
+        """
+        # Patch Machine
+        """
+        When I execute restore command
+        Then I should see "+patch .bashrc"
+        And Dotfile ".bashrc" should contain "Default bashrc"
+        And Dotfile ".bashrc" should not contain "Patch Machine"
+        And Dotfile ".bashrc" should not contain "Patch Default"
+        And Dotfile ".bashrc" should contain 'source "/root/.dotfiles/bashrc"'
+        And Dotfile ".dotfiles/bashrc" should contain "Patch Defaults"
+        And Dotfile ".dotfiles/bashrc" should contain "Patch Machine"
+        And Dotfile ".dotfiles/bashrc" should contain ".dotfiles/bin"

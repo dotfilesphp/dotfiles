@@ -5,11 +5,13 @@ services:
         public: true
 
     Dotfiles\Plugins\PHPBrew\Command\InstallCommand: ~
+
+    Dotfiles\Plugins\PHPBrew\EventSubscriber:
+        tags:
+            - { name: "event_subscriber" }
+            
     phpbrew.installer:
         class: Dotfiles\Plugins\PHPBrew\Installer
-    phpbrew.listeners.install:
-        class: Dotfiles\Plugins\PHPBrew\Listeners\InstallListener
-        tags:
-            - { name: event_listener, method: onInstallEvent, event: dotfiles.install }
+        
     Dotfiles\Plugins\PHPBrew\Installer:
         alias: phpbrew.installer

@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 use Webmozart\Assert\Assert;
 
-class MainContext implements Context
+class CommandContext implements Context
 {
     private $commandPrefix;
 
