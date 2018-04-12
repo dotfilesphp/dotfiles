@@ -11,18 +11,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\PHPCSFixer\Tests\Listeners;
+namespace Dotfiles\Plugins\PHPCSFixer\Tests;
 
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
-use Dotfiles\Plugins\PHPCSFixer\Listeners\InstallSubscriber;
+use Dotfiles\Plugins\PHPCSFixer\EventSubscriber;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class InstallSubscriberTest extends BaseTestCase
+class EventSubscriberTest extends BaseTestCase
 {
     public function testOnPatchEvent(): void
     {
@@ -48,14 +48,14 @@ class InstallSubscriberTest extends BaseTestCase
         ;
         $downloader->expects($this->once())
             ->method('run')
-            ->with(InstallSubscriber::URL, $tempDir.'/phpcs/php-cs-fixer.phar', false)
+            ->with(EventSubscriber::URL, $tempDir.'/phpcs/php-cs-fixer.phar', false)
         ;
 
         $output->expects($this->once())
             ->method('writeln')
             ->with($this->stringContains('PHP-CS-Fixer already installed'))
         ;
-        $sut = new InstallSubscriber($config, $downloader, $output, $logger);
+        $sut = new EventSubscriber($config, $downloader, $output, $logger);
         $sut->onInstallEvent($event);
 
         // test with already installed

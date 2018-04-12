@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\PHPCSFixer\Listeners;
+namespace Dotfiles\Plugins\PHPCSFixer;
 
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Event\PatchEvent;
@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class InstallSubscriber implements EventSubscriberInterface
+class EventSubscriber implements EventSubscriberInterface
 {
     public const URL = 'http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar';
 

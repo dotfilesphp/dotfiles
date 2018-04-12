@@ -3,6 +3,6 @@ services:
         autowire: true
         autoconfigure: true
         public: true
-    phpcs.listeners.install:
-        class: Dotfiles\Plugins\PHPCSFixer\Listeners\InstallSubscriber
+    phpcs.event_subscriber:
+        class: Dotfiles\Plugins\PHPCSFixer\EventSubscriber
         tags: { name: "event_subscriber" }

@@ -11,12 +11,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\Composer\Listeners;
+namespace Dotfiles\Plugins\Composer;
 
-use Dotfiles\Plugins\Composer\Installer;
+use Dotfiles\Core\Constant;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class InstallSubscriber implements EventSubscriberInterface
+class EventSubscriber implements EventSubscriberInterface
 {
     /**
      * @var Installer
@@ -32,7 +32,7 @@ class InstallSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'dotfiles.install' => 'onInstallEvent',
+            Constant::EVENT_INSTALL => 'onInstallEvent',
         );
     }
 
