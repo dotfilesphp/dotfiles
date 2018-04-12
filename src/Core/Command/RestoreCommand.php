@@ -13,21 +13,38 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Command;
 
-use Dotfiles\Core\Processor\Restore;
+use Dotfiles\Core\Processor\Hooks;
+use Dotfiles\Core\Processor\Patcher;
+use Dotfiles\Core\Processor\Template;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class RestoreCommand extends Command
 {
     /**
-     * @var Restore
+     * @var Hooks
      */
-    private $restore;
+    private $hooks;
 
-    public function __construct(?string $name = null, Restore $restore)
-    {
+    /**
+     * @var Patcher
+     */
+    private $patcher;
+    /**
+     * @var Template
+     */
+    private $template;
+
+    public function __construct(
+        ?string $name = null,
+        Template $template,
+        Patcher $patcher,
+        Hooks $hooks
+    ) {
         parent::__construct($name);
-        $this->restore = $restore;
+        $this->template = $template;
+        $this->patcher = $patcher;
+        $this->hooks = $hooks;
     }
 
     /**
@@ -43,6 +60,8 @@ class RestoreCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->restore->run();
+        $this->template->run();
+        $this->patcher->run();
+        $this->hooks->run();
     }
 }

@@ -15,6 +15,7 @@ namespace Dotfiles\Behat\Context;
 
 use Behat\Behat\Context\Context;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 use Webmozart\Assert\Assert;
@@ -83,11 +84,12 @@ class MainContext implements Context
         }
         $this->stream = fopen('php://memory', 'w');
         $this->output = new StreamOutput($this->stream);
+        $this->output->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
     }
 
     private function runCommand($command): void
     {
-        $cmd = $this->commandPrefix.' '.$command;
+        $cmd = $this->commandPrefix.' -vvv '.$command;
         $output = $this->output;
         $helper = new DebugFormatterHelper();
 

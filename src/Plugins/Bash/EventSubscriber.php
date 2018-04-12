@@ -11,9 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\Bash\Listeners;
+namespace Dotfiles\Plugins\Bash;
 
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Toolkit;
@@ -21,7 +22,7 @@ use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class InstallListener implements EventSubscriberInterface
+class EventSubscriber implements EventSubscriberInterface
 {
     /**
      * @var Config
@@ -32,8 +33,6 @@ class InstallListener implements EventSubscriberInterface
      * @var Dispatcher
      */
     private $dispatcher;
-
-    private $installDir;
 
     private $logger;
 
@@ -47,14 +46,24 @@ class InstallListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            PatchEvent::NAME => 'onPatchEvent',
+            Constant::EVENT_PRE_PATCH => array(
+                array('onPrePatchEvent', 1000),
+            ),
+            Constant::EVENT_POST_RESTORE => array(
+                array('onPostRestore', 1000),
+            ),
         );
     }
 
     /**
      * @param PatchEvent $event
      */
-    public function onPatchEvent(PatchEvent $event): void
+    public function onPrePatchEvent(PatchEvent $event): void
+    {
+        $this->doBashPatch($event);
+    }
+
+    private function doBashPatch(PatchEvent $event): void
     {
         $currentPatches = $event->getPatches();
         $bashPatch = array();

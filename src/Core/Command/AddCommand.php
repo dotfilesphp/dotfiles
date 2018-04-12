@@ -74,17 +74,18 @@ class AddCommand extends Command implements CommandInterface
     {
         $this->output = $output;
         $config = $this->config;
-        $homeDir = $config->get('dotfiles.home_dir');
         $recursive = $input->getOption('recursive');
         $machine = $input->getOption('machine');
-        $repoDir = $config->get('dotfiles.backup_dir')."/src/$machine/home";
-        $sourcePath = str_replace($homeDir.DIRECTORY_SEPARATOR, '', $input->getArgument('path'));
+        $backupDir = $config->get('dotfiles.backup_dir')."/src/$machine/home";
+        $sourcePath = $input->getArgument('path');
+        $homeDir = $config->get('dotfiles.home_dir');
 
         // detect source path
         $originPath = $this->detectPath($sourcePath);
-        $targetPath = $repoDir.'/'.str_replace('.', '', $sourcePath);
+        $targetPath = $backupDir.'/'.str_replace('.', '', $sourcePath);
+        $targetPath = str_replace($homeDir.DIRECTORY_SEPARATOR, '', $targetPath);
 
-        Toolkit::ensureDir($repoDir);
+        Toolkit::ensureDir($backupDir);
 
         $basename = basename($sourcePath);
         if (0 === strpos($basename, '.')) {
@@ -98,7 +99,7 @@ class AddCommand extends Command implements CommandInterface
         }
     }
 
-    private function detectPath($path)
+    private function detectPath(string $path)
     {
         if ($this->ensureDirOrFile($path)) {
             return $path;

@@ -39,16 +39,4 @@ abstract class CommandTestCase extends BaseTestCase
     }
 
     abstract protected function configureCommand();
-
-    /**
-     * @return Application
-     */
-    protected function getApplication()
-    {
-        if (!$this->application instanceof Application) {
-            $this->application = new Application();
-        }
-
-        return $this->application;
-    }
 }

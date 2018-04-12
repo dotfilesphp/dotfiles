@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo "defaults pre-restore bash hooks";
+
+exit(0)

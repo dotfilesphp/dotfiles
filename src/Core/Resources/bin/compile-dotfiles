@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Helper script to compile dotfiles in bin directory
+/app/bin/dotfiles compile
+rm -Rvf /home/backup/var/cache/*

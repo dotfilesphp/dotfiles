@@ -3,9 +3,8 @@ services:
         autowire: true
         autoconfigure: true
         public: true
-                
-    Dotfiles\Core\Processor\Restore:
-        alias: dotfiles.restore
+                    
+    
     Dotfiles\Core\Event\Dispatcher: ~
     Dotfiles\Core\Config\Config:
         synthetic: true
@@ -40,10 +39,22 @@ services:
     dotfiles.downloader:
         class: Dotfiles\Core\Util\Downloader
         arguments: ['@dotfiles.output','@dotfiles.logger']
-    dotfiles.restore:
-        class: Dotfiles\Core\Processor\Restore
 
     Symfony\Component\Console\Input\InputInterface:
         alias: dotfiles.input
     Symfony\Component\Console\Output\OutputInterface:
         alias: dotfiles.output
+        
+    # processor service
+    dotfiles.hooks:
+        class: Dotfiles\Core\Processor\Hooks
+    dotfiles.template:
+        class: Dotfiles\Core\Processor\Template
+    dotfiles.patcher:
+        class: Dotfiles\Core\Processor\Patcher
+    Dotfiles\Core\Processor\Patcher:
+        alias: dotfiles.patcher
+    Dotfiles\Core\Processor\Hooks:
+        alias: dotfiles.hooks
+    Dotfiles\Core\Processor\Template:
+        alias: dotfiles.template

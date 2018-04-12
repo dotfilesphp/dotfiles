@@ -18,8 +18,10 @@ COPY custom.ini /usr/local/etc/php/conf.d/99-custom.ini
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
+
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 WORKDIR /app
 RUN mkdir /app/var
 RUN ln -s /app/build/dotfiles.phar /usr/local/bin/dotfiles
+RUN ln -s /app/src/Core/Resources/bin/compile-dotfiles /usr/local/bin/compile-dotfiles

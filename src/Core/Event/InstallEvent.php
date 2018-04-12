@@ -11,16 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Tests;
+namespace Dotfiles\Core\Event;
 
-use Dotfiles\Core\Application as BaseApplication;
-
-class Application extends BaseApplication
+class InstallEvent extends AbstractEvent
 {
-    /**
-     * Application constructor.
-     */
-    public function __construct()
-    {
-    }
+    public const NAME = 'dotfiles.install';
 }
