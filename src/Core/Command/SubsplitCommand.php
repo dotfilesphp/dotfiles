@@ -81,6 +81,10 @@ class SubsplitCommand extends Command
                 'path' => 'src/Plugins/PHPCSFixer',
                 'repo' => 'git@github.com:dotfilesphp/phpcsfixer-plugin.git',
             ),
+            'behat' => array(
+                'path' => 'src/Behat',
+                'repo' => 'git@github.com:dotfilesphp/behat-extension.git'
+            )
         );
 
         foreach ($tree as $name => $config) {
