@@ -6,5 +6,4 @@ services:
             context: docker
         volumes:
             - ./:/app:rw
-            - /app/var
             - /app/build

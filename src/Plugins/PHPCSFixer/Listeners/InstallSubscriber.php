@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\PHPCSFixer\Listeners;
 
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Event\InstallEvent;
+use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Filesystem;
 use Psr\Log\LoggerInterface;
@@ -56,11 +56,11 @@ class InstallSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            InstallEvent::NAME => 'onInstallEvent',
+            'dotfiles.install' => 'onInstallEvent',
         );
     }
 
-    public function onInstallEvent(InstallEvent $event): void
+    public function onInstallEvent(PatchEvent $event): void
     {
         $config = $this->config;
         $downloader = $this->downloader;

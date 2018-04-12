@@ -47,7 +47,7 @@ class ClearCacheCommand extends Command implements CommandInterface
     {
         $this
             ->setName('clear-cache')
-            ->setAliases(array('cc'))
+            ->setAliases(array('cc', 'cache-clear'))
         ;
     }
 
@@ -63,11 +63,13 @@ class ClearCacheCommand extends Command implements CommandInterface
 
         $fs = new Filesystem();
 
+        $output->writeln("Cleaning cache in <comment>$cacheDir</comment>");
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($finder->files() as $file) {
             $fs->remove($file);
             $relPath = $file->getRelativePathname();
-            $this->logger->debug("-removed <comment>$relPath</comment>");
+            $message = "-removed <comment>$relPath</comment>";
+            $this->logger->debug($message);
         }
     }
 }

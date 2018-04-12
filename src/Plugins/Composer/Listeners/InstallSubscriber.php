@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Composer\Listeners;
 
-use Dotfiles\Core\Event\InstallEvent;
 use Dotfiles\Plugins\Composer\Installer;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -33,7 +32,7 @@ class InstallSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            InstallEvent::NAME => 'onInstallEvent',
+            'dotfiles.install' => 'onInstallEvent',
         );
     }
 

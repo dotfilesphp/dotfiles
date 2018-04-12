@@ -15,7 +15,7 @@ namespace Dotfiles\Plugins\Bash\Tests\Listeners;
 
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Event\Dispatcher;
-use Dotfiles\Core\Event\InstallEvent;
+use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Dotfiles\Plugins\Bash\Listeners\InstallListener;
 use PHPUnit\Framework\TestCase;
@@ -23,10 +23,10 @@ use Psr\Log\LoggerInterface;
 
 class InstallListenerTest extends TestCase
 {
-    public function testHandleEvent(): void
+    public function testOnPatchEvent(): void
     {
         $dispatcher = $this->createMock(Dispatcher::class);
-        $event = $this->createMock(InstallEvent::class);
+        $event = $this->createMock(PatchEvent::class);
         $config = $this->createMock(Config::class);
         $logger = $this->createMock(LoggerInterface::class);
 
@@ -40,10 +40,10 @@ class InstallListenerTest extends TestCase
         ;
         $dispatcher->expects($this->once())
             ->method('dispatch')
-            ->with(ReloadBashConfigEvent::NAME, new ReloadBashConfigEvent($logger))
+            ->with(ReloadBashConfigEvent::NAME, $this->isInstanceOf(ReloadBashConfigEvent::class))
         ;
         $listener = new InstallListener($dispatcher, $config, $logger);
-        $listener->onInstallEvent($event);
+        $listener->onPatchEvent($event);
 
         $this->assertFileExists($tempDir.'/.dotfiles/bashrc');
     }

@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\PHPCSFixer\Tests\Listeners;
 
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Event\InstallEvent;
+use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallSubscriberTest extends BaseTestCase
 {
-    public function testOnInstallEvent(): void
+    public function testOnPatchEvent(): void
     {
         $tempDir = sys_get_temp_dir().'/dotfiles';
         $installDir = sys_get_temp_dir().'/dotfiles/tests/install';
@@ -34,7 +34,7 @@ class InstallSubscriberTest extends BaseTestCase
 
         $config = $this->createMock(Config::class);
         $downloader = $this->createMock(Downloader::class);
-        $event = $this->createMock(InstallEvent::class);
+        $event = $this->createMock(PatchEvent::class);
         $logger = $this->createMock(LoggerInterface::class);
         $output = $this->createMock(OutputInterface::class);
 

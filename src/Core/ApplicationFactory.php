@@ -42,7 +42,7 @@ class ApplicationFactory
     private $container;
 
     /**
-     * @var PluginInterface[]
+     * @var Plugin[]
      */
     private $plugins = array();
 

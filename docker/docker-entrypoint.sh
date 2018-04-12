@@ -18,12 +18,13 @@ fi
 	#
 
 #fi
-export COMPOSE_INTERACTIVE_NO_CLI=1
-cd /app
-DOTFILES_ENV=dev /app/bin/dotfiles compile
-mkdir -p /home/dotfiles
+
 mkdir -p /home/backup
 cd /home/backup
+DOTFILES_ENV=dev /app/bin/dotfiles compile /app/build
 dotfiles init -m docker /home/backup
 
+export DOTFILES_ENV=prod
+dotfiles cache-clear -vvv
+echo $PWD
 exec docker-php-entrypoint "$@"

@@ -77,7 +77,7 @@ class AddCommand extends Command implements CommandInterface
         $homeDir = $config->get('dotfiles.home_dir');
         $recursive = $input->getOption('recursive');
         $machine = $input->getOption('machine');
-        $repoDir = $config->get('dotfiles.repo_dir')."/src/$machine/home";
+        $repoDir = $config->get('dotfiles.backup_dir')."/src/$machine/home";
         $sourcePath = str_replace($homeDir.DIRECTORY_SEPARATOR, '', $input->getArgument('path'));
 
         // detect source path

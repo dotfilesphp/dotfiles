@@ -70,7 +70,7 @@ class OutputTest extends TestCase
         $display = ob_get_contents();
         ob_end_clean();
 
-        $this->assertContains('$home_dir/foo/bar', $display);
-        $this->assertContains('$dotfiles_dir/bin/some-command', $display);
+        $this->assertContains('foo/bar', $display);
+        $this->assertContains('bin/some-command', $display);
     }
 }

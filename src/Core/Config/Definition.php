@@ -24,10 +24,11 @@ class Definition implements DefinitionInterface
         $baseDir = Toolkit::getBaseDir();
         $tempDir = sys_get_temp_dir().'/dotfiles/temp';
 
-        $repoDir = getenv('DOTFILES_REPO_DIR');
-        $varDir = $repoDir.'/var';
-        if (false === $repoDir) {
+        $backupDir = getenv('DOTFILES_BACKUP_DIR');
+        $varDir = $backupDir.'/var';
+        if (false === $backupDir) {
             $varDir = sys_get_temp_dir().'/dotfiles/var';
+            $backupDir = sys_get_temp_dir().'/dotfiles/backup';
         }
         $homeDir = getenv('HOME');
 
@@ -39,8 +40,8 @@ class Definition implements DefinitionInterface
         $root = $builder->root('dotfiles');
         $root
             ->children()
-                ->scalarNode('repo_dir')
-                    ->defaultValue($repoDir)
+                ->scalarNode('backup_dir')
+                    ->defaultValue($backupDir)
                 ->end()
                 ->scalarNode('env')
                     ->defaultValue(getenv('DOTFILES_ENV'))
@@ -71,9 +72,6 @@ class Definition implements DefinitionInterface
                 ->end()
                 ->scalarNode('temp_dir')
                     ->defaultValue($tempDir)
-                ->end()
-                ->scalarNode('backup_dir')
-                    ->defaultValue('%dotfiles.repo_dir%')
                 ->end()
                 ->scalarNode('bin_dir')
                     ->defaultValue('%dotfiles.install_dir%/bin')

@@ -15,7 +15,7 @@ namespace Dotfiles\Plugins\Bash\Listeners;
 
 use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Event\Dispatcher;
-use Dotfiles\Core\Event\InstallEvent;
+use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Psr\Log\LoggerInterface;
@@ -47,19 +47,30 @@ class InstallListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            InstallEvent::NAME => 'onInstallEvent',
+            PatchEvent::NAME => 'onPatchEvent',
         );
     }
 
-    public function onInstallEvent(InstallEvent $event): void
+    /**
+     * @param PatchEvent $event
+     */
+    public function onPatchEvent(PatchEvent $event): void
     {
+        $currentPatches = $event->getPatches();
+        $bashPatch = array();
+        if (array_key_exists('.bashrc', $currentPatches)) {
+            $bashPatch = $currentPatches['.bashrc'];
+        }
         $reloadEvent = new ReloadBashConfigEvent($this->logger);
+        $reloadEvent->addFooterConfig(implode("\n", $bashPatch));
+
         $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME, $reloadEvent);
         $this->generateDotfilesConfig($reloadEvent->getBashConfig());
 
         $installDir = $this->config->get('dotfiles.install_dir');
         $target = $this->config->get('dotfiles.home_dir').'/.bashrc';
-        $event->addPatch($target, "source \"${installDir}/bashrc\"");
+
+        $event->setPatch($target, array("source \"${installDir}/bashrc\""));
     }
 
     private function generateDotfilesConfig($bashConfig): void

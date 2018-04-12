@@ -51,34 +51,7 @@ class InitCommandTest extends CommandTestCase
         static::cleanupTempDir();
     }
 
-    public function testInitSuccessfully(): void
-    {
-        $repoDir = '/tmp/dotfiles/tests/init';
-        Toolkit::ensureDir(dirname($repoDir));
-
-        $tester = $this->getTester('init');
-        $tester->setInputs(array(
-            $repoDir,
-            'some-machine',
-            null,
-        ));
-        $tester->execute(array('command' => 'init'));
-
-        $this->assertDirectoryIsWritable($repoDir);
-        $this->assertDirectoryExists(getenv('HOME').'/.dotfiles');
-        $this->assertFileExists($envFile = getenv('HOME').'/.dotfiles/.env');
-
-        $contents = file_get_contents($envFile);
-        $this->assertContains('some-machine', $contents);
-        $this->assertContains($repoDir, $contents);
-
-        // checking repodir
-        $this->assertFileExists($repoDir.'/.gitignore');
-        $this->assertFileExists($repoDir.'/config/dotfiles.yaml');
-        $this->assertFileExists($repoDir.'/src/.gitkeep');
-    }
-
-    public function testRepoDirQuestion(): void
+    public function testBackupDirQuestion(): void
     {
         $tester = $this->getTester('init');
         $tester->setInputs(array(
@@ -90,8 +63,35 @@ class InitCommandTest extends CommandTestCase
 
         $tester->execute(array());
         $output = $tester->getDisplay(array(true));
-        $this->assertContains('local repository dir', $output);
+        $this->assertContains('local backup dir', $output);
         $this->assertContains('your machine name', $output);
+    }
+
+    public function testInitSuccessfully(): void
+    {
+        $backupDir = '/tmp/dotfiles/tests/init';
+        Toolkit::ensureDir(dirname($backupDir));
+
+        $tester = $this->getTester('init');
+        $tester->setInputs(array(
+            $backupDir,
+            'some-machine',
+            null,
+        ));
+        $tester->execute(array('command' => 'init'));
+
+        $this->assertDirectoryIsWritable($backupDir);
+        $this->assertDirectoryExists(getenv('HOME').'/.dotfiles');
+        $this->assertFileExists($envFile = getenv('HOME').'/.dotfiles/.env');
+
+        $contents = file_get_contents($envFile);
+        $this->assertContains('some-machine', $contents);
+        $this->assertContains($backupDir, $contents);
+
+        // checking backupDir
+        $this->assertFileExists($backupDir.'/.gitignore');
+        $this->assertFileExists($backupDir.'/config/dotfiles.yaml');
+        $this->assertFileExists($backupDir.'/src/.gitkeep');
     }
 
     protected function configureCommand(): void

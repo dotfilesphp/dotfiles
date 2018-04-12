@@ -150,7 +150,7 @@ class AddCommandTest extends CommandTestCase
         $this->config->expects($this->any())
             ->method('get')
             ->willReturnMap(array(
-                array('dotfiles.repo_dir', $this->repoDir),
+                array('dotfiles.backup_dir', $this->repoDir),
                 array('dotfiles.home_dir', __DIR__.'/fixtures/home'),
             ))
         ;

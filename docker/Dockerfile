@@ -21,5 +21,5 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 WORKDIR /app
-
+RUN mkdir /app/var
 RUN ln -s /app/build/dotfiles.phar /usr/local/bin/dotfiles

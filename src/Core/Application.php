@@ -94,7 +94,7 @@ class Application extends BaseApplication
             $isCompile = 'compile' === $argv[1] || '--version' == $argv[1] ? true : false;
         }
         if (
-            !getenv('DOTFILES_REPO_DIR')
+            !getenv('DOTFILES_BACKUP_DIR')
             && ('dev' !== getenv('DOTFILES_ENV'))
             && !$isCompile
         ) {

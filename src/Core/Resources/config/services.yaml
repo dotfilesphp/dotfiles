@@ -16,6 +16,7 @@ services:
     Dotfiles\Core\Command\AddCommand: ~
     Dotfiles\Core\Command\InitCommand: ~
     Dotfiles\Core\Command\RestoreCommand: ~
+    Dotfiles\Core\Command\ConfigCommand: ~
     Dotfiles\Core\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
     Dotfiles\Core\Util\Filesystem: ~
