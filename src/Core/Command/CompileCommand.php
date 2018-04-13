@@ -165,9 +165,9 @@ class CompileCommand extends Command
             ->exclude(array(
                 'Tests',
             ))
-            ->notName('Compiler.php')
-            ->notName('SubsplitCommand.php')
-            ->notName('CompilerCommand.php')
+            //->notName('Compiler.php')
+            //->notName('SubsplitCommand.php')
+            //->notName('CompilerCommand.php')
             ->in($this->baseDir.'/src/Core')
             ->sort($finderSort)
         ;

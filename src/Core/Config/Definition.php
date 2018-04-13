@@ -30,11 +30,11 @@ class Definition implements DefinitionInterface
             $varDir = sys_get_temp_dir().'/dotfiles/var';
             $backupDir = sys_get_temp_dir().'/dotfiles/backup';
         }
-        $homeDir = getenv('HOME');
+        $homeDir = getenv('DOTFILES_HOME_DIR');
 
         if ('dev' === getenv('DOTFILES_ENV')) {
-            $homeDir = sys_get_temp_dir().'/dotfiles/home';
-            $varDir = sys_get_temp_dir().'/dotfiles/var';
+            //$homeDir = sys_get_temp_dir().'/dotfiles/home';
+            //$varDir = sys_get_temp_dir().'/dotfiles/var';
         }
 
         $root = $builder->root('dotfiles');

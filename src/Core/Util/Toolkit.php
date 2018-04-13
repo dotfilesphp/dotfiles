@@ -124,19 +124,19 @@ class Toolkit
 
     public static function loadDotEnv(): void
     {
-        $cwd = static::getBaseDir();
-        $files = array();
+        $cwd = getcwd();
+        $files = [__DIR__.'/../Resources/default.env'];
         if (is_file($file = $cwd.'/.env.dist')) {
             $files[] = $file;
         }
-        if (is_file($file = $cwd.'/.env')) {
+
+        if (is_file($file = getenv('HOME').'/.dotfiles/.env')) {
             $files[] = $file;
         }
 
-        if (DOTFILES_PHAR_MODE) {
-            if (is_file($file = getenv('HOME').'/.dotfiles/.env')) {
-                $files[] = $file;
-            }
+        // $PWD/.env always win
+        if (is_file($file = $cwd.'/.env')) {
+            $files[] = $file;
         }
 
         if (count($files) > 0) {
@@ -185,5 +185,21 @@ class Toolkit
         $path = strtr($path, array_merge($defaults, $additionalPath));
 
         return $path;
+    }
+
+    public static function getRelativePath(string $file):string
+    {
+        $homeDir = getenv('DOTFILES_HOME_DIR');
+        $backupDir = getenv('DOTFILES_BACKUP_DIR');
+
+        if(false !== strpos($file,$homeDir)){
+            return str_replace($homeDir,'~',$file);
+        }
+
+        if(false !== strpos($file,$backupDir)){
+            return str_replace(dirname($backupDir).'/','',$file);
+        }
+
+        return $file;
     }
 }

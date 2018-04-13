@@ -3,3 +3,6 @@
 .env
 vendor
 docker/*.ini
+build
+/var/*
+!var/.gitkeep
