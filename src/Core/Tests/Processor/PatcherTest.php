@@ -50,7 +50,7 @@ class PatcherTest extends BaseTestCase
         $output = $this->getDisplay();
 
         $this->assertContains('applying patch', $output);
-        $homeDir = $this->getConfig()->get('dotfiles.home_dir');
+        $homeDir = $this->getParameters()->get('dotfiles.home_dir');
 
         $this->assertFileExists($file = $homeDir.'/.bashrc');
         $contents = file_get_contents($file);
@@ -60,8 +60,8 @@ class PatcherTest extends BaseTestCase
 
     private function getPatcherObject()
     {
-        $this->getConfig()->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
+        $this->getParameters()->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
 
-        return new Patcher($this->getConfig(), $this->logger, $this->dispatcher);
+        return new Patcher($this->getParameters(), $this->logger, $this->dispatcher);
     }
 }

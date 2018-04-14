@@ -62,7 +62,7 @@ class HooksTest extends BaseTestCase
      */
     private function getHookObject()
     {
-        $config = $this->getConfig();
+        $config = $this->getParameters();
         $config->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
 
         return new Hooks($config, $this->dispatcher, $this->logger);

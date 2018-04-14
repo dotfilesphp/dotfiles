@@ -54,7 +54,7 @@ class RestoreCommandTest extends CommandTestCase
             $hasExecuted = true;
         }
 
-        $homeDir = $this->getConfig()->get('dotfiles.home_dir');
+        $homeDir = $this->getParameters()->get('dotfiles.home_dir');
         if (!$assertNot) {
             $this->assertFileExists($homeDir.DIRECTORY_SEPARATOR.$file);
         } else {

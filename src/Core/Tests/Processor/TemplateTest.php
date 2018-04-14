@@ -88,7 +88,7 @@ class TemplateTest extends BaseTestCase
         $tempDir = $this->tempDir;
         Toolkit::ensureDir($tempDir);
 
-        $config = $this->getConfig();
+        $config = $this->getParameters();
         $config->set('dotfiles.home_dir', $tempDir.'/home');
         $config->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
 
