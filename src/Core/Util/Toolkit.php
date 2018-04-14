@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Util;
 
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Finder\SplFileInfo;
 
 class Toolkit
@@ -44,42 +43,10 @@ class Toolkit
         static::ensureDir(dirname($file));
     }
 
-    /**
-     * Flattens an nested array of translations.
-     *
-     * The scheme used is:
-     *   'key' => array('key2' => array('key3' => 'value'))
-     * Becomes:
-     *   'key.key2.key3' => 'value'
-     *
-     * This function takes an array by reference and will modify it
-     *
-     * @param array  &$values The array that will be flattened
-     * @param array  $subnode Current subnode being parsed, used internally for recursive calls
-     * @param string $path    Current path being parsed, used internally for recursive calls
-     */
-    private static function doFlattenArray(array &$values, array $subnode = null, $path = null): void
+    public static function flattenArray(array &$values, $prefix = null): void
     {
-        if (null === $subnode) {
-            $subnode = &$values;
-        }
-        foreach ($subnode as $key => $value) {
-            if (is_array($value)) {
-                $nodePath = $path ? $path.'.'.$key : $key;
-                static::doFlattenArray($values, $value, $nodePath);
-                if (null === $path) {
-                    unset($values[$key]);
-                }
-            } elseif (null !== $path) {
-                $values[$path.'.'.$key] = $value;
-            }
-        }
-    }
-
-    public static function flattenArray(array &$values, $prefix = null)
-    {
-        if(!is_null($prefix)){
-            $values = [$prefix=>$values];
+        if (null !== $prefix) {
+            $values = array($prefix => $values);
         }
         static::doFlattenArray($values);
     }
@@ -100,6 +67,7 @@ class Toolkit
         global $argv;
         $command = $argv[0];
         $cacheDir = getenv('DOTFILES_CACHE_DIR');
+
         return $cacheDir.DIRECTORY_SEPARATOR.crc32($command);
     }
 
@@ -182,5 +150,37 @@ class Toolkit
         $path = strtr($path, array_merge($defaults, $additionalPath));
 
         return $path;
+    }
+
+    /**
+     * Flattens an nested array of translations.
+     *
+     * The scheme used is:
+     *   'key' => array('key2' => array('key3' => 'value'))
+     * Becomes:
+     *   'key.key2.key3' => 'value'
+     *
+     * This function takes an array by reference and will modify it
+     *
+     * @param array  &$values The array that will be flattened
+     * @param array  $subnode Current subnode being parsed, used internally for recursive calls
+     * @param string $path    Current path being parsed, used internally for recursive calls
+     */
+    private static function doFlattenArray(array &$values, array $subnode = null, $path = null): void
+    {
+        if (null === $subnode) {
+            $subnode = &$values;
+        }
+        foreach ($subnode as $key => $value) {
+            if (is_array($value)) {
+                $nodePath = $path ? $path.'.'.$key : $key;
+                static::doFlattenArray($values, $value, $nodePath);
+                if (null === $path) {
+                    unset($values[$key]);
+                }
+            } elseif (null !== $path) {
+                $values[$path.'.'.$key] = $value;
+            }
+        }
     }
 }

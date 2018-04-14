@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Util;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem as BaseFileSystem;
 
 class Filesystem extends BaseFileSystem
 {
-
     public function patch($file, $patch): void
     {
         if (!is_dir($dir = dirname($file))) {
@@ -41,24 +39,23 @@ class Filesystem extends BaseFileSystem
         }
     }
 
-    public function removeDir($dir, callable $onRemoveCallback = null)
+    public function removeDir($dir, callable $onRemoveCallback = null): void
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
-                if ($object != "." && $object !="..") {
-                    if (filetype($dir . DIRECTORY_SEPARATOR . $object) == "dir") {
-                        $this->removeDir($dir . DIRECTORY_SEPARATOR . $object,$onRemoveCallback);
+                if ('.' != $object && '..' != $object) {
+                    if ('dir' == filetype($dir.DIRECTORY_SEPARATOR.$object)) {
+                        $this->removeDir($dir.DIRECTORY_SEPARATOR.$object, $onRemoveCallback);
                     } else {
-                        unlink($pathName = $dir . DIRECTORY_SEPARATOR . $object);
-                        call_user_func($onRemoveCallback,$pathName);
+                        unlink($pathName = $dir.DIRECTORY_SEPARATOR.$object);
+                        call_user_func($onRemoveCallback, $pathName);
                     }
                 }
             }
             reset($objects);
             rmdir($dir);
-            call_user_func($onRemoveCallback,$dir);
+            call_user_func($onRemoveCallback, $dir);
         }
-
     }
 }

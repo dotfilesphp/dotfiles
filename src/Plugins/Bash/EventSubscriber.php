@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Bash;
 
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Constant;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Toolkit;
@@ -25,16 +25,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class EventSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var Parameters
-     */
-    private $parameters;
-
-    /**
      * @var Dispatcher
      */
     private $dispatcher;
 
     private $logger;
+    /**
+     * @var Parameters
+     */
+    private $parameters;
 
     public function __construct(Dispatcher $dispatcher, Parameters $parameters, LoggerInterface $logger)
     {

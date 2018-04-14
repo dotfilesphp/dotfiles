@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Command;
 
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
 use Dotfiles\Core\Util\Filesystem;
@@ -28,11 +27,6 @@ use Symfony\Component\Finder\Finder;
 class AddCommand extends Command implements CommandInterface
 {
     /**
-     * @var Parameters
-     */
-    private $parameters;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -41,6 +35,10 @@ class AddCommand extends Command implements CommandInterface
      * @var OutputInterface
      */
     private $output;
+    /**
+     * @var Parameters
+     */
+    private $parameters;
 
     public function __construct(
         ?string $name = null,
@@ -84,10 +82,10 @@ class AddCommand extends Command implements CommandInterface
         // detect source path
         $originPath = $this->detectPath($sourcePath);
         $relativePath = Toolkit::getRelativePath($originPath);
-        if(0 === strpos($relativePath,'.')){
-            $relativePath = substr($relativePath,1);
+        if (0 === strpos($relativePath, '.')) {
+            $relativePath = substr($relativePath, 1);
         }
-        $relativePath = str_replace('.'.$sourcePath,$sourcePath,$relativePath);
+        $relativePath = str_replace('.'.$sourcePath, $sourcePath, $relativePath);
         $targetPath = $backupDir.'/'.$relativePath;
 
         Toolkit::ensureDir($backupDir);

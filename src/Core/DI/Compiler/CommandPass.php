@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\DI\Compiler;
 
-use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\Command\CommandInterface;
+use Dotfiles\Core\Console\Application;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;

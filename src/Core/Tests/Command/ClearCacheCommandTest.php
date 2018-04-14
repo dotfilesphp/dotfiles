@@ -33,7 +33,7 @@ class ClearCacheCommandTest extends CommandTestCase
      */
     private $factory;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->factory = $this->createMock(ApplicationFactory::class);
     }
@@ -46,13 +46,13 @@ class ClearCacheCommandTest extends CommandTestCase
         ;
 
         $tester = $this->getTester('clear-cache');
-        $tester->execute([],['verbosity' => OutputInterface::VERBOSITY_DEBUG]);
+        $tester->execute(array(), array('verbosity' => OutputInterface::VERBOSITY_DEBUG));
         $output = $tester->getDisplay();
 
         $this->assertContains('Cleaning cache in ', $output);
     }
 
-    protected function configureCommand()
+    protected function configureCommand(): void
     {
         $this->command = new ClearCacheCommand(
             null,

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Command;
 
 use Dotfiles\Core\Console\Application;
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Exceptions\InstallFailedException;
 use Dotfiles\Core\Util\Downloader;

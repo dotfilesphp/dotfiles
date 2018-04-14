@@ -28,7 +28,7 @@ class ConfigurationTest extends TestCase
     public function getTestConfigTreeBuilderData()
     {
         return array(
-            array('machine_name','%env(DOTFILES_MACHINE_NAME)%'),
+            array('machine_name', '%env(DOTFILES_MACHINE_NAME)%'),
             array('home_dir', '%env(DOTFILES_HOME_DIR)%'),
             array('debug', '%env(DOTFILES_DEBUG)%'),
             array('base_dir', Toolkit::getBaseDir()),

@@ -73,7 +73,6 @@ class InitCommandTest extends CommandTestCase
 
     public function testInitSuccessfully(): void
     {
-
         $backupDir = $this->getParameters()->get('dotfiles.backup_dir');
         $homeDir = $this->getParameters()->get('dotfiles.home_dir');
 
@@ -82,7 +81,7 @@ class InitCommandTest extends CommandTestCase
             $backupDir,
             'some-machine',
             null,
-            null
+            null,
         ));
         $tester->execute(array('command' => 'init'));
 

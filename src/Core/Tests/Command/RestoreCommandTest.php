@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\RestoreCommand;
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 

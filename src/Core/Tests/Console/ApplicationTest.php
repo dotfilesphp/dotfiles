@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Console;
 
-use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Console\Application;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;

@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 namespace Dotfiles\Core\Config;
+
 use Dotfiles\Core\Exceptions\InvalidArgumentException;
 
 /**
@@ -21,32 +22,18 @@ class Config implements \ArrayAccess
 {
     private $configs = array();
 
-    /**
-     * @param array $configs
-     */
-    public function setConfigs(array $configs): void
+    public function all()
     {
-        $this->configs = $configs;
-    }
-
-    public function set($name,$value):self
-    {
-        $this->configs[$name] = $value;
-
-        return $this;
+        return $this->configs;
     }
 
     public function get($name)
     {
-        if(!array_key_exists($name,$this->configs)){
+        if (!array_key_exists($name, $this->configs)) {
             throw new InvalidArgumentException('Config key "'.$name.'" not exists.');
         }
-        return $this->configs[$name];
-    }
 
-    public function all()
-    {
-        return $this->configs;
+        return $this->configs[$name];
     }
 
     /**
@@ -79,5 +66,20 @@ class Config implements \ArrayAccess
     public function offsetUnset($offset): void
     {
         unset($this->configs[$offset]);
+    }
+
+    public function set($name, $value): self
+    {
+        $this->configs[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param array $configs
+     */
+    public function setConfigs(array $configs): void
+    {
+        $this->configs = $configs;
     }
 }

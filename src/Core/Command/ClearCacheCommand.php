@@ -20,8 +20,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class ClearCacheCommand.
@@ -29,27 +27,25 @@ use Symfony\Component\Finder\SplFileInfo;
 class ClearCacheCommand extends Command implements CommandInterface
 {
     /**
-     * @var Parameters
+     * @var ApplicationFactory
      */
-    private $parameters;
+    private $factory;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
-
     /**
-     * @var ApplicationFactory
+     * @var Parameters
      */
-    private $factory;
+    private $parameters;
 
     public function __construct(
         ?string $name = null,
         Parameters $parameters,
         LoggerInterface $logger,
         ApplicationFactory $factory
-    )
-    {
+    ) {
         parent::__construct($name);
         $this->parameters = $parameters;
         $this->logger = $logger;
@@ -69,14 +65,14 @@ class ClearCacheCommand extends Command implements CommandInterface
         $config = $this->parameters;
         $cacheDir = $config->get('dotfiles.cache_dir');
 
-        if(!is_dir($cacheDir)){
+        if (!is_dir($cacheDir)) {
             return;
         }
 
         $output->writeln("Cleaning cache in <comment>$cacheDir</comment>");
         $logger = $this->logger;
         $fs = new Filesystem();
-        $fs->removeDir($cacheDir,function($directory) use ($logger){
+        $fs->removeDir($cacheDir, function ($directory) use ($logger): void {
             $message = "-removed <comment>$directory</comment>";
             $this->logger->debug($message);
         });

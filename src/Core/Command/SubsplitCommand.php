@@ -83,8 +83,8 @@ class SubsplitCommand extends Command
             ),
             'behat' => array(
                 'path' => 'src/Behat',
-                'repo' => 'git@github.com:dotfilesphp/behat-extension.git'
-            )
+                'repo' => 'git@github.com:dotfilesphp/behat-extension.git',
+            ),
         );
 
         foreach ($tree as $name => $config) {

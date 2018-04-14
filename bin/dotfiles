@@ -4,7 +4,6 @@
 umask(0022);
 require __DIR__.'/../vendor/autoload.php';
 use Dotfiles\Core\ApplicationFactory;
-use Dotfiles\Core\Util\Toolkit;
 
 try {
     if (!defined('DOTFILES_PHAR_MODE')) {

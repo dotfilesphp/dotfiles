@@ -32,42 +32,42 @@ class SelfUpdateCommandTest extends CommandTestCase
      */
     private $downloader;
 
-    public function setUp()/* The :void return type declaration that should be here would cause a BC issue */
+    public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         $this->downloader = $this->createMock(Downloader::class);
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $tempDir = $this->getParameters()->get('dotfiles.temp_dir');
         $this->downloader->expects($this->exactly(2))
             ->method('run')
-            ->will($this->returnCallback(function($url, $target) use($tempDir){
-                if(false!==strpos($target,'dotfiles.phar.json')){
+            ->will($this->returnCallback(function ($url, $target) use ($tempDir): void {
+                if (false !== strpos($target, 'dotfiles.phar.json')) {
                     $target = $tempDir.'/update/dotfiles.phar.json';
-                    copy(__DIR__.'/fixtures/dotfiles.phar.json',$target);
+                    copy(__DIR__.'/fixtures/dotfiles.phar.json', $target);
                 }
-                if(false !== strpos($target,'dotfiles.phar')){
+                if (false !== strpos($target, 'dotfiles.phar')) {
                     $target = $tempDir.'/update/dotfiles.phar';
-                    copy(__DIR__.'/fixtures/dotfiles.phar',$target);
+                    copy(__DIR__.'/fixtures/dotfiles.phar', $target);
                 }
             }))
         ;
 
         $tester = $this->getTester('selfupdate');
-        $tester->execute([]);
+        $tester->execute(array());
 
         $output = $tester->getDisplay(true);
 
-        $this->assertContains('Begin update into test',$output);
+        $this->assertContains('Begin update into test', $output);
     }
 
-    protected function configureCommand()
+    protected function configureCommand(): void
     {
         $logger = $this->getContainer()->get('dotfiles.logger');
         $factory = $this->createMock(ApplicationFactory::class);
-        $command = new ClearCacheCommand(null,$this->getParameters(),$logger, $factory);
+        $command = new ClearCacheCommand(null, $this->getParameters(), $logger, $factory);
         $this->getApplication()->add($command);
-        $this->command = new SelfUpdateCommand(null,$this->downloader, $this->getParameters());
+        $this->command = new SelfUpdateCommand(null, $this->downloader, $this->getParameters());
     }
 }

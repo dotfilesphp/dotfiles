@@ -33,11 +33,6 @@ class InitCommand extends Command
     private $commandProcessor;
 
     /**
-     * @var Parameters
-     */
-    private $parameters;
-
-    /**
      * @var string
      */
     private $defaultBackupDir;
@@ -57,6 +52,11 @@ class InitCommand extends Command
      */
     private $output;
 
+    /**
+     * @var Parameters
+     */
+    private $parameters;
+
     public function __construct(?string $name = null, CommandProcessor $processor, Parameters $parameters)
     {
         parent::__construct($name);
@@ -73,7 +73,7 @@ class InitCommand extends Command
             ->setDescription('Initialize new Dotfiles project.')
             ->addArgument('backup-dir', InputArgument::OPTIONAL, 'Local repository directory')
             ->addOption('machine', 'm', InputOption::VALUE_OPTIONAL, 'Machine name')
-            ->addOption('install-dir','i', InputOption::VALUE_OPTIONAL,'Dotfiles instalaltion directory installation')
+            ->addOption('install-dir', 'i', InputOption::VALUE_OPTIONAL, 'Dotfiles instalaltion directory installation')
         ;
     }
 
@@ -96,18 +96,13 @@ class InitCommand extends Command
             $machine = $this->doAskMachineName();
         }
 
-        if(null === ($installDir = $input->getOption('install-dir'))){
+        if (null === ($installDir = $input->getOption('install-dir'))) {
             $installDir = $this->doAskInstallDir();
         }
 
-        $this->initDotfilesProfile($backupDir, $machine,$installDir);
+        $this->initDotfilesProfile($backupDir, $machine, $installDir);
         $this->initBackupDir($backupDir);
         $this->initInstallDir($installDir);
-    }
-
-    private function initInstallDir($installDir)
-    {
-        Toolkit::ensureDir($installDir);
     }
 
     private function doAskInstallDir()
@@ -175,7 +170,6 @@ class InitCommand extends Command
 
     private function initDotfilesProfile(string $backupDir, string $machine, $installDir): void
     {
-
         $time = (new \DateTime())->format('Y-m-d H:i:s');
         $envFile = getenv('DOTFILES_HOME_DIR').'/.dotfiles_profile';
         Toolkit::ensureFileDir($envFile);
@@ -187,5 +181,10 @@ DOTFILES_INSTALL_DIR=$installDir
 EOF;
 
         file_put_contents($envFile, $contents, LOCK_EX);
+    }
+
+    private function initInstallDir($installDir): void
+    {
+        Toolkit::ensureDir($installDir);
     }
 }

@@ -15,11 +15,8 @@ namespace Dotfiles\Core;
 
 use Composer\Autoload\ClassLoader;
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Configuration;
-use Dotfiles\Core\DI\Builder;
 use Dotfiles\Core\DI\Compiler\CommandPass;
 use Dotfiles\Core\DI\Compiler\ListenerPass;
-use Dotfiles\Core\DI\ContainerInterface;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
@@ -30,7 +27,6 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -42,11 +38,6 @@ class ApplicationFactory
      * @var Container
      */
     private $container;
-
-    /**
-     * @var Plugin[]
-     */
-    private $plugins = array();
 
     /**
      * @var bool
@@ -61,7 +52,12 @@ class ApplicationFactory
     /**
      * @var array
      */
-    private $envFiles = [];
+    private $envFiles = array();
+
+    /**
+     * @var Plugin[]
+     */
+    private $plugins = array();
 
     public function __construct()
     {
@@ -114,41 +110,6 @@ class ApplicationFactory
         return array_key_exists($name, $this->plugins);
     }
 
-    private function loadDotEnv(): void
-    {
-        global $argv;
-        // set temp dir based on OS
-        putenv('DOTFILES_TEMP_DIR='.sys_get_temp_dir().'/dotfiles');
-        $dryRun = in_array('--dry-run',$argv) ? true:false;
-        putenv('DOTFILES_DRY_RUN='.$dryRun);
-
-        $files = $this->envFiles;
-        if (count($files) > 0) {
-            $env = new Dotenv();
-            call_user_func_array(array($env, 'load'), $files);
-        }
-
-        $this->debug = (bool)getenv('DOTFILES_DEBUG');
-        $this->env = getenv('DOTFILES_ENV');
-
-        $homeDir = getenv('DOTFILES_HOME_DIR');
-        $backupDir = getenv('DOTFILES_BACKUP_DIR');
-        if(!getenv('DOTFILES_INSTALL_DIR')){
-            putenv('DOTFILES_INSTALL_DIR='.$homeDir.'/.dotfiles');
-        }
-
-        if(!getenv('DOTFILES_CONFIG_DIR')) {
-            putenv('DOTFILES_CONFIG_DIR=' . getenv('DOTFILES_BACKUP_DIR') . '/config');
-        }
-
-        if(!getenv('DOTFILES_CACHE_DIR')){
-            putenv('DOTFILES_CACHE_DIR='.$backupDir.'/var/cache');
-        }
-        if(!getenv('DOTFILES_LOG_DIR')){
-            putenv('DOTFILES_LOG_DIR='.$backupDir.'/var/log');
-        }
-    }
-
     private function addAutoload(): void
     {
         $baseDir = Toolkit::getBaseDir();
@@ -163,101 +124,47 @@ class ApplicationFactory
         }
     }
 
-    private function processCoreConfig(array $configs, ContainerBuilder $builder)
-    {
-        $dotfileConfig = array_key_exists('dotfiles',$configs) ? $configs['dotfiles']:array();
-        $processor = new Processor();
-        $parameters = $processor->processConfiguration(new Configuration(),$dotfileConfig);
-        $parameters= ['dotfiles' => $parameters];
-        Toolkit::flattenArray($parameters);
-
-        $builder->getParameterBag()->add($parameters);
-
-        $locator = new FileLocator(__DIR__.'/Resources/config');
-        $loader = new YamlFileLoader($builder,$locator);
-        $loader->load('services.yaml');
-    }
-
-    private function compileContainer():void
+    private function compileContainer(): void
     {
         $configs = $this->getConfiguration();
         //$paramaterBag = new ParameterBag();
         $builder = new ContainerBuilder();
-        $this->processCoreConfig($configs,$builder);
+        $this->processCoreConfig($configs, $builder);
         // processing core configuration
 
         /* @var Plugin $plugin */
-        foreach($this->plugins as $name => $plugin){
-            $pluginConfig = array_key_exists($name,$configs) ? $configs[$name]:array();
-            $plugin->load($pluginConfig,$builder);
+        foreach ($this->plugins as $name => $plugin) {
+            $pluginConfig = array_key_exists($name, $configs) ? $configs[$name] : array();
+            $plugin->load($pluginConfig, $builder);
         }
 
         $cachePath = $this->getCachePathPrefix().'/container.php';
-        $cache = new ConfigCache($cachePath,$this->debug);
-        if(!$cache->isFresh() || 'dev' == $this->env){
+        $cache = new ConfigCache($cachePath, $this->debug);
+        if (!$cache->isFresh() || 'dev' == $this->env) {
             $builder->addCompilerPass(new CommandPass());
             $builder->addCompilerPass(new ListenerPass());
             $builder->compile(true);
             $dumper = new PhpDumper($builder);
             $resources = $this->envFiles;
-            array_walk($resources,function(&$item){
-                $item =  new FileResource($item);
+            array_walk($resources, function (&$item): void {
+                $item = new FileResource($item);
             });
-            $resources = array_merge($resources,$builder->getResources());
-            $cache->write($dumper->dump(['class' => 'CachedContainer']),$resources);
+            $resources = array_merge($resources, $builder->getResources());
+            $cache->write($dumper->dump(array('class' => 'CachedContainer')), $resources);
         }
-        if(!class_exists('CachedContainer')){
+        if (!class_exists('CachedContainer')) {
             include_once $cachePath;
         }
         $container = new \CachedContainer();
 
-
         $config = new Config();
         $config->setConfigs($container->getParameterBag()->all());
-        $container->set(Config::class,$config);
+        $container->set(Config::class, $config);
 
         $parameters = new Parameters();
         $parameters->setConfigs($container->getParameterBag()->all());
-        $container->set('dotfiles.parameters',$parameters);
+        $container->set('dotfiles.parameters', $parameters);
         $this->container = $container;
-
-    }
-
-    private function getConfiguration()
-    {
-        $configDir = getenv('DOTFILES_CONFIG_DIR');
-        if(!is_dir($configDir)){
-            return array();
-        }
-        $cacheFile = $this->getCachePathPrefix().'/config.php';
-        $cache = new ConfigCache($cacheFile,$this->debug);
-        if(!$cache->isFresh() || 'dev' === $this->env){
-            $finder = Finder::create()
-                ->name('*.yaml')
-                ->name('*.yml')
-                ->in($configDir)
-            ;
-            $configs = array();
-            $configFiles = array();
-            /* @var SplFileInfo $file */
-            foreach($finder->files() as $file){
-                $parsed = Yaml::parseFile($file->getRealPath());
-                if(is_array($parsed)){
-                    $configs = array_merge_recursive($configs,$parsed);
-                }
-                $configFiles[] = new FileResource($file->getRealPath());
-            }
-            $template = "<?php\n/* ParameterBag Cache File Generated at %s */\nreturn %s;\n";
-            $time = new \DateTime();
-            $contents = sprintf(
-                $template,
-                $time->format('Y-m-d H:i:s'),
-                var_export($configs,true)
-            );
-            $cache->write($contents,$configFiles);
-        }
-
-        return include $cacheFile;
     }
 
     private function getCachePathPrefix()
@@ -266,7 +173,45 @@ class ApplicationFactory
         global $argv;
         $command = $argv[0];
         $cacheDir = getenv('DOTFILES_CACHE_DIR');
+
         return $cacheDir.DIRECTORY_SEPARATOR.crc32($command);
+    }
+
+    private function getConfiguration()
+    {
+        $configDir = getenv('DOTFILES_CONFIG_DIR');
+        if (!is_dir($configDir)) {
+            return array();
+        }
+        $cacheFile = $this->getCachePathPrefix().'/config.php';
+        $cache = new ConfigCache($cacheFile, $this->debug);
+        if (!$cache->isFresh() || 'dev' === $this->env) {
+            $finder = Finder::create()
+                ->name('*.yaml')
+                ->name('*.yml')
+                ->in($configDir)
+            ;
+            $configs = array();
+            $configFiles = array();
+            /* @var SplFileInfo $file */
+            foreach ($finder->files() as $file) {
+                $parsed = Yaml::parseFile($file->getRealPath());
+                if (is_array($parsed)) {
+                    $configs = array_merge_recursive($configs, $parsed);
+                }
+                $configFiles[] = new FileResource($file->getRealPath());
+            }
+            $template = "<?php\n/* ParameterBag Cache File Generated at %s */\nreturn %s;\n";
+            $time = new \DateTime();
+            $contents = sprintf(
+                $template,
+                $time->format('Y-m-d H:i:s'),
+                var_export($configs, true)
+            );
+            $cache->write($contents, $configFiles);
+        }
+
+        return include $cacheFile;
     }
 
     /**
@@ -301,6 +246,41 @@ class ApplicationFactory
         return $dirs;
     }
 
+    private function loadDotEnv(): void
+    {
+        global $argv;
+        // set temp dir based on OS
+        putenv('DOTFILES_TEMP_DIR='.sys_get_temp_dir().'/dotfiles');
+        $dryRun = in_array('--dry-run', $argv) ? true : false;
+        putenv('DOTFILES_DRY_RUN='.$dryRun);
+
+        $files = $this->envFiles;
+        if (count($files) > 0) {
+            $env = new Dotenv();
+            call_user_func_array(array($env, 'load'), $files);
+        }
+
+        $this->debug = (bool) getenv('DOTFILES_DEBUG');
+        $this->env = getenv('DOTFILES_ENV');
+
+        $homeDir = getenv('DOTFILES_HOME_DIR');
+        $backupDir = getenv('DOTFILES_BACKUP_DIR');
+        if (!getenv('DOTFILES_INSTALL_DIR')) {
+            putenv('DOTFILES_INSTALL_DIR='.$homeDir.'/.dotfiles');
+        }
+
+        if (!getenv('DOTFILES_CONFIG_DIR')) {
+            putenv('DOTFILES_CONFIG_DIR='.getenv('DOTFILES_BACKUP_DIR').'/config');
+        }
+
+        if (!getenv('DOTFILES_CACHE_DIR')) {
+            putenv('DOTFILES_CACHE_DIR='.$backupDir.'/var/cache');
+        }
+        if (!getenv('DOTFILES_LOG_DIR')) {
+            putenv('DOTFILES_LOG_DIR='.$backupDir.'/var/log');
+        }
+    }
+
     /**
      * Load available plugins.
      */
@@ -324,6 +304,21 @@ class ApplicationFactory
                 $this->registerPlugin($plugin);
             }
         }
+    }
+
+    private function processCoreConfig(array $configs, ContainerBuilder $builder): void
+    {
+        $dotfileConfig = array_key_exists('dotfiles', $configs) ? $configs['dotfiles'] : array();
+        $processor = new Processor();
+        $parameters = $processor->processConfiguration(new Configuration(), $dotfileConfig);
+        $parameters = array('dotfiles' => $parameters);
+        Toolkit::flattenArray($parameters);
+
+        $builder->getParameterBag()->add($parameters);
+
+        $locator = new FileLocator(__DIR__.'/Resources/config');
+        $loader = new YamlFileLoader($builder, $locator);
+        $loader->load('services.yaml');
     }
 
     /**

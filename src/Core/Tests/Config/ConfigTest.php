@@ -14,15 +14,10 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Config;
 
 use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Config\DefinitionInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
-use Symfony\Component\Config\Definition\NodeInterface;
 
 class ConfigTest extends TestCase
 {
-
     public function testArrayAccess(): void
     {
         $config = new Config();

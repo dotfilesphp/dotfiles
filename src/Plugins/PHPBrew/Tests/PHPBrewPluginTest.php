@@ -20,9 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
- * Class PHPBrewPluginTest
- *
- * @package Dotfiles\Plugins\PHPBrew\Tests
+ * Class PHPBrewPluginTest.
  */
 class PHPBrewPluginTest extends TestCase
 {
@@ -47,10 +45,10 @@ class PHPBrewPluginTest extends TestCase
 
         $parameter->expects($this->once())
             ->method('add')
-            ->with([
+            ->with(array(
                 'phpbrew.rc_enable' => true,
                 'phpbrew.set_prompt' => true,
-            ])
+            ))
         ;
 
         $plugin = new PHPBrewPlugin();

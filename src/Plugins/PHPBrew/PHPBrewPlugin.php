@@ -27,9 +27,9 @@ class PHPBrewPlugin extends Plugin
         $loader = new YamlFileLoader($container, $locator);
         $loader->load('services.yaml');
 
-        $configuration = $this->getConfiguration($configs,$container);
-        $config = $this->processConfiguration($configuration,$configs);
-        Toolkit::flattenArray($config,'phpbrew');
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
+        Toolkit::flattenArray($config, 'phpbrew');
         $container->getParameterBag()->add($config);
     }
 }
