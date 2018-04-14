@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
@@ -45,7 +46,9 @@ class SubsplitCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('subsplit');
+        $this->setName('subsplit')
+        ->addArgument('package', InputArgument::OPTIONAL, 'Package to subsplit', null)
+    ;
         $this->workdir = realpath(__DIR__.'/../../../');
     }
 
@@ -53,6 +56,8 @@ class SubsplitCommand extends Command
     {
         $this->output = $output;
         $workdir = $this->workdir;
+        $filter = $input->getArgument('package');
+        $filter = null === $filter ? array() : explode(',', $filter);
 
         if (!is_dir($dir = $workdir.'/.subsplit')) {
             $this->runCommand('git subsplit --debug init '.static::SOURCE);
@@ -88,6 +93,9 @@ class SubsplitCommand extends Command
         );
 
         foreach ($tree as $name => $config) {
+            if (count($filter) > 0 && !in_array($name, $filter)) {
+                continue;
+            }
             $this->output->writeln("processing <comment>$name</comment>");
             $this->publish($config['path'], $config['repo']);
         }
