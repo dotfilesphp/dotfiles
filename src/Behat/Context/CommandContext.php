@@ -83,15 +83,21 @@ class CommandContext implements Context
 
     private static function loadDotEnv(): void
     {
+        putenv('DOTFILES_TEMP_DIR='.sys_get_temp_dir().'/dotfiles');
         $files = array(
             __DIR__.'/../Resources/default.env',
-            getenv('HOME').'/.dotfiles_profile',
         );
+
+        if(is_file($file = getenv('HOME').'/.dotfiles_profile')){
+            $files[] = $file;
+        }
 
         $env = new Dotenv();
         foreach ($files as $file) {
             $env->load($file);
         }
+
+        
     }
 
     private static function loadPharAutoload(): void
