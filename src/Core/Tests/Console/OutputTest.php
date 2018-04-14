@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Console;
 
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Console\Output;
+use Dotfiles\Core\DI\Parameters;
 use PHPUnit\Framework\TestCase;
 
 class TestOutput extends Output

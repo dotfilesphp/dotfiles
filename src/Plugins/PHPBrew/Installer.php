@@ -48,10 +48,10 @@ class Installer
     /**
      * Installer constructor.
      *
-     * @param \Dotfiles\Core\DI\Parameters          $config
-     * @param Downloader      $downloader
-     * @param LoggerInterface $logger
-     * @param OutputInterface $output
+     * @param \Dotfiles\Core\DI\Parameters $config
+     * @param Downloader                   $downloader
+     * @param LoggerInterface              $logger
+     * @param OutputInterface              $output
      */
     public function __construct(
         Parameters $config,

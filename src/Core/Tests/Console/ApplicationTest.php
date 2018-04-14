@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Console;
 
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Console\Application;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\DI\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

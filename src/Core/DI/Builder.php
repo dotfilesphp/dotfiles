@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\DI;
 
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\DI\Compiler\CommandPass;
 use Dotfiles\Core\DI\Compiler\ListenerPass;
 use Dotfiles\Core\Util\Toolkit;

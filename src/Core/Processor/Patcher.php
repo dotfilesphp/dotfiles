@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Constant;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Filesystem;

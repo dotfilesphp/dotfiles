@@ -28,11 +28,6 @@ class Application extends BaseApplication
     public const VERSION = '@package_version@';
 
     /**
-     * @var Parameters
-     */
-    private $parameters;
-
-    /**
      * @var InputInterface
      */
     private $input;
@@ -41,6 +36,11 @@ class Application extends BaseApplication
      * @var OutputInterface
      */
     private $output;
+
+    /**
+     * @var Parameters
+     */
+    private $parameters;
 
     /**
      * {@inheritdoc}

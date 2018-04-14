@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Config;
 
-use Dotfiles\Core\DI\Parameters;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase

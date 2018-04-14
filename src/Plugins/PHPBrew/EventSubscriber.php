@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew;
 
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Constant;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\PatchEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
