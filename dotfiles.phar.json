@@ -1,13 +1,6 @@
 {
-<<<<<<< HEAD
     "version": "0d7d5a039ee2fb17d55a8f4434af0103ddbef607",
     "branch": "1.0-dev",
     "date": "2018-04-14 08:11:52",
     "sha256": "1b41ea50cbc8de9446a074a817314860c54e31b65e254722b3a34cf125078c59"
-=======
-    "version": "c38a47976ea0df8bf1e04e9467838cbf1af171c6",
-    "branch": "1.0-dev",
-    "date": "2018-04-12 11:03:35",
-    "sha256": "cd5f344549afe1cb64c97c80b320f15d657fe7cd3537190170f900966b5f3ba6"
->>>>>>> e2fb16efa6e2450a9c5df455ac28e5c1e82fcb4c
 }
