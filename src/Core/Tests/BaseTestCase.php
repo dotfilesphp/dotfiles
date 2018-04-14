@@ -15,7 +15,6 @@ namespace Dotfiles\Core\Tests;
 
 use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\DI\Parameters;
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Filesystem;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -111,14 +110,6 @@ abstract class BaseTestCase extends TestCase
         $this->boot();
 
         return $this->container;
-    }
-
-    /**
-     * @return Parameters
-     */
-    protected function getParameters(): Parameters
-    {
-        return $this->getContainer()->get('dotfiles.parameters');
     }
 
     /**
