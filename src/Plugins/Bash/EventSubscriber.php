@@ -106,7 +106,9 @@ $bashConfig
 # END DOTFILES CONFIG
 
 EOC;
-        Toolkit::ensureFileDir($file = $installDir.DIRECTORY_SEPARATOR.$fileName);
+
+        $file = $installDir.DIRECTORY_SEPARATOR.$fileName;
+        Toolkit::ensureDir($installDir);
         file_put_contents($file, $contents, LOCK_EX);
     }
 }

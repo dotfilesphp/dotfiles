@@ -18,6 +18,7 @@ use Dotfiles\Core\Event\Dispatcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\Process;
 
 class Hooks
@@ -90,12 +91,13 @@ class Hooks
         $logger->debug("Executing <comment>$relPath</comment>");
         $process = new Process($realPath);
         $process->run(function ($type, $buffer) use ($relPath,$logger,$helper,$process): void {
+            $buffer = trim($buffer);
             $contents = $helper->start(
                 spl_object_hash($process),
                 $buffer,
                 Process::ERR === $type
             );
-            $logger->debug('OUTPUT >>'.$contents);
+            $logger->debug('<comment>[hooks] </comment>'.$contents);
         });
     }
 
@@ -104,25 +106,43 @@ class Hooks
         $this->hooks['pre']['restore'] = array();
         $this->hooks['post']['restore'] = array();
 
-        $backupPath = $this->config->get('dotfiles.backup_dir');
+        $backupPath = $this->config->get('dotfiles.backup_dir').'/src';
+        $machine = $this->config->get('dotfiles.machine_name');
+        $dirs = array();
+        if (is_dir($dir = $backupPath.'/defaults/hooks')) {
+            $dirs[] = $dir;
+        }
+        if (is_dir($dir = $backupPath.'/'.$machine.'/hooks')) {
+            $dirs[] = $dir;
+        }
+
+        if (!count($dirs) > 0) {
+            $this->debug('+hooks no available hooks found');
+
+            return;
+        }
+
         $finder = Finder::create()
-            ->in($backupPath.'/src')
-            ->path('hooks')
+            ->in($backupPath)
             ->name('pre-*')
             ->name('post-*')
+            ->path('defaults/hooks')
+            ->path($machine.'/hooks')
         ;
 
-        /* @var \SplFileInfo $file */
+        /* @var SplFileInfo $file */
         foreach ($finder->files() as $file) {
             $relPath = $file->getRelativePathname();
             $realPath = $file->getRealPath();
 
+            $this->debug($file->getRealPath());
             $baseName = basename($file->getRealPath());
             if (false !== ($tlength = strpos($baseName, '.'))) {
                 $baseName = substr($baseName, 0, $tlength);
             }
             $exp = explode('-', $baseName);
 
+            $this->debug($file->getRealPath());
             if (!is_executable($realPath)) {
                 $this->debug('-hooks not executable: '.$relPath);
 

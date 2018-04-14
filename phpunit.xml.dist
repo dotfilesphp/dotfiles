@@ -12,6 +12,7 @@
         <ini name="error_reporting" value="-1" />
         <env name="DOTFILES_MACHINE_NAME" value="dotfiles"/>
         <env name="DOTFILES_ENV" value="dev"/>
+        <env name="DOTFILES_INSTALL_DIR" value="./var/temp/home/.dotfiles"/>
         <env name="DOTFILES_TEMP_DIR" value="./var/temp"/>
         <env name="DOTFILES_HOME_DIR" value="./var/temp/home"/>
     </php>

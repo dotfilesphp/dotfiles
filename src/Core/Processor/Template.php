@@ -97,7 +97,9 @@ class Template
         /* @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($files as $file) {
             $target = Toolkit::ensureDotPath($file->getRelativePathname());
-            $fs->copy($file->getRealPath(), $targetDir.DIRECTORY_SEPARATOR.$target);
+            $targetFile = $targetDir.DIRECTORY_SEPARATOR.$target;
+            Toolkit::ensureDir($targetDir);
+            $fs->copy($file->getRealPath(), $targetFile);
             $this->debug('+restore: <comment>'.$target.'</comment>');
         }
     }

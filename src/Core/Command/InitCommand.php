@@ -16,14 +16,12 @@ namespace Dotfiles\Core\Command;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
 use Dotfiles\Core\Util\CommandProcessor;
-use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Finder\Finder;
 
 class InitCommand extends Command
 {
@@ -101,8 +99,6 @@ class InitCommand extends Command
         }
 
         $this->initDotfilesProfile($backupDir, $machine, $installDir);
-        $this->initBackupDir($backupDir);
-        $this->initInstallDir($installDir);
     }
 
     private function doAskInstallDir()
@@ -153,21 +149,6 @@ class InitCommand extends Command
         return $helper->ask($input, $output, $question);
     }
 
-    private function initBackupDir($backupDir): void
-    {
-        Toolkit::ensureDir($backupDir);
-        $origin = __DIR__.'/../Resources/templates/backup';
-
-        $finder = Finder::create()
-            ->ignoreVCS(true)
-            ->ignoreDotFiles(false)
-            ->in($origin)
-            ->files()
-        ;
-        $fs = new Filesystem();
-        $fs->mirror($origin, $backupDir, $finder);
-    }
-
     private function initDotfilesProfile(string $backupDir, string $machine, $installDir): void
     {
         $time = (new \DateTime())->format('Y-m-d H:i:s');
@@ -181,10 +162,5 @@ DOTFILES_INSTALL_DIR=$installDir
 EOF;
 
         file_put_contents($envFile, $contents, LOCK_EX);
-    }
-
-    private function initInstallDir($installDir): void
-    {
-        Toolkit::ensureDir($installDir);
     }
 }

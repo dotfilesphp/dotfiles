@@ -26,11 +26,6 @@ use Symfony\Component\Finder\SplFileInfo;
 class Patcher
 {
     /**
-     * @var Parameters
-     */
-    private $config;
-
-    /**
      * @var Dispatcher
      */
     private $dispatcher;
@@ -39,6 +34,10 @@ class Patcher
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var Parameters
+     */
+    private $parameters;
 
     /**
      * @var array
@@ -46,11 +45,11 @@ class Patcher
     private $patches = array();
 
     public function __construct(
-        Parameters $config,
+        Parameters $parameters,
         LoggerInterface $logger,
         Dispatcher $dispatcher
     ) {
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
     }
@@ -77,14 +76,15 @@ class Patcher
      */
     private function applyPatch($patches): void
     {
-        $this->debug('start applying patch');
-        $homeDir = $this->config->get('dotfiles.home_dir');
+        $homeDir = $this->parameters->get('dotfiles.home_dir');
+        $this->debug('start applying patch to '.$homeDir);
         $fs = new Filesystem();
         foreach ($patches as $relPath => $patch) {
             $contents = implode(PHP_EOL, $patch);
             $target = $homeDir.DIRECTORY_SEPARATOR.$relPath;
-            $fs->patch($target, $contents);
             $this->debug('+patch '.$target);
+            Toolkit::ensureFileDir($target);
+            $fs->patch($target, $contents);
         }
     }
 
@@ -95,20 +95,31 @@ class Patcher
 
     private function registerPatch(): void
     {
-        $backupDir = $this->config->get('dotfiles.backup_dir').'/src';
+        $machine = $this->parameters->get('dotfiles.machine_name');
+        $backupDir = $this->parameters->get('dotfiles.backup_dir').'/src';
+        $dirs = array();
+        if (is_dir($dir = $backupDir.'/defaults/patch')) {
+            $dirs[] = $dir;
+        }
+        $machinePatch = $backupDir.DIRECTORY_SEPARATOR.$machine.DIRECTORY_SEPARATOR.'/patch';
+        if (is_dir($machinePatch)) {
+            $dirs[] = $machinePatch;
+        }
 
+        if (!count($dirs) > 0) {
+            return;
+        }
         $finder = Finder::create()
             ->ignoreVCS(true)
             ->ignoreDotFiles(false)
-            ->in($backupDir)
-            ->path('patch')
+            ->in($dirs)
         ;
 
         $this->debug('registering all available patches');
 
         /* @var SplFileInfo $file */
         foreach ($finder->files() as $file) {
-            $relPath = str_replace($file->getRelativePath().'/', '', $file->getRelativePathname());
+            $relPath = $file->getRelativePathname();
             $relPath = Toolkit::ensureDotPath($relPath);
             $patch = file_get_contents($file->getRealPath());
             if (!isset($this->patches[$relPath])) {

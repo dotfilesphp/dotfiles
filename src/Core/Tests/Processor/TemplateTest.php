@@ -17,7 +17,6 @@ use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\Template;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Tests\Helper\LoggerOutputTrait;
-use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -34,16 +33,11 @@ class TemplateTest extends BaseTestCase
      */
     private $dispatcher;
 
-    /**
-     * @var string
-     */
-    private $tempDir;
-
     public function setUp(): void
     {
         $this->dispatcher = $this->createMock(Dispatcher::class);
-        $this->tempDir = sys_get_temp_dir().'/dotfiles/tests/restore';
         $this->setUpLogger();
+        static::cleanupTempDir();
     }
 
     public function getTestExecuteSuccessfully()
@@ -52,7 +46,6 @@ class TemplateTest extends BaseTestCase
             array('.ssh/id_rsa', true),
             array('.ssh/id_rsa.pub', true),
             array('.bashrc', true),
-            array('.dotfiles', true),
             array('.no-dot-prefix', true),
         );
     }
@@ -75,8 +68,9 @@ class TemplateTest extends BaseTestCase
         $restore->run();
         $this->assertContains($file, $output);
 
+        $tempDir = $this->getParameters()->get('dotfiles.home_dir');
         if ($ensureFile) {
-            $this->assertFileExists($this->tempDir.'/home/'.$file);
+            $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.$file);
         }
     }
 
@@ -85,12 +79,10 @@ class TemplateTest extends BaseTestCase
      */
     private function getTemplateObject()
     {
-        $tempDir = $this->tempDir;
-        Toolkit::ensureDir($tempDir);
-
+        static::cleanupTempDir();
+        $this->boot();
         $config = $this->getParameters();
-        $config->set('dotfiles.home_dir', $tempDir.'/home');
-        $config->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
+        $this->createBackupDirMock(__DIR__.'/fixtures/backup');
 
         return new Template($config, $this->dispatcher, $this->logger);
     }

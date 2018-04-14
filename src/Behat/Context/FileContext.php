@@ -78,6 +78,9 @@ class FileContext implements Context
      */
     public function iHaveBackupDefaultsPatch(string $section, string $path, PyStringNode $contents = null): void
     {
+        if ('machine' === $section) {
+            $section = getenv('DOTFILES_MACHINE_NAME');
+        }
         $target = getenv('DOTFILES_BACKUP_DIR').'/src/'.$section.'/patch/'.$path;
         $this->generateFile($target, $contents);
     }

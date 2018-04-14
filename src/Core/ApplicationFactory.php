@@ -62,10 +62,6 @@ class ApplicationFactory
     {
         $files = array(__DIR__.'/Resources/default.env');
 
-        if (is_file($file = getenv('HOME').'/.dotfiles_profile')) {
-            $files[] = $file;
-        }
-
         // $PWD/.env always win
         $cwd = getcwd();
         if (is_file($file = $cwd.'/.env.dist')) {
@@ -250,9 +246,15 @@ class ApplicationFactory
         putenv('DOTFILES_DRY_RUN='.$dryRun);
 
         $files = $this->envFiles;
+        $env = new Dotenv();
         if (count($files) > 0) {
-            $env = new Dotenv();
             call_user_func_array(array($env, 'load'), $files);
+        }
+
+        $dev = getenv('DOTFILES_ENV');
+        if (
+            'dev' !== $dev && is_file($file = getenv('HOME').'/.dotfiles_profile')) {
+            $env->load($file);
         }
 
         $this->debug = (bool) getenv('DOTFILES_DEBUG');

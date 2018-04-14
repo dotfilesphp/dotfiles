@@ -36,8 +36,7 @@ class RestoreCommandTest extends CommandTestCase
             array('.ssh/id_rsa'),
             array('.ssh/id_rsa.pub'),
             array('.bashrc'),
-            array('.dotfiles'),
-            array('.no-dot-prefix', true),
+            array('.no-dot-prefix'),
         );
     }
 
@@ -49,6 +48,7 @@ class RestoreCommandTest extends CommandTestCase
     {
         static $hasExecuted = false;
         if (!$hasExecuted) {
+            static::cleanupTempDir();
             $tester = $this->getTester('restore');
             $tester->execute(array(), array('verbosity' => OutputInterface::VERBOSITY_DEBUG));
             $hasExecuted = true;

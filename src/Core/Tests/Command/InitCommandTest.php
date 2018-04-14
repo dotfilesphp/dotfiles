@@ -84,18 +84,11 @@ class InitCommandTest extends CommandTestCase
         ));
         $tester->execute(array('command' => 'init'));
 
-        $this->assertDirectoryIsWritable($backupDir);
-        $this->assertDirectoryExists($homeDir.'/.dotfiles');
         $this->assertFileExists($envFile = $homeDir.'/.dotfiles_profile');
 
         $contents = file_get_contents($envFile);
         $this->assertContains('some-machine', $contents);
         $this->assertContains($backupDir, $contents);
-
-        // checking backupDir
-        $this->assertFileExists($backupDir.'/.gitignore');
-        $this->assertFileExists($backupDir.'/config/dotfiles.yaml');
-        $this->assertFileExists($backupDir.'/src/.gitkeep');
     }
 
     protected function configureCommand(): void
