@@ -95,21 +95,19 @@ abstract class BaseTestCase extends TestCase
         $fs->mirror($fromFixturesDir, $this->getParameters()->get('dotfiles.home_dir'), $files);
     }
 
-    /**
-     * @return \Dotfiles\Core\DI\Parameters
-     *
-     * @deprecated use parameters instead
-     */
-    protected function getConfig(): Parameters
-    {
-        return $this->getContainer()->get('dotfiles.config');
-    }
-
     protected function getContainer()
     {
         $this->boot();
 
         return $this->container;
+    }
+
+    /**
+     * @return \Dotfiles\Core\DI\Parameters
+     */
+    protected function getParameters(): Parameters
+    {
+        return $this->getContainer()->get('dotfiles.parameters');
     }
 
     /**
