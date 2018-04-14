@@ -35,6 +35,7 @@ class ClearCacheCommand extends Command implements CommandInterface
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var Parameters
      */

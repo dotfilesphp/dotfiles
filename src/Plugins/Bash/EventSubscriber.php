@@ -30,6 +30,7 @@ class EventSubscriber implements EventSubscriberInterface
     private $dispatcher;
 
     private $logger;
+
     /**
      * @var Parameters
      */

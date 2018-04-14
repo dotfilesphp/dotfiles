@@ -35,6 +35,7 @@ class AddCommand extends Command implements CommandInterface
      * @var OutputInterface
      */
     private $output;
+
     /**
      * @var Parameters
      */
