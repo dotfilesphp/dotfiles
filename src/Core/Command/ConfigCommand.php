@@ -24,10 +24,10 @@ class ConfigCommand extends Command
      */
     private $config;
 
-    public function __construct(?string $name = null, Config $config)
+    public function __construct(?string $name = null, Config $parameters)
     {
         parent::__construct($name);
-        $this->config = $config;
+        $this->config = $parameters;
     }
 
     protected function configure(): void
@@ -41,7 +41,7 @@ class ConfigCommand extends Command
     {
         $config = $this->config;
 
-        $params = $config->getAll(true);
+        $params = $config->all(true);
 
         foreach ($params as $name => $value) {
             $output->writeln(sprintf(

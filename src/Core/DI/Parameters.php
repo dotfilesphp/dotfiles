@@ -11,13 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Config;
+namespace Dotfiles\Core\DI;
 use Dotfiles\Core\Exceptions\InvalidArgumentException;
 
 /**
- * Class Config.
+ * Provide parameters during runtime
  */
-class Config implements \ArrayAccess
+class Parameters implements \ArrayAccess
 {
     private $configs = array();
 

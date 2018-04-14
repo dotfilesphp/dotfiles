@@ -186,6 +186,7 @@ class CompileCommand extends Command
             ->in($this->baseDir.'/vendor/myclabs')
             ->in($this->baseDir.'/vendor/psr')
             ->in($this->baseDir.'/vendor/monolog')
+            ->in($this->baseDir.'/vendor/psy')
             ->sort($finderSort)
         ;
         $this->registerFiles($finder);
@@ -283,7 +284,7 @@ if (extension_loaded('apc') && ini_get('apc.enable_cli') && ini_get('apc.cache_b
     }
 }
 
-define('DOTFILES_PHAR_MODE', true);
+putenv('DOTFILES_PHAR_MODE=1');
 
 Phar::mapPhar('dotfiles.phar');
 

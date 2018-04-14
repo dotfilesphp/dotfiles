@@ -15,6 +15,7 @@ namespace Dotfiles\Core\Tests;
 
 use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Filesystem;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -38,6 +39,7 @@ abstract class BaseTestCase extends TestCase
         static::cleanupTempDir();
     }
 
+
     public function boot(): void
     {
         if (!$this->hasBoot) {
@@ -52,7 +54,8 @@ abstract class BaseTestCase extends TestCase
 
     public static function cleanupTempDir(): void
     {
-        if (is_dir($dir = sys_get_temp_dir().'/dotfiles')) {
+        $dir = getenv('DOTFILES_TEMP_DIR');
+        if ($dir && is_dir($dir)) {
             $finder = Finder::create()
                 ->in($dir)
             ;
@@ -63,7 +66,7 @@ abstract class BaseTestCase extends TestCase
     }
 
     /**
-     * @return \Dotfiles\Core\Application
+     * @return \Dotfiles\Core\Console\Application
      */
     public function getApplication()
     {
@@ -74,16 +77,55 @@ abstract class BaseTestCase extends TestCase
 
     /**
      * @return Config
+     * @deprecated use parameters instead
      */
     protected function getConfig(): Config
     {
         return $this->getContainer()->get('dotfiles.config');
     }
 
+    /**
+     * @return Parameters
+     */
+    protected function getParameters(): Parameters
+    {
+        return $this->getContainer()->get('dotfiles.parameters');
+    }
+
     protected function getContainer()
     {
         $this->boot();
-
         return $this->container;
+    }
+
+    protected function createHomeDirMock(string $fromFixturesDir)
+    {
+        $files = Finder::create()
+            ->ignoreDotFiles(false)
+            ->ignoreVCS(true)
+            ->in($fromFixturesDir)
+        ;
+        $fs = new Filesystem();
+        $fs->mirror($fromFixturesDir,$this->getParameters()->get('dotfiles.home_dir'),$files);
+    }
+
+    protected function createBackupDirMock(string  $fromFixturesDir)
+    {
+        $files = Finder::create()
+            ->ignoreDotFiles(false)
+            ->ignoreVCS(true)
+            ->in($fromFixturesDir)
+        ;
+        $fs = new Filesystem();
+        $fs->mirror($fromFixturesDir,$this->getParameters()->get('dotfiles.backup_dir'),$files);
+    }
+
+    /**
+     * @param   string  $id
+     * @return  mixed
+     */
+    protected function getService(string $id)
+    {
+        return $this->getContainer()->get($id);
     }
 }

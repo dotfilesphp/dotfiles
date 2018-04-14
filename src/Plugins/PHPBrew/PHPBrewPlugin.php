@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\PHPBrew;
 
 use Dotfiles\Core\Plugin;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -25,5 +26,10 @@ class PHPBrewPlugin extends Plugin
         $locator = new FileLocator(__DIR__.'/Resources');
         $loader = new YamlFileLoader($container, $locator);
         $loader->load('services.yaml');
+
+        $configuration = $this->getConfiguration($configs,$container);
+        $config = $this->processConfiguration($configuration,$configs);
+        Toolkit::flattenArray($config,'phpbrew');
+        $container->getParameterBag()->add($config);
     }
 }

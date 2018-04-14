@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Command;
 
+use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Command\ClearCacheCommand;
-use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -27,47 +26,39 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @covers \Dotfiles\Core\Command\ClearCacheCommand
  */
-class ClearCacheCommandTest extends BaseTestCase
+class ClearCacheCommandTest extends CommandTestCase
 {
     /**
      * @var MockObject
      */
-    private $config;
+    private $factory;
 
-    /**
-     * @var MockObject
-     */
-    private $logger;
-
-    public function setUp(): void
+    public function setUp()
     {
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $this->config = $this->createMock(Config::class);
-        static::cleanupTempDir();
+        $this->factory = $this->createMock(ApplicationFactory::class);
     }
 
     public function testExecute(): void
     {
-        $input = $this->createMock(InputInterface::class);
-        $output = $this->createMock(OutputInterface::class);
-        $tempDir = sys_get_temp_dir().'/cache';
-        $cacheFile = $tempDir.'/some-file.php';
-        Toolkit::ensureFileDir($cacheFile);
-        touch($cacheFile);
-
-        $this->config->expects($this->once())
-            ->method('get')
-            ->with('dotfiles.cache_dir')
-            ->willReturn($tempDir)
+        Toolkit::ensureDir($this->getParameters()->get('dotfiles.cache_dir'));
+        $this->factory->expects($this->once())
+            ->method('boot')
         ;
 
-        $this->logger->expects($this->once())
-            ->method('debug')
-            ->with($this->stringContains('some-file.php'))
-        ;
+        $tester = $this->getTester('clear-cache');
+        $tester->execute([],['verbosity' => OutputInterface::VERBOSITY_DEBUG]);
+        $output = $tester->getDisplay();
 
-        $command = new ClearCacheCommand(null, $this->config, $this->logger);
-        $command->run($input, $output);
-        $this->assertFileNotExists($cacheFile);
+        $this->assertContains('Cleaning cache in ', $output);
+    }
+
+    protected function configureCommand()
+    {
+        $this->command = new ClearCacheCommand(
+            null,
+            $this->getParameters(),
+            $this->getService(LoggerInterface::class),
+            $this->factory
+        );
     }
 }

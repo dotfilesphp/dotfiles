@@ -14,12 +14,8 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\AddCommand;
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
 use Dotfiles\Core\Tests\CommandTestCase;
-use Dotfiles\Core\Tests\CommandTester;
-use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class AddCommandTest.
@@ -28,37 +24,10 @@ use Psr\Log\LoggerInterface;
  */
 class AddCommandTest extends CommandTestCase
 {
-    /**
-     * @var string
-     */
-    private $backupDir;
-
-    /**
-     * @var MockObject
-     */
-    private $config;
-
-    /**
-     * @var MockObject
-     */
-    private $logger;
-
-    public function setUp(): void
-    {
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $this->config = $this->createMock(Config::class);
-        $this->backupDir = sys_get_temp_dir().'/dotfiles/tests/add-command';
-    }
-
     public function testAddDir(): void
     {
-        $command = $this->getAddCommand();
-        $app = $this->getApplication();
-        $app->add($command);
-
-        $cmd = $app->find('add');
-        $tester = new CommandTester($cmd);
-
+        $backupDir = $this->getParameters()->get('dotfiles.backup_dir');
+        $tester = $this->getTester('add');
         // test with recursive option
         $tester->execute(array(
             'path' => '.ssh',
@@ -67,8 +36,8 @@ class AddCommandTest extends CommandTestCase
         $output = $tester->getDisplay(true);
 
         $this->assertContains('ssh', $output);
-        $this->assertFileExists($this->backupDir.'/src/defaults/home/ssh/id_rsa');
-        $this->assertFileExists($this->backupDir.'/src/defaults/home/ssh/id_rsa.pub');
+        $this->assertFileExists($backupDir.'/src/defaults/home/ssh/id_rsa');
+        $this->assertFileExists($backupDir.'/src/defaults/home/ssh/id_rsa.pub');
 
         // test with recursive option
         $tester->execute(array(
@@ -76,8 +45,8 @@ class AddCommandTest extends CommandTestCase
             '-r' => true,
             '-m' => 'athena',
         ));
-        $this->assertFileExists($this->backupDir.'/src/athena/home/ssh/id_rsa');
-        $this->assertFileExists($this->backupDir.'/src/athena/home/ssh/id_rsa.pub');
+        $this->assertFileExists($backupDir.'/src/athena/home/ssh/id_rsa');
+        $this->assertFileExists($backupDir.'/src/athena/home/ssh/id_rsa.pub');
 
         // test without recursive option
         $this->expectException(InvalidOperationException::class);
@@ -91,73 +60,52 @@ class AddCommandTest extends CommandTestCase
 
     public function testAddFile(): void
     {
-        $command = $this->getAddCommand();
-        $app = $this->getApplication();
-        $app->add($command);
-
-        $cmd = $app->find('add');
-        $tester = new CommandTester($cmd);
+        $backupDir = $this->getParameters()->get('dotfiles.backup_dir');
+        $tester = $this->getTester('add');
         $tester->execute(array(
             'path' => '.bashrc',
         ));
         $output = $tester->getDisplay(true);
 
         $this->assertContains('bashrc', $output);
-        $this->assertFileExists($this->backupDir.'/src/defaults/home/bashrc');
+        $this->assertFileExists($backupDir.'/src/defaults/home/bashrc');
 
         $tester->execute(array(
             'path' => '.bashrc',
             '-m' => 'zeus',
         ));
-        $this->assertFileExists($this->backupDir.'/src/zeus/home/bashrc');
+        $this->assertFileExists($backupDir.'/src/zeus/home/bashrc');
 
+        $homeDir = $this->getParameters()->get('dotfiles.home_dir');
         $tester->execute(array(
-            'path' => __DIR__.'/fixtures/home/.bashrc',
+            'path' => $homeDir.'/.bashrc',
             '-m' => 'complete-path',
         ));
-        $this->assertFileExists($this->backupDir.'/src/complete-path/home/bashrc');
+        $this->assertFileExists($backupDir.'/src/complete-path/home/bashrc');
 
         $tester->execute(array(
             'path' => 'bashrc',
             '-m' => 'no-dot',
         ));
-        $this->assertFileExists($this->backupDir.'/src/no-dot/home/bashrc');
+        $this->assertFileExists($backupDir.'/src/no-dot/home/bashrc');
     }
 
     public function testAddNonExistingPath(): void
     {
-        $command = $this->getAddCommand();
-        $app = $this->getApplication();
-        $app->add($command);
-
         $this->expectException(InvalidOperationException::class);
         $this->expectExceptionMessageRegExp('/Can not find/is');
-
-        $cmd = $app->find('add');
-        $tester = new CommandTester($cmd);
+        $tester = $this->getTester('add');
         $tester->execute(array(
             'path' => 'foo',
         ));
     }
 
-    protected function configureCommand(): void
+    /**
+     * @return mixed
+     */
+    protected function configureCommand()
     {
-        // TODO: Implement configureCommand() method.
-    }
-
-    private function getAddCommand()
-    {
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap(array(
-                array('dotfiles.backup_dir', $this->backupDir),
-                array('dotfiles.home_dir', __DIR__.'/fixtures/home'),
-            ))
-        ;
-        $config = $this->getConfig();
-        $config->set('dotfiles.backup_dir', $this->backupDir);
-        $config->set('dotfiles.home_dir', __DIR__.'/fixtures/home');
-
-        return new AddCommand(null, $config, $this->logger);
+        $this->createHomeDirMock(__DIR__.'/fixtures/home');
+        $this->command = $this->getContainer()->get(AddCommand::class);
     }
 }

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Bash;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
@@ -25,9 +25,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class EventSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var Config
+     * @var Parameters
      */
-    private $config;
+    private $parameters;
 
     /**
      * @var Dispatcher
@@ -36,10 +36,10 @@ class EventSubscriber implements EventSubscriberInterface
 
     private $logger;
 
-    public function __construct(Dispatcher $dispatcher, Config $config, LoggerInterface $logger)
+    public function __construct(Dispatcher $dispatcher, Parameters $parameters, LoggerInterface $logger)
     {
         $this->dispatcher = $dispatcher;
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
     }
 
@@ -76,7 +76,7 @@ class EventSubscriber implements EventSubscriberInterface
         $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME, $reloadEvent);
         $this->generateDotfilesConfig($reloadEvent->getBashConfig());
 
-        $installDir = $this->config->get('dotfiles.install_dir');
+        $installDir = $this->parameters->get('dotfiles.install_dir');
         $target = '.bashrc';
 
         $event->setPatch($target, array("source \"${installDir}/bashrc\""));
@@ -84,7 +84,7 @@ class EventSubscriber implements EventSubscriberInterface
 
     private function generateDotfilesConfig($bashConfig): void
     {
-        $installDir = $this->config->get('dotfiles.install_dir');
+        $installDir = $this->parameters->get('dotfiles.install_dir');
 
         $uname = php_uname();
         if (false !== strpos('darwin', $uname)) {

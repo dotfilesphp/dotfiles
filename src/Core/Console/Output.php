@@ -47,13 +47,6 @@ class Output extends ConsoleOutput
      */
     private function stripFileName(string $messages): string
     {
-        $homeDir = getenv('DOTFILES_HOME_DIR');
-        $backupDir = getenv('DOTFILES_BACKUP_DIR');
-
-        $messages = strtr($messages,[
-            $homeDir => '~',
-            dirname($backupDir).DIRECTORY_SEPARATOR => ''
-        ]);
         return $messages;
     }
 }

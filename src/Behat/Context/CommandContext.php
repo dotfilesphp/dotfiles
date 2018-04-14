@@ -19,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 use Webmozart\Assert\Assert;
+use Symfony\Component\Dotenv\Dotenv;
 
 class CommandContext implements Context
 {
@@ -33,6 +34,38 @@ class CommandContext implements Context
         $this->commandPrefix = $commandPrefix;
     }
 
+    private static function loadDotEnv()
+    {
+        $files = array(
+            __DIR__.'/../Resources/default.env',
+            getenv('HOME').'/.dotfiles_profile',
+        );
+
+        $env = new Dotenv();
+        foreach($files as $file){
+            $env->load($file);
+        }
+    }
+
+    private static function loadPharAutoload()
+    {
+        if(false !== ($pharFile = getenv('DOTFILES_PHAR_FILE'))){
+            $path = realpath(__DIR__.'/../build/dotfiles.phar');
+            $phar = 'phar://'.$path;
+
+            $autoloadFile = $phar.'/vendor/autoload.php';
+            $contents = file_get_contents($autoloadFile);
+
+            $pattern = '/ComposerAutoloaderInit[a-z|0-9]+/im';
+            preg_match($pattern,$contents,$matches);
+            $class = $matches[0];
+
+            if(!class_exists($class)){
+                include_once $autoloadFile;
+            }
+        }
+    }
+
     /**
      * @BeforeSuite
      *
@@ -43,6 +76,9 @@ class CommandContext implements Context
         if (!is_file('/.dockerenv')) {
             throw new \Exception('You must run behat test in docker-environment');
         }
+
+        static::loadDotEnv();
+        static::loadPharAutoload();
     }
 
     /**

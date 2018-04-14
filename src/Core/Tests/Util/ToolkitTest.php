@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Util;
 
+use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Toolkit;
-use PHPUnit\Framework\TestCase;
 
-class ToolkitTest extends TestCase
+class ToolkitTest extends BaseTestCase
 {
     public function testGetCachePathPrefix(): void
     {
         global $argv;
-        $expected = sys_get_temp_dir().'/dotfiles/var/cache/'.crc32($argv[0]);
+        $expected = getenv('DOTFILES_CACHE_DIR').DIRECTORY_SEPARATOR.crc32($argv[0]);
         $this->assertEquals($expected, Toolkit::getCachePathPrefix());
     }
 }

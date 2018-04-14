@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Tests;
+namespace Dotfiles\Core\Tests\Console;
 
-use Dotfiles\Core\Application;
+use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class ApplicationTest.
  *
- * @covers \Dotfiles\Core\Application
+ * @covers \Dotfiles\Core\Console\Application
  */
 class ApplicationTest extends TestCase
 {
@@ -47,17 +47,6 @@ class ApplicationTest extends TestCase
         $this->config = $this->createMock(Config::class);
         $this->input = $this->createMock(InputInterface::class);
         $this->output = $this->createMock(OutputInterface::class);
-    }
-
-    public function testRun(): void
-    {
-        $this->config->expects($this->once())
-            ->method('set')
-            ->with('dotfiles.dry_run', false)
-        ;
-        $app = $this->getSUT();
-        $app->setAutoExit(false);
-        $app->run();
     }
 
     public function testVersion(): void

@@ -16,6 +16,10 @@ try {
 
     /* @var \Dotfiles\Core\Console\Application $app */
     $app = $container->get('dotfiles.app');
+    $app->addCommands([
+        new \Dotfiles\Core\Command\SubsplitCommand(),
+        new \Dotfiles\Core\Command\CompileCommand()
+    ]);
     exit($app->run());
 } catch (\Exception $e) {
     echo $e->getMessage()."\n";

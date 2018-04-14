@@ -35,10 +35,11 @@ class FileContext implements Context
      */
     public function dotfileShouldContain(string $name, string $needle): void
     {
-        $target = getenv('HOME').DIRECTORY_SEPARATOR.$name;
+        $target = getenv('DOTFILES_HOME_DIR').DIRECTORY_SEPARATOR.$name;
         if (!is_file($target)) {
             throw new InvalidArgumentException('Can not find file: '.$name);
         }
+        Toolkit::ensureFileDir($target);
         $contents = file_get_contents($target);
         Assert::contains($contents, $needle);
     }
@@ -51,10 +52,11 @@ class FileContext implements Context
      */
     public function dotfileShouldNotContain(string $name, string $needle): void
     {
-        $target = getenv('HOME').DIRECTORY_SEPARATOR.$name;
+        $target = getenv('DOTFILES_HOME_DIR').DIRECTORY_SEPARATOR.$name;
         if (!is_file($target)) {
             throw new InvalidArgumentException('Can not find file: '.$name);
         }
+        Toolkit::ensureFileDir($target);
         $contents = file_get_contents($target);
         Assert::notContains($contents, $needle);
     }
@@ -76,7 +78,7 @@ class FileContext implements Context
      */
     public function iHaveBackupDefaultsPatch(string $section, string $path, PyStringNode $contents = null): void
     {
-        $target = '/home/backup/src/'.$section.'/patch/'.$path;
+        $target = getenv('DOTFILES_BACKUP_DIR').'/src/'.$section.'/patch/'.$path;
         $this->generateFile($target, $contents);
     }
 
@@ -89,7 +91,8 @@ class FileContext implements Context
      */
     public function iHaveDotfile(string $path, PyStringNode $contents = null): void
     {
-        $target = getenv('HOME').DIRECTORY_SEPARATOR.$path;
+        $target = getenv('DOTFILES_HOME_DIR').DIRECTORY_SEPARATOR.$path;
+        Toolkit::ensureFileDir($target);
         if (null === $contents) {
             touch($target);
         } else {

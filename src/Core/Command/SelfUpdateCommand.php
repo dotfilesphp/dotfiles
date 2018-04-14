@@ -13,8 +13,9 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Command;
 
-use Dotfiles\Core\Application;
+use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Exceptions\InstallFailedException;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
@@ -38,7 +39,7 @@ class SelfUpdateCommand extends Command implements CommandInterface
     private $cacheDir;
 
     /**
-     * @var Config
+     * @var Parameters
      */
     private $config;
 
@@ -75,14 +76,14 @@ class SelfUpdateCommand extends Command implements CommandInterface
     public function __construct(
         ?string $name = null,
         Downloader $downloader,
-        Config $config
+        Parameters $parameters
     ) {
         parent::__construct($name);
 
-        $this->config = $config;
+        $this->config = $parameters;
         $this->downloader = $downloader;
-        $this->tempDir = $config->get('dotfiles.temp_dir');
-        $this->cacheDir = $config->get('dotfiles.cache_dir');
+        $this->tempDir = $parameters->get('dotfiles.temp_dir');
+        $this->cacheDir = $parameters->get('dotfiles.cache_dir');
     }
 
     protected function configure(): void
@@ -140,7 +141,6 @@ class SelfUpdateCommand extends Command implements CommandInterface
         if (!is_file($targetFile)) {
             $url = static::BASE_URL.'/dotfiles.phar';
             $downloader = $this->downloader;
-            $downloader->getProgressBar()->setFormat('Download <comment>dotfiles.phar</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>');
             $downloader->run($url, $targetFile);
         }
 

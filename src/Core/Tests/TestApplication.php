@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests;
 
-use Dotfiles\Core\Application as BaseApplication;
+use Dotfiles\Core\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

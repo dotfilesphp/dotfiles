@@ -17,5 +17,13 @@
         "psr-4": {
             "Dotfiles\\Behat\\": ""
         }
-    }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "bin": [
+        "Resources/bin/run-behat"
+    ]
 }

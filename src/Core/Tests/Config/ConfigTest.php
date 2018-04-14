@@ -22,39 +22,6 @@ use Symfony\Component\Config\Definition\NodeInterface;
 
 class ConfigTest extends TestCase
 {
-    protected function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
-    {
-        parent::setUp();
-    }
-
-    public function testAddConfigAndCacheDir(): void
-    {
-        $config = new Config();
-        $dir = __DIR__.'/fixtures/config';
-        $config->addConfigDir($dir);
-        $this->assertContains($dir, $config->getConfigDirs());
-        $this->expectException(\InvalidArgumentException::class);
-        $config->addConfigDir('foo/bar');
-    }
-
-    public function testAddDefinition(): void
-    {
-        $node = $this->createMock(NodeInterface::class);
-        $tree = $this->createMock(TreeBuilder::class);
-        $tree->expects($this->once())
-            ->method('buildTree')
-            ->willReturn($node)
-        ;
-        $definition = $this->createMock(DefinitionInterface::class)
-        ;
-        $definition->expects($this->once())
-            ->method('getConfigTreeBuilder')
-            ->willReturn($tree)
-        ;
-
-        $config = new Config();
-        $config->addDefinition($definition);
-    }
 
     public function testArrayAccess(): void
     {
@@ -65,49 +32,5 @@ class ConfigTest extends TestCase
         $this->assertEquals('bar', $config->get('foo'));
         unset($config['foo']);
         $this->assertFalse(isset($config['foo']));
-    }
-
-    public function testLoadConfigurationProcessConfigFiles(): void
-    {
-        $config = new Config();
-
-        $config->addConfigDir(__DIR__.'/fixtures/config');
-        $config->addDefinition(new TestDefinition());
-        $config->loadConfiguration();
-
-        $this->assertEquals('bar', $config->get('test.foo'));
-        $this->assertEquals('world', $config->get('test.hello'));
-    }
-
-    public function testLoadConfigurationProcessDefaultValue(): void
-    {
-        $config = new Config();
-
-        $config->addDefinition(new TestDefinition());
-        $config->loadConfiguration();
-
-        $this->assertEquals('default', $config->get('test.foo'));
-        $this->assertEquals('default', $config->get('test.hello'));
-
-        $flattened = $config->getAll(true);
-        $this->assertArrayHasKey('test.foo', $flattened);
-        $array = $config->getAll();
-        $this->assertArrayHasKey('test', $array);
-        $this->assertEquals('default', $array['test']['foo']);
-
-        $this->expectException(\InvalidArgumentException::class);
-        $config->get('hello.world');
-    }
-
-    public function testShouldHandleError(): void
-    {
-        $config = new Config();
-        $config
-            ->addDefinition(new TestDefinition())
-            ->addConfigDir(__DIR__.'/fixtures/error')
-        ;
-        $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('Unrecognized option "error" under "test"');
-        $config->loadConfiguration();
     }
 }

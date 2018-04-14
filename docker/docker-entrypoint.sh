@@ -8,10 +8,10 @@ fi
 
 mkdir -p /home/backup
 cd /home/backup
-DOTFILES_ENV=dev /app/bin/dotfiles compile /app/build
-dotfiles init -m docker /home/backup
-
-export DOTFILES_ENV=prod
-dotfiles cache-clear -vvv
+cp /home/dotfiles/behat.yml.dist /app/
+DOTFILES_ENV=dev /home/dotfiles/bin/tools compile /app/build
+chdir /home/backup
 echo $PWD
+dotfiles init -m docker /home/backup
+dotfiles cache-clear -vvv
 exec docker-php-entrypoint "$@"

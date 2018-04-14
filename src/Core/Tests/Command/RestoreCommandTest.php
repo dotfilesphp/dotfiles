@@ -55,7 +55,7 @@ class RestoreCommandTest extends CommandTestCase
             $hasExecuted = true;
         }
 
-        $homeDir = $this->getContainer()->get('dotfiles.config')->get('dotfiles.home_dir');
+        $homeDir = $this->getConfig()->get('dotfiles.home_dir');
         if (!$assertNot) {
             $this->assertFileExists($homeDir.DIRECTORY_SEPARATOR.$file);
         } else {
@@ -65,10 +65,7 @@ class RestoreCommandTest extends CommandTestCase
 
     protected function configureCommand(): void
     {
-        /* @var Config $config */
-        $config = $this->getContainer()->get(Config::class);
-
-        $config->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
+        $this->createBackupDirMock(__DIR__.'/fixtures/backup');
         $this->command = $this->getContainer()->get(RestoreCommand::class);
     }
 }

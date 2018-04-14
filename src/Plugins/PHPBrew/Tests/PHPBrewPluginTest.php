@@ -13,10 +13,17 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
+use Dotfiles\Plugins\PHPBrew\Configuration;
 use Dotfiles\Plugins\PHPBrew\PHPBrewPlugin;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
+/**
+ * Class PHPBrewPluginTest
+ *
+ * @package Dotfiles\Plugins\PHPBrew\Tests
+ */
 class PHPBrewPluginTest extends TestCase
 {
     public function testLoad(): void
@@ -25,6 +32,25 @@ class PHPBrewPluginTest extends TestCase
         $builder->expects($this->once())
             ->method('fileExists')
             ->with($this->stringContains('services.yaml'))
+        ;
+
+        $builder->expects($this->once())
+            ->method('getReflectionClass')
+            ->willReturn(new \ReflectionClass(Configuration::class))
+        ;
+
+        $parameter = $this->createMock(ParameterBagInterface::class);
+        $builder->expects($this->once())
+            ->method('getParameterBag')
+            ->willReturn($parameter)
+        ;
+
+        $parameter->expects($this->once())
+            ->method('add')
+            ->with([
+                'phpbrew.rc_enable' => true,
+                'phpbrew.set_prompt' => true,
+            ])
         ;
 
         $plugin = new PHPBrewPlugin();

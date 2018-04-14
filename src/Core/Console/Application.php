@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core;
+namespace Dotfiles\Core\Console;
 
 use Dotfiles\Core\Config\Config;
 use Symfony\Component\Console\Application as BaseApplication;
@@ -85,18 +85,9 @@ class Application extends BaseApplication
             $output = $this->output;
         }
 
-        $dryRun = $input->hasParameterOption(array('--dry-run'), true);
-        $this->config->set('dotfiles.dry_run', $dryRun);
-
-        global $argv;
-        $isCompile = false;
-        if (isset($argv[1])) {
-            $isCompile = 'compile' === $argv[1] || '--version' == $argv[1] ? true : false;
-        }
         if (
             !getenv('DOTFILES_BACKUP_DIR')
             && ('dev' !== getenv('DOTFILES_ENV'))
-            && !$isCompile
         ) {
             return $this->find('init')->run($input, $output);
         }

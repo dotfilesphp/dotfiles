@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\DI\Compiler;
 
-use Dotfiles\Core\Application;
+use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\Command\CommandInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

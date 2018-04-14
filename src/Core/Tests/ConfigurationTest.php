@@ -11,34 +11,34 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Tests\Config;
+namespace Dotfiles\Core\Tests;
 
-use Dotfiles\Core\Config\Definition;
+use Dotfiles\Core\Configuration;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Processor;
 
 /**
- * Class DefinitionTest.
+ * Class ConfigurationTest.
  *
  * @covers \Dotfiles\Core\Config\Definition
  */
-class DefinitionTest extends TestCase
+class ConfigurationTest extends TestCase
 {
     public function getTestConfigTreeBuilderData()
     {
         return array(
-            array('machine_name', getenv('DOTFILES_MACHINE_NAME')),
-            array('home_dir', getenv('HOME')),
-            array('debug', false),
+            array('machine_name','%env(DOTFILES_MACHINE_NAME)%'),
+            array('home_dir', '%env(DOTFILES_HOME_DIR)%'),
+            array('debug', '%env(DOTFILES_DEBUG)%'),
             array('base_dir', Toolkit::getBaseDir()),
-            array('install_dir', '%dotfiles.home_dir%/.dotfiles'),
-            array('log_dir', '/tmp/dotfiles/var/log'),
-            array('cache_dir', '/tmp/dotfiles/var/cache'),
-            array('temp_dir', sys_get_temp_dir().'/dotfiles/temp'),
-            array('backup_dir', sys_get_temp_dir().'/dotfiles/backup'),
-            array('bin_dir', '%dotfiles.install_dir%/bin'),
-            array('vendor_dir', '%dotfiles.install_dir%/vendor'),
+            array('install_dir', '%env(DOTFILES_INSTALL_DIR)%'),
+            array('log_dir', '%env(DOTFILES_LOG_DIR)%'),
+            array('cache_dir', '%env(DOTFILES_CACHE_DIR)%'),
+            array('temp_dir', '%env(DOTFILES_TEMP_DIR)%'),
+            array('backup_dir', '%env(DOTFILES_BACKUP_DIR)%'),
+            array('bin_dir', '%env(DOTFILES_INSTALL_DIR)%/bin'),
+            array('vendor_dir', '%env(DOTFILES_INSTALL_DIR)%/vendor'),
         );
     }
 
@@ -49,7 +49,7 @@ class DefinitionTest extends TestCase
      */
     public function testGetConfigTreeBuilder(string $key, string $default): void
     {
-        $definition = new Definition();
+        $definition = new Configuration();
         $processor = new Processor();
         $config = $processor->process($definition->getConfigTreeBuilder()->buildTree(), array());
 

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Command;
 
 use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
@@ -27,9 +28,9 @@ use Symfony\Component\Finder\Finder;
 class AddCommand extends Command implements CommandInterface
 {
     /**
-     * @var Config
+     * @var Parameters
      */
-    private $config;
+    private $parameters;
 
     /**
      * @var LoggerInterface
@@ -43,11 +44,11 @@ class AddCommand extends Command implements CommandInterface
 
     public function __construct(
         ?string $name = null,
-        Config $config,
+        Parameters $parameters,
         LoggerInterface $logger
     ) {
         parent::__construct($name);
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
     }
 
@@ -73,7 +74,7 @@ class AddCommand extends Command implements CommandInterface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output = $output;
-        $config = $this->config;
+        $config = $this->parameters;
         $recursive = $input->getOption('recursive');
         $machine = $input->getOption('machine');
         $backupDir = $config->get('dotfiles.backup_dir')."/src/$machine/home";
@@ -82,8 +83,12 @@ class AddCommand extends Command implements CommandInterface
 
         // detect source path
         $originPath = $this->detectPath($sourcePath);
-        $targetPath = $backupDir.'/'.str_replace('.', '', $sourcePath);
-        $targetPath = str_replace($homeDir.DIRECTORY_SEPARATOR, '', $targetPath);
+        $relativePath = Toolkit::getRelativePath($originPath);
+        if(0 === strpos($relativePath,'.')){
+            $relativePath = substr($relativePath,1);
+        }
+        $relativePath = str_replace('.'.$sourcePath,$sourcePath,$relativePath);
+        $targetPath = $backupDir.'/'.$relativePath;
 
         Toolkit::ensureDir($backupDir);
 
@@ -105,7 +110,7 @@ class AddCommand extends Command implements CommandInterface
             return $path;
         }
 
-        $homeDir = $this->config->get('dotfiles.home_dir');
+        $homeDir = $this->parameters->get('dotfiles.home_dir');
         $test = $homeDir.DIRECTORY_SEPARATOR.$path;
         if ($this->ensureDirOrFile($test)) {
             return $test;

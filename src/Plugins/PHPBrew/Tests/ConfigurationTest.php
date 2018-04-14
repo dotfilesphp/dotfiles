@@ -13,26 +13,20 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
-use Dotfiles\Core\Config\Config;
-use Dotfiles\Plugins\PHPBrew\Configuration;
-use PHPUnit\Framework\TestCase;
+use Dotfiles\Core\Tests\BaseTestCase;
 
 /**
- * Class DefinitionTest.
+ * Class ConfigurationTest.
  *
  * @covers \Dotfiles\Plugins\PHPBrew\Configuration
  */
-class ConfigurationTest extends TestCase
+class ConfigurationTest extends BaseTestCase
 {
     public function testProcess(): void
     {
-        $config = new Config();
-        $config->addDefinition(new Configuration());
-        $config->addConfigDir(__DIR__.'/fixtures');
-        $config->loadConfiguration();
-        $processed = $config->getAll();
+        $parameters = $this->getParameters();
 
-        $this->assertTrue($processed['phpbrew']['set_prompt']);
-        $this->assertArrayHasKey('machines', $processed['phpbrew']);
+        $this->assertTrue($parameters->get('phpbrew.set_prompt'));
+        $this->assertTrue($parameters->get('phpbrew.rc_enable'));
     }
 }

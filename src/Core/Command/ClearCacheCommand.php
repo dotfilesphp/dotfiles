@@ -13,13 +13,15 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Command;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\ApplicationFactory;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Filesystem;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class ClearCacheCommand.
@@ -27,20 +29,31 @@ use Symfony\Component\Finder\Finder;
 class ClearCacheCommand extends Command implements CommandInterface
 {
     /**
-     * @var Config
+     * @var Parameters
      */
-    private $config;
+    private $parameters;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
 
-    public function __construct(?string $name = null, Config $config, LoggerInterface $logger)
+    /**
+     * @var ApplicationFactory
+     */
+    private $factory;
+
+    public function __construct(
+        ?string $name = null,
+        Parameters $parameters,
+        LoggerInterface $logger,
+        ApplicationFactory $factory
+    )
     {
         parent::__construct($name);
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
+        $this->factory = $factory;
     }
 
     protected function configure(): void
@@ -53,23 +66,20 @@ class ClearCacheCommand extends Command implements CommandInterface
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $config = $this->config;
+        $config = $this->parameters;
         $cacheDir = $config->get('dotfiles.cache_dir');
 
-        $finder = Finder::create()
-            ->in($cacheDir)
-            ->files()
-        ;
-
-        $fs = new Filesystem();
+        if(!is_dir($cacheDir)){
+            return;
+        }
 
         $output->writeln("Cleaning cache in <comment>$cacheDir</comment>");
-        /* @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($finder->files() as $file) {
-            $fs->remove($file);
-            $relPath = $file->getRelativePathname();
-            $message = "-removed <comment>$relPath</comment>";
+        $logger = $this->logger;
+        $fs = new Filesystem();
+        $fs->removeDir($cacheDir,function($directory) use ($logger){
+            $message = "-removed <comment>$directory</comment>";
             $this->logger->debug($message);
-        }
+        });
+        $this->factory->boot();
     }
 }

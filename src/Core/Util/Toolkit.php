@@ -58,7 +58,7 @@ class Toolkit
      * @param array  $subnode Current subnode being parsed, used internally for recursive calls
      * @param string $path    Current path being parsed, used internally for recursive calls
      */
-    public static function flattenArray(array &$values, array $subnode = null, $path = null): void
+    private static function doFlattenArray(array &$values, array $subnode = null, $path = null): void
     {
         if (null === $subnode) {
             $subnode = &$values;
@@ -66,7 +66,7 @@ class Toolkit
         foreach ($subnode as $key => $value) {
             if (is_array($value)) {
                 $nodePath = $path ? $path.'.'.$key : $key;
-                static::flattenArray($values, $value, $nodePath);
+                static::doFlattenArray($values, $value, $nodePath);
                 if (null === $path) {
                     unset($values[$key]);
                 }
@@ -76,10 +76,18 @@ class Toolkit
         }
     }
 
+    public static function flattenArray(array &$values, $prefix = null)
+    {
+        if(!is_null($prefix)){
+            $values = [$prefix=>$values];
+        }
+        static::doFlattenArray($values);
+    }
+
     public static function getBaseDir()
     {
         $baseDir = getcwd();
-        if (DOTFILES_PHAR_MODE) {
+        if (getenv('DOTFILES_PHAR_MODE')) {
             $baseDir = str_replace(__FILE__, '', \Phar::running(false));
         }
 
@@ -91,12 +99,8 @@ class Toolkit
         // using argv command to differ each dotfiles executable file
         global $argv;
         $command = $argv[0];
-        $cachePath = sys_get_temp_dir().'/dotfiles/var/cache';
-        if (false !== getenv('DOTFILES_BACKUP_DIR')) {
-            $cachePath = getenv('DOTFILES_BACKUP_DIR').'/var/cache';
-        }
-
-        return $cachePath.DIRECTORY_SEPARATOR.crc32($command);
+        $cacheDir = getenv('DOTFILES_CACHE_DIR');
+        return $cacheDir.DIRECTORY_SEPARATOR.crc32($command);
     }
 
     /**
@@ -122,27 +126,20 @@ class Toolkit
         return new SplFileInfo($path, $relativePath, $relativePath.DIRECTORY_SEPARATOR.basename($path));
     }
 
-    public static function loadDotEnv(): void
+    public static function getRelativePath(string $file): string
     {
-        $cwd = getcwd();
-        $files = [__DIR__.'/../Resources/default.env'];
-        if (is_file($file = $cwd.'/.env.dist')) {
-            $files[] = $file;
+        $homeDir = getenv('DOTFILES_HOME_DIR');
+        $backupDir = getenv('DOTFILES_BACKUP_DIR');
+
+        if (false !== strpos($file, $homeDir)) {
+            return str_replace($homeDir.DIRECTORY_SEPARATOR, '', $file);
         }
 
-        if (is_file($file = getenv('HOME').'/.dotfiles/.env')) {
-            $files[] = $file;
+        if (false !== strpos($file, $backupDir)) {
+            return str_replace(dirname($backupDir).'/', '', $file);
         }
 
-        // $PWD/.env always win
-        if (is_file($file = $cwd.'/.env')) {
-            $files[] = $file;
-        }
-
-        if (count($files) > 0) {
-            $env = new Dotenv();
-            call_user_func_array(array($env, 'load'), $files);
-        }
+        return $file;
     }
 
     public static function normalizeValue($value)
@@ -185,21 +182,5 @@ class Toolkit
         $path = strtr($path, array_merge($defaults, $additionalPath));
 
         return $path;
-    }
-
-    public static function getRelativePath(string $file):string
-    {
-        $homeDir = getenv('DOTFILES_HOME_DIR');
-        $backupDir = getenv('DOTFILES_BACKUP_DIR');
-
-        if(false !== strpos($file,$homeDir)){
-            return str_replace($homeDir,'~',$file);
-        }
-
-        if(false !== strpos($file,$backupDir)){
-            return str_replace(dirname($backupDir).'/','',$file);
-        }
-
-        return $file;
     }
 }

@@ -3,30 +3,29 @@ services:
         autowire: true
         autoconfigure: true
         public: true
-                    
-    
     Dotfiles\Core\Event\Dispatcher: ~
     Dotfiles\Core\Config\Config:
         synthetic: true
-        calls:
-            - [setCachePath, ['%dotfiles.cache_dir%']]
     Dotfiles\Core\Command\SelfUpdateCommand: ~
     Dotfiles\Core\Command\ClearCacheCommand: ~
     Dotfiles\Core\Command\AddCommand: ~
     Dotfiles\Core\Command\InitCommand: ~
     Dotfiles\Core\Command\RestoreCommand: ~
     Dotfiles\Core\Command\ConfigCommand: ~
-    Dotfiles\Core\Application: ~
+    Dotfiles\Core\Console\Application: ~
     Dotfiles\Core\Util\CommandProcessor: ~
     Dotfiles\Core\Util\Filesystem: ~
+    Dotfiles\Core\ApplicationFactory: ~
 
     # aliasses
     Psr\Log\LoggerInterface:
         alias: dotfiles.logger
     Dotfiles\Core\Util\Downloader:
         alias: dotfiles.downloader
+    dotfiles.factory:
+        class: Dotfiles\Core\ApplicationFactory
     dotfiles.app:
-        alias: Dotfiles\Core\Application
+        alias: Dotfiles\Core\Console\Application
     dotfiles.config:
         alias: Dotfiles\Core\Config\Config
     dotfiles.input:
@@ -36,6 +35,12 @@ services:
     dotfiles.logger:
         class: Symfony\Component\Console\Logger\ConsoleLogger
         arguments: ['@dotfiles.output']
+    dotfiles.parameters:
+        class: Dotfiles\Core\DI\Parameters
+        synthetic: true
+    Dotfiles\Core\DI\Parameters:
+        alias: dotfiles.parameters
+        
     dotfiles.downloader:
         class: Dotfiles\Core\Util\Downloader
         arguments: ['@dotfiles.output','@dotfiles.logger']
