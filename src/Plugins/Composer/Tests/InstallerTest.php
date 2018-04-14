@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\Composer\Tests;
 
 use Dotfiles\Core\DI\Parameters;
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\CommandProcessor;
 use Dotfiles\Core\Util\Downloader;

@@ -15,7 +15,6 @@ namespace Dotfiles\Core\Tests\Console;
 
 use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\DI\Parameters;
-use Dotfiles\Core\DI\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;

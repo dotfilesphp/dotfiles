@@ -15,7 +15,6 @@ namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\InitCommand;
 use Dotfiles\Core\DI\Parameters;
-use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Util\CommandProcessor;
 use Dotfiles\Core\Util\Toolkit;
