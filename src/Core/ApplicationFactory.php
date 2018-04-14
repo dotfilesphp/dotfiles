@@ -83,6 +83,7 @@ class ApplicationFactory
         $this->addAutoload();
         $this->loadPlugins();
         $this->compileContainer();
+        $this->ensureDir();
 
         return $this;
     }
@@ -107,13 +108,12 @@ class ApplicationFactory
 
     private function addAutoload(): void
     {
-        $baseDir = Toolkit::getBaseDir();
+        $baseDir = getenv('DOTFILES_BACKUP_DIR');
         $autoloadFile = $baseDir.'/vendor/autoload.php';
 
         // ignore if files is already loaded in phar file
         if (
-            is_file($autoloadFile) &&
-            (false === strpos($autoloadFile, 'phar:///'))
+            is_file($autoloadFile)
         ) {
             include_once $autoloadFile;
         }
@@ -156,6 +156,15 @@ class ApplicationFactory
         $parameters->setConfigs($container->getParameterBag()->all());
         $container->set('dotfiles.parameters', $parameters);
         $this->container = $container;
+    }
+
+    private function ensureDir(): void
+    {
+        /* @var Parameters $parameters */
+        $parameters = $this->container->get('dotfiles.parameters');
+        Toolkit::ensureDir($parameters->get('dotfiles.install_dir'));
+        Toolkit::ensureDir($parameters->get('dotfiles.bin_dir'));
+        Toolkit::ensureDir($parameters->get('dotfiles.vendor_dir'));
     }
 
     private function getCachePathPrefix()
