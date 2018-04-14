@@ -88,7 +88,7 @@ class CommandContext implements Context
             __DIR__.'/../Resources/default.env',
         );
 
-        if(is_file($file = getenv('HOME').'/.dotfiles_profile')){
+        if (is_file($file = getenv('HOME').'/.dotfiles_profile')) {
             $files[] = $file;
         }
 
@@ -96,8 +96,6 @@ class CommandContext implements Context
         foreach ($files as $file) {
             $env->load($file);
         }
-
-        
     }
 
     private static function loadPharAutoload(): void
