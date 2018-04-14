@@ -13,8 +13,9 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\DI;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\DI\Builder;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Tests\BaseTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\Container;
@@ -37,7 +38,7 @@ class BuilderTest extends BaseTestCase
 
     public function setUp(): void
     {
-        $this->config = $this->createMock(Config::class);
+        $this->config = $this->createMock(Parameters::class);
     }
 
     public function getBuilder()

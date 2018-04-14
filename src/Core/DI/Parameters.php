@@ -30,7 +30,7 @@ class Parameters implements \ArrayAccess
     public function get($name)
     {
         if (!array_key_exists($name, $this->configs)) {
-            throw new InvalidArgumentException('Config key "'.$name.'" not exists.');
+            throw new InvalidArgumentException('Parameters key "'.$name.'" not exists.');
         }
 
         return $this->configs[$name];

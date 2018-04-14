@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Config;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
     public function testArrayAccess(): void
     {
-        $config = new Config();
+        $config = new \Dotfiles\Core\DI\Parameters();
         $config['foo'] = 'bar';
         $this->assertTrue(isset($config['foo']));
         $this->assertEquals('bar', $config['foo']);

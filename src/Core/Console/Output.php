@@ -13,20 +13,20 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Console;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class Output extends ConsoleOutput
 {
     /**
-     * @var Config
+     * @var Parameters
      */
-    private $config;
+    private $parameters;
 
-    public function __construct(Config $config)
+    public function __construct(Parameters $parameters)
     {
         parent::__construct();
-        $this->config = $config;
+        $this->parameters = $parameters;
     }
 
     /**

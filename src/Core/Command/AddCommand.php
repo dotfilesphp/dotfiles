@@ -78,7 +78,6 @@ class AddCommand extends Command implements CommandInterface
         $machine = $input->getOption('machine');
         $backupDir = $config->get('dotfiles.backup_dir')."/src/$machine/home";
         $sourcePath = $input->getArgument('path');
-        $homeDir = $config->get('dotfiles.home_dir');
 
         // detect source path
         $originPath = $this->detectPath($sourcePath);

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Dotfiles\Core;
 
 use Composer\Autoload\ClassLoader;
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\DI\Compiler\CommandPass;
 use Dotfiles\Core\DI\Compiler\ListenerPass;
 use Dotfiles\Core\DI\Parameters;
@@ -156,10 +155,6 @@ class ApplicationFactory
             include_once $cachePath;
         }
         $container = new \CachedContainer();
-
-        $config = new Config();
-        $config->setConfigs($container->getParameterBag()->all());
-        $container->set(Config::class, $config);
 
         $parameters = new Parameters();
         $parameters->setConfigs($container->getParameterBag()->all());

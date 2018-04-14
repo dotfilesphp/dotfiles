@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Util;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +26,7 @@ class Downloader
     private $bytesMax;
 
     /**
-     * @var Config
+     * @var Parameters
      */
     private $config;
 
@@ -55,7 +55,7 @@ class Downloader
      */
     private $progressBar;
 
-    public function __construct(OutputInterface $output, LoggerInterface $logger, Config $config)
+    public function __construct(OutputInterface $output, LoggerInterface $logger, Parameters $config)
     {
         $this->output = $output;
         $this->logger = $logger;

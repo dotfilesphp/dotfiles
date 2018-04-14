@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Console;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Console\Output;
 use PHPUnit\Framework\TestCase;
 
 class TestOutput extends Output
 {
-    public function __construct(Config $config)
+    public function __construct(Parameters $parameters)
     {
-        parent::__construct($config);
+        parent::__construct($parameters);
     }
 
     public function write($messages, $newline = false, $options = \Symfony\Component\Console\Output\Output::OUTPUT_NORMAL): void
@@ -52,7 +52,7 @@ class OutputTest extends TestCase
     {
         $tempDir = sys_get_temp_dir().'/dotfiles/tests/output';
 
-        $config = $this->createMock(Config::class);
+        $config = $this->createMock(Parameters::class);
         $config->expects($this->any())
             ->method('get')
             ->willReturnMap(array(

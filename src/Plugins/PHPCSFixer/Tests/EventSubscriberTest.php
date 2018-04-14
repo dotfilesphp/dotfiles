@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPCSFixer\Tests;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
@@ -32,7 +32,7 @@ class EventSubscriberTest extends BaseTestCase
 
         Toolkit::ensureDir($installDir);
 
-        $config = $this->createMock(Config::class);
+        $config = $this->createMock(Parameters::class);
         $downloader = $this->createMock(Downloader::class);
         $event = $this->createMock(PatchEvent::class);
         $logger = $this->createMock(LoggerInterface::class);

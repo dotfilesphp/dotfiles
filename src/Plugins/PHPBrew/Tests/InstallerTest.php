@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
@@ -53,7 +53,7 @@ class InstallerTest extends BaseTestCase
 
     public function setUp(): void
     {
-        $this->config = $this->createMock(Config::class);
+        $this->config = $this->createMock(Parameters::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->output = $this->createMock(OutputInterface::class);

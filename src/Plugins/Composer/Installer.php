@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Composer;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\CommandProcessor;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
@@ -28,7 +28,7 @@ class Installer
     public const SIG_URL = 'https://composer.github.io/installer.sig';
 
     /**
-     * @var Config
+     * @var \Dotfiles\Core\DI\Parameters
      */
     private $config;
 
@@ -55,7 +55,7 @@ class Installer
     public function __construct(
         OutputInterface $output,
         LoggerInterface $logger,
-        Config $config,
+        Parameters $config,
         Downloader $downloader,
         CommandProcessor $processor
     ) {

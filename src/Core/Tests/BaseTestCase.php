@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests;
 
 use Dotfiles\Core\ApplicationFactory;
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Filesystem;
 use PHPUnit\Framework\TestCase;
@@ -97,11 +97,11 @@ abstract class BaseTestCase extends TestCase
     }
 
     /**
-     * @return Config
+     * @return \Dotfiles\Core\DI\Parameters
      *
      * @deprecated use parameters instead
      */
-    protected function getConfig(): Config
+    protected function getConfig(): Parameters
     {
         return $this->getContainer()->get('dotfiles.config');
     }

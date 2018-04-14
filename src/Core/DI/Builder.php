@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\DI;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\DI\Compiler\CommandPass;
 use Dotfiles\Core\DI\Compiler\ListenerPass;
 use Dotfiles\Core\Util\Toolkit;
@@ -28,7 +28,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class Builder
 {
     /**
-     * @var Config
+     * @var Parameters
      */
     private $config;
 
@@ -47,7 +47,7 @@ class Builder
      */
     private $dumper;
 
-    public function __construct(Config $config)
+    public function __construct(Parameters $config)
     {
         $this->config = $config;
     }
@@ -119,11 +119,11 @@ class Builder
     }
 
     /**
-     * @param Config $config
+     * @param Parameters $config
      *
      * @return Builder
      */
-    public function setConfig(Config $config): self
+    public function setConfig(Parameters $config): self
     {
         $this->config = $config;
 

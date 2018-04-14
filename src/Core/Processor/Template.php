@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
@@ -23,7 +23,7 @@ use Symfony\Component\Finder\Finder;
 class Template
 {
     /**
-     * @var Config
+     * @var Parameters
      */
     private $config;
 
@@ -43,7 +43,7 @@ class Template
     private $section;
 
     public function __construct(
-        Config $config,
+        Parameters $config,
         Dispatcher $dispatcher,
         LoggerInterface $logger
     ) {

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
@@ -23,7 +23,7 @@ use Symfony\Component\Process\Process;
 class Hooks
 {
     /**
-     * @var Config
+     * @var \Dotfiles\Core\DI\Parameters
      */
     private $config;
 
@@ -43,7 +43,7 @@ class Hooks
     private $logger;
 
     public function __construct(
-        Config $config,
+        Parameters $config,
         Dispatcher $dispatcher,
         LoggerInterface $logger
     ) {

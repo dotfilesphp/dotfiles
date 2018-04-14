@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Composer\Tests;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\CommandProcessor;
 use Dotfiles\Core\Util\Downloader;
@@ -62,7 +63,7 @@ class InstallerTest extends BaseTestCase
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
         $this->output = $this->createMock(OutputInterface::class);
-        $this->config = $this->createMock(Config::class);
+        $this->config = $this->createMock(Parameters::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->processor = $this->createMock(CommandProcessor::class);

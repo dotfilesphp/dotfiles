@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Bash\Tests\Event;
 
-use DOtfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use PHPUnit\Framework\TestCase;

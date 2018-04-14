@@ -13,8 +13,9 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Console;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Console\Application;
+use Dotfiles\Core\DI\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,7 +45,7 @@ class ApplicationTest extends TestCase
 
     protected function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
-        $this->config = $this->createMock(Config::class);
+        $this->config = $this->createMock(Parameters::class);
         $this->input = $this->createMock(InputInterface::class);
         $this->output = $this->createMock(OutputInterface::class);
     }

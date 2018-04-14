@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\PatchEvent;
 use Psr\Log\LoggerInterface;
@@ -22,7 +22,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class EventSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var Config
+     * @var Parameters
      */
     private $config;
 
@@ -31,7 +31,7 @@ class EventSubscriber implements EventSubscriberInterface
      */
     private $logger;
 
-    public function __construct(Config $config, LoggerInterface $logger)
+    public function __construct(Parameters $config, LoggerInterface $logger)
     {
         $this->config = $config;
         $this->logger = $logger;

@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\InitCommand;
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Util\CommandProcessor;

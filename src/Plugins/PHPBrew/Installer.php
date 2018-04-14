@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
@@ -26,7 +26,7 @@ class Installer
     public const DOWNLOAD_URL = 'https://github.com/phpbrew/phpbrew/raw/master/phpbrew';
 
     /**
-     * @var Config
+     * @var Parameters
      */
     private $config;
 
@@ -48,13 +48,13 @@ class Installer
     /**
      * Installer constructor.
      *
-     * @param Config          $config
+     * @param \Dotfiles\Core\DI\Parameters          $config
      * @param Downloader      $downloader
      * @param LoggerInterface $logger
      * @param OutputInterface $output
      */
     public function __construct(
-        Config $config,
+        Parameters $config,
         Downloader $downloader,
         LoggerInterface $logger,
         OutputInterface $output

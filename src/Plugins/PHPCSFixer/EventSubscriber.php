@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPCSFixer;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Filesystem;
@@ -26,7 +26,7 @@ class EventSubscriber implements EventSubscriberInterface
     public const URL = 'http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar';
 
     /**
-     * @var Config
+     * @var \Dotfiles\Core\DI\Parameters
      */
     private $config;
 
@@ -45,7 +45,7 @@ class EventSubscriber implements EventSubscriberInterface
      */
     private $output;
 
-    public function __construct(Config $config, Downloader $downloader, OutputInterface $output, LoggerInterface $logger)
+    public function __construct(Parameters $config, Downloader $downloader, OutputInterface $output, LoggerInterface $logger)
     {
         $this->config = $config;
         $this->downloader = $downloader;

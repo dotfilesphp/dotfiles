@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Console;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,9 +28,9 @@ class Application extends BaseApplication
     public const VERSION = '@package_version@';
 
     /**
-     * @var Config
+     * @var Parameters
      */
-    private $config;
+    private $parameters;
 
     /**
      * @var InputInterface
@@ -46,13 +46,13 @@ class Application extends BaseApplication
      * {@inheritdoc}
      */
     public function __construct(
-        Config $config,
+        Parameters $parameters,
         InputInterface $input,
         OutputInterface $output
     ) {
         parent::__construct('dotfiles', static::VERSION);
 
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->input = $input;
         $this->output = $output;
 

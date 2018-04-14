@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
@@ -26,7 +26,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class Patcher
 {
     /**
-     * @var Config
+     * @var Parameters
      */
     private $config;
 
@@ -46,7 +46,7 @@ class Patcher
     private $patches = array();
 
     public function __construct(
-        Config $config,
+        Parameters $config,
         LoggerInterface $logger,
         Dispatcher $dispatcher
     ) {
