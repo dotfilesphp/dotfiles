@@ -15,8 +15,8 @@ namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\InitCommand;
 use Dotfiles\Core\DI\Parameters;
+use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Tests\CommandTestCase;
-use Dotfiles\Core\Util\CommandProcessor;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Process\Process;
@@ -45,7 +45,7 @@ class InitCommandTest extends CommandTestCase
 
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
-        $this->processor = $this->createMock(CommandProcessor::class);
+        $this->processor = $this->createMock(ProcessRunner::class);
         $this->process = $this->createMock(Process::class);
         $this->parameters = $this->createMock(Parameters::class);
         static::cleanupTempDir();

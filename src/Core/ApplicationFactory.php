@@ -129,7 +129,8 @@ class ApplicationFactory
 
         /* @var Plugin $plugin */
         foreach ($this->plugins as $name => $plugin) {
-            $pluginConfig = array_key_exists($name, $configs) ? $configs[$name] : array();
+            $pluginConfig[$name] = array_key_exists($name, $configs) ? $configs[$name] : array();
+
             $plugin->load($pluginConfig, $builder);
         }
 

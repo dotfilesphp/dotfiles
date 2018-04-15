@@ -15,7 +15,7 @@ namespace Dotfiles\Core\Command;
 
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
-use Dotfiles\Core\Util\CommandProcessor;
+use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\Console\Question\Question;
 class InitCommand extends Command
 {
     /**
-     * @var CommandProcessor
+     * @var \Dotfiles\Core\Processor\ProcessRunner
      */
     private $commandProcessor;
 
@@ -55,7 +55,7 @@ class InitCommand extends Command
      */
     private $parameters;
 
-    public function __construct(?string $name = null, CommandProcessor $processor, Parameters $parameters)
+    public function __construct(?string $name = null, ProcessRunner $processor, Parameters $parameters)
     {
         parent::__construct($name);
         $this->commandProcessor = $processor;

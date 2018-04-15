@@ -21,6 +21,11 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class PHPCSFixerPlugin extends Plugin
 {
+    public function getName(): string
+    {
+        return 'phpcs';
+    }
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         $locator = new FileLocator(__DIR__.'/Resources');

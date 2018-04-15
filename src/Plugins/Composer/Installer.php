@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\Composer;
 
 use Dotfiles\Core\DI\Parameters;
-use Dotfiles\Core\Util\CommandProcessor;
+use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
@@ -48,7 +48,7 @@ class Installer
     private $output;
 
     /**
-     * @var CommandProcessor
+     * @var \Dotfiles\Core\Processor\ProcessRunner
      */
     private $processor;
 
@@ -57,7 +57,7 @@ class Installer
         LoggerInterface $logger,
         Parameters $config,
         Downloader $downloader,
-        CommandProcessor $processor
+        ProcessRunner $processor
     ) {
         $this->config = $config;
         $this->logger = $logger;

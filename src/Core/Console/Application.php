@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Console;
 
+use Dotfiles\Core\Command\ShellCommand;
 use Dotfiles\Core\DI\Parameters;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Dotfiles\Core\Command\ShellCommand;
 
 class Application extends BaseApplication
 {
@@ -92,6 +92,7 @@ class Application extends BaseApplication
             return $this->find('init')->run($input, $output);
         }
         $this->setDefaultCommand('shell');
+
         return parent::run($input, $output);
     }
 }

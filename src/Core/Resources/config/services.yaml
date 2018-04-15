@@ -11,7 +11,7 @@ services:
     Dotfiles\Core\Command\RestoreCommand: ~
     Dotfiles\Core\Command\ConfigCommand: ~
     Dotfiles\Core\Console\Application: ~
-    Dotfiles\Core\Util\CommandProcessor: ~
+    Dotfiles\Core\Processor\ProcessRunner: ~
     Dotfiles\Core\Util\Filesystem: ~
     Dotfiles\Core\ApplicationFactory: ~
 

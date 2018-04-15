@@ -16,8 +16,7 @@ namespace Dotfiles\Plugins\NVM;
 use Dotfiles\Core\Plugin;
 
 /**
- * export NVM_DIR="$HOME/.nvm"
- * [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm.
+ * NVM Plugin.
  */
 class NVMPlugin extends Plugin
 {

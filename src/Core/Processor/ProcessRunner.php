@@ -11,23 +11,37 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Util;
+namespace Dotfiles\Core\Processor;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Helper\DebugFormatterHelper;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
-class CommandProcessor
+class ProcessRunner
 {
     /**
      * @var LoggerInterface
      */
     private $logger;
 
+    /**
+     * @var float
+     */
+    private $timeout = 60;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
     public function __construct(
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        OutputInterface $output
     ) {
         $this->logger = $logger;
+        $this->output = $output;
     }
 
     /**
@@ -38,6 +52,7 @@ class CommandProcessor
      * @param int|float|null $timeout     The timeout in seconds or null to disable
      *
      * @throws RuntimeException When proc_open is not installed
+     * @deprecated use run method
      *
      * @return Process
      */
@@ -49,9 +64,46 @@ class CommandProcessor
         return $process;
     }
 
+    /**
+     * @param float $timeout
+     */
+    public function setTimeout(float $timeout): void
+    {
+        $this->timeout = $timeout;
+    }
+
+
     private function debug($message, $context = array()): void
     {
         $message = '<comment>[command]</comment> '.$message;
         $this->logger->debug($message, $context);
+    }
+
+    public function run($commandline, callable $callback = null, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
+    {
+        $process = new Process(
+            $commandline,
+            $cwd,
+            $env,
+            $input,
+            $timeout
+        );
+
+        $helper = new DebugFormatterHelper();
+        $output = $this->output;
+
+        $process->run(function($type,$buffer) use($helper,$output,$process,$callback) {
+            if(is_callable($callback)){
+                call_user_func($callback,$type,$buffer);
+            }
+            $contents = $helper->progress(
+                spl_object_hash($process),
+                $buffer,
+                Process::ERR === $type
+            );
+            $output->writeln($contents);
+        });
+
+        return $process;
     }
 }

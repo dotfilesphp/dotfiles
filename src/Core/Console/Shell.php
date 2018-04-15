@@ -32,9 +32,13 @@ use Symfony\Component\Process\ProcessBuilder;
 class Shell
 {
     private $application;
+
     private $hasReadline;
+
     private $history;
+
     private $output;
+
     private $processIsolation = false;
 
     /**
