@@ -34,6 +34,7 @@ return PhpCsFixer\Config::create()
         'protected_to_private' => false,
         '@PSR1' => true,
         '@PSR2' => true,
+        '@70Migration' => true,
         'ordered_imports' => array('sortAlgorithm' => 'alpha'),
         'header_comment' => array('header' => $header),
         'heredoc_to_nowdoc' => true,
