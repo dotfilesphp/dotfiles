@@ -18,14 +18,15 @@ use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Dotfiles\Core\Command\ShellCommand;
 
 class Application extends BaseApplication
 {
-    public const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
+    const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
 
-    public const RELEASE_DATE = '@release_date@';
+    const RELEASE_DATE = '@release_date@';
 
-    public const VERSION = '@package_version@';
+    const VERSION = '@package_version@';
 
     /**
      * @var InputInterface
@@ -41,6 +42,11 @@ class Application extends BaseApplication
      * @var Parameters
      */
     private $parameters;
+
+    /**
+     * @var bool
+     */
+    private $shellIsRunning = false;
 
     /**
      * {@inheritdoc}
@@ -59,6 +65,7 @@ class Application extends BaseApplication
         $this->getDefinition()->addOption(
             new InputOption('dry-run', '-d', InputOption::VALUE_NONE, 'Only show which files would have been modified')
         );
+        $this->add(new ShellCommand());
     }
 
     /**
@@ -78,20 +85,13 @@ class Application extends BaseApplication
      */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
-        if (null === $input) {
-            $input = $this->input;
-        }
-        if (null === $output) {
-            $output = $this->output;
-        }
-
         if (
             !getenv('DOTFILES_BACKUP_DIR')
             && ('dev' !== getenv('DOTFILES_ENV'))
         ) {
             return $this->find('init')->run($input, $output);
         }
-
+        $this->setDefaultCommand('shell');
         return parent::run($input, $output);
     }
 }

@@ -6,3 +6,4 @@ docker/*.ini
 build
 /var/*
 !var/.gitkeep
+/nbproject/private/

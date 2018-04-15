@@ -15,6 +15,9 @@ namespace Dotfiles\Core;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Dotfiles\Core\Util\Toolkit;
 
 /**
  * Class Plugin.
@@ -34,7 +37,20 @@ abstract class Plugin extends Extension
     /**
      * {@inheritdoc}
      */
-    public function load(array $configs, ContainerBuilder $container): void
+    public function load(array $config, ContainerBuilder $container): void
     {
+        $r = new \ReflectionClass(get_class($this));
+        $resourceDir = dirname($r->getFileName()).'/Resources';
+        
+        if(is_file($serviceConfig = $resourceDir.DIRECTORY_SEPARATOR.'services.yaml')){
+            $locator = new FileLocator($resourceDir);
+            $loader = new YamlFileLoader($locator, $container);
+            $loader->load($serviceConfig);
+        }
+        
+        $configuration = $this->getConfiguration($config, $container);
+        $configs = $this->processConfiguration($configuration, $config);
+        Toolkit::flattenArray($configs,$this->getName());
+        $container->getParameterBag()->add($configs);
     }
 }

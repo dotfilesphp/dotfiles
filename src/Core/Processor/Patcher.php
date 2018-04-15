@@ -34,6 +34,7 @@ class Patcher
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var Parameters
      */
