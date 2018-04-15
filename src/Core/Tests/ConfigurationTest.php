@@ -21,7 +21,7 @@ use Symfony\Component\Config\Definition\Processor;
 /**
  * Class ConfigurationTest.
  *
- * @covers \Dotfiles\Core\Config\Definition
+ * @covers \Dotfiles\Core\Configuration
  */
 class ConfigurationTest extends TestCase
 {
