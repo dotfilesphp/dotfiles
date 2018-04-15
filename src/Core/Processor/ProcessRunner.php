@@ -27,14 +27,14 @@ class ProcessRunner
     private $logger;
 
     /**
-     * @var float
-     */
-    private $timeout = 60;
-
-    /**
      * @var OutputInterface
      */
     private $output;
+
+    /**
+     * @var float
+     */
+    private $timeout = 60;
 
     public function __construct(
         LoggerInterface $logger,
@@ -52,6 +52,7 @@ class ProcessRunner
      * @param int|float|null $timeout     The timeout in seconds or null to disable
      *
      * @throws RuntimeException When proc_open is not installed
+     *
      * @deprecated use run method
      *
      * @return Process
@@ -62,21 +63,6 @@ class ProcessRunner
         $this->debug($commandline);
 
         return $process;
-    }
-
-    /**
-     * @param float $timeout
-     */
-    public function setTimeout(float $timeout): void
-    {
-        $this->timeout = $timeout;
-    }
-
-
-    private function debug($message, $context = array()): void
-    {
-        $message = '<comment>[command]</comment> '.$message;
-        $this->logger->debug($message, $context);
     }
 
     public function run($commandline, callable $callback = null, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
@@ -92,9 +78,9 @@ class ProcessRunner
         $helper = new DebugFormatterHelper();
         $output = $this->output;
 
-        $process->run(function($type,$buffer) use($helper,$output,$process,$callback) {
-            if(is_callable($callback)){
-                call_user_func($callback,$type,$buffer);
+        $process->run(function ($type, $buffer) use ($helper,$output,$process,$callback) {
+            if (is_callable($callback)) {
+                call_user_func($callback, $type, $buffer);
             }
             $contents = $helper->progress(
                 spl_object_hash($process),
@@ -105,5 +91,19 @@ class ProcessRunner
         });
 
         return $process;
+    }
+
+    /**
+     * @param float $timeout
+     */
+    public function setTimeout(float $timeout): void
+    {
+        $this->timeout = $timeout;
+    }
+
+    private function debug($message, $context = array()): void
+    {
+        $message = '<comment>[command]</comment> '.$message;
+        $this->logger->debug($message, $context);
     }
 }

@@ -22,11 +22,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends BaseApplication
 {
-    const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
+    public const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
 
-    const RELEASE_DATE = '@release_date@';
+    public const RELEASE_DATE = '@release_date@';
 
-    const VERSION = '@package_version@';
+    public const VERSION = '@package_version@';
 
     /**
      * @var InputInterface
