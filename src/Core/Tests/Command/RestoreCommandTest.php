@@ -36,7 +36,7 @@ class RestoreCommandTest extends CommandTestCase
             array('.ssh/id_rsa'),
             array('.ssh/id_rsa.pub'),
             array('.bashrc'),
-            array('.no-dot-prefix'),
+            array('.no-dot-prefix', true),
         );
     }
 
