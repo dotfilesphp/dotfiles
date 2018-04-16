@@ -14,14 +14,25 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests;
 
 use Dotfiles\Core\ApplicationFactory;
+use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Filesystem;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\Finder;
 
 abstract class BaseTestCase extends TestCase
 {
+    /**
+     * @var StreamOutput
+     */
+    protected $output;
+
+    /**
+     * @var resource
+     */
+    protected $stream;
     /**
      * @var ContainerInterface
      */
@@ -41,11 +52,24 @@ abstract class BaseTestCase extends TestCase
     public function boot(): void
     {
         if (!$this->hasBoot) {
+            $stream = fopen('php://memory', '+w');
+            $output = new StreamOutput($stream);
+
             $factory = new ApplicationFactory();
             $factory->boot();
-            $app = new TestApplication();
             $this->container = $factory->getContainer();
+            $this->container->set('dotfiles.output', $output);
+
+            $app = new TestApplication(
+                $this->container->get('dotfiles.parameters'),
+                $this->container->get('dotfiles.input'),
+                $output
+            );
+            $this->container->set(Application::class, $app);
             $this->container->set('dotfiles.app', $app);
+
+            $this->stream = $stream;
+            $this->output = $output;
             $this->hasBoot = true;
         }
     }
@@ -100,6 +124,16 @@ abstract class BaseTestCase extends TestCase
         $this->boot();
 
         return $this->container;
+    }
+
+    protected function getDisplay()
+    {
+        rewind($this->output->getStream());
+        $display = stream_get_contents($this->output->getStream());
+
+        $display = str_replace(PHP_EOL, "\n", $display);
+
+        return $display;
     }
 
     /**

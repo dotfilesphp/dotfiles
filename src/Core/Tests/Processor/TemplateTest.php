@@ -16,7 +16,6 @@ namespace Dotfiles\Core\Tests\Processor;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\Template;
 use Dotfiles\Core\Tests\BaseTestCase;
-use Dotfiles\Core\Tests\Helper\LoggerOutputTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -26,8 +25,6 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 class TemplateTest extends BaseTestCase
 {
-    use LoggerOutputTrait;
-
     /**
      * @var MockObject
      */
@@ -36,7 +33,6 @@ class TemplateTest extends BaseTestCase
     public function setUp(): void
     {
         $this->dispatcher = $this->createMock(Dispatcher::class);
-        $this->setUpLogger();
         static::cleanupTempDir();
     }
 
@@ -84,6 +80,6 @@ class TemplateTest extends BaseTestCase
         $config = $this->getParameters();
         $this->createBackupDirMock(__DIR__.'/fixtures/backup');
 
-        return new Template($config, $this->dispatcher, $this->logger);
+        return new Template($config, $this->dispatcher, $this->getService('dotfiles.logger'));
     }
 }

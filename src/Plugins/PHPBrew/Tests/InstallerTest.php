@@ -20,7 +20,6 @@ use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\PHPBrew\Installer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class InstallerTest.
@@ -45,10 +44,8 @@ class InstallerTest extends BaseTestCase
     private $logger;
 
     /**
-     * @var MockObject
+     * @var string
      */
-    private $output;
-
     private $tempDir;
 
     public function setUp(): void
@@ -56,7 +53,6 @@ class InstallerTest extends BaseTestCase
         $this->config = $this->createMock(Parameters::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->output = $this->createMock(OutputInterface::class);
         $this->tempDir = sys_get_temp_dir().'/dotfiles';
         static::cleanupTempDir();
     }
@@ -79,12 +75,9 @@ class InstallerTest extends BaseTestCase
     {
         Toolkit::ensureFileDir($file = $this->tempDir.'/bin/phpbrew');
         touch($file);
-        $this->output->expects($this->once())
-            ->method('writeln')
-            ->with($this->stringContains('already installed'))
-        ;
         $installer = $this->getSUT();
         $installer->run();
+        $this->assertContains('already installed', $this->getDisplay());
     }
 
     public function testRunWhenFileDownloaded(): void
@@ -124,7 +117,7 @@ class InstallerTest extends BaseTestCase
             $this->config,
             $this->downloader,
             $this->logger,
-            $this->output
+            $this->getService('dotfiles.output')
         );
     }
 }

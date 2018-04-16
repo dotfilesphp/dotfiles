@@ -26,11 +26,6 @@ use Symfony\Component\Console\Question\Question;
 class InitCommand extends Command
 {
     /**
-     * @var \Dotfiles\Core\Processor\ProcessRunner
-     */
-    private $commandProcessor;
-
-    /**
      * @var string
      */
     private $defaultBackupDir;
@@ -54,11 +49,15 @@ class InitCommand extends Command
      * @var Parameters
      */
     private $parameters;
+    /**
+     * @var ProcessRunner
+     */
+    private $runner;
 
     public function __construct(?string $name = null, ProcessRunner $processor, Parameters $parameters)
     {
         parent::__construct($name);
-        $this->commandProcessor = $processor;
+        $this->runner = $processor;
         $this->parameters = $parameters;
         $this->defaultHomeDir = $parameters->get('dotfiles.home_dir');
         $this->defaultBackupDir = $parameters->get('dotfiles.backup_dir');

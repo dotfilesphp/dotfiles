@@ -19,7 +19,6 @@ use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class Installer
 {
@@ -48,22 +47,22 @@ class Installer
     private $output;
 
     /**
-     * @var \Dotfiles\Core\Processor\ProcessRunner
+     * @var ProcessRunner
      */
-    private $processor;
+    private $runner;
 
     public function __construct(
         OutputInterface $output,
         LoggerInterface $logger,
         Parameters $config,
         Downloader $downloader,
-        ProcessRunner $processor
+        ProcessRunner $runner
     ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->output = $output;
         $this->downloader = $downloader;
-        $this->processor = $processor;
+        $this->runner = $runner;
     }
 
     /**
@@ -134,6 +133,11 @@ class Installer
         $this->logger->debug($message, $context);
     }
 
+    /**
+     * @param $scriptFile
+     * @param $installDir
+     * @param $fileName
+     */
     private function executeInstallScript($scriptFile, $installDir, $fileName): void
     {
         $cmd = array(
@@ -145,17 +149,13 @@ class Installer
         );
         $cmd = implode(' ', $cmd);
 
-        $process = $this->processor->create($cmd);
-        $process->setTimeout(3600);
-        $process->setIdleTimeout(60);
-        $process->run(function ($type, $buffer): void {
-            //@codeCoverageIgnoreStart
-            if (Process::ERR === $type) {
-                $this->logger->error($buffer);
-            } else {
-                $this->debug($buffer);
-            }
-            //@codeCoverageIgnoreEnd
-        });
+        $this->runner->run(
+            $cmd,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
     }
 }

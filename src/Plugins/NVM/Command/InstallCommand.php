@@ -9,40 +9,37 @@
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Command;
+namespace Dotfiles\Plugins\NVM\Command;
 
-use Dotfiles\Core\Console\Shell;
+use Dotfiles\Core\Command\Command;
+use Dotfiles\Plugins\NVM\Installer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * ShellCommand.
- *
- * @author Anthonius Munthi me@itstoni.com
- */
-class ShellCommand extends Command
+class InstallCommand extends Command
 {
     /**
-     * @var Shell
+     * @var Installer
      */
-    private $shell;
+    private $installer;
 
-    public function __construct(?string $name = null, Shell $shell)
+    public function __construct(?string $name = null, Installer $installer)
     {
         parent::__construct($name);
-        $this->shell = $shell;
+
+        $this->installer = $installer;
     }
 
     protected function configure()
     {
         $this
-            ->setName('shell')
-            ->setDescription('Execute dotfiles shell')
+            ->setName('nvm:install')
+            ->setDescription('Install Node Version Manager')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->shell->run();
+        $this->installer->install();
     }
 }

@@ -20,6 +20,11 @@ class TestPlugin extends Plugin
 {
 }
 
+/**
+ * Class PluginTest.
+ *
+ * @covers \Dotfiles\Core\Plugin
+ */
 class PluginTest extends TestCase
 {
     public function testGetName(): void

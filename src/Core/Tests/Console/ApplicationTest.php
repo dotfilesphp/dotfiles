@@ -14,39 +14,24 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Console;
 
 use Dotfiles\Core\Console\Application;
-use Dotfiles\Core\DI\Parameters;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Dotfiles\Core\Tests\BaseTestCase;
+use Symfony\Component\Console\Input\StringInput;
 
 /**
  * Class ApplicationTest.
  *
  * @covers \Dotfiles\Core\Console\Application
  */
-class ApplicationTest extends TestCase
+class ApplicationTest extends BaseTestCase
 {
-    /**
-     * @var MockObject
-     */
-    private $config;
-
-    /**
-     * @var MockObject
-     */
-    private $input;
-
-    /**
-     * @var MockObject
-     */
-    private $output;
-
-    protected function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
+    public function testRun()
     {
-        $this->config = $this->createMock(Parameters::class);
-        $this->input = $this->createMock(InputInterface::class);
-        $this->output = $this->createMock(OutputInterface::class);
+        $input = new StringInput('list');
+        $app = $this->getSUT();
+        $app->run($input, $this->output);
+        $display = $this->getDisplay();
+
+        $this->assertContains('@package_version@ @package_branch_alias_version@ @release_date@', $display);
     }
 
     public function testVersion(): void
@@ -62,8 +47,11 @@ class ApplicationTest extends TestCase
         $this->assertEquals($expected, $app->getLongVersion());
     }
 
+    /**
+     * @return Application
+     */
     private function getSUT()
     {
-        return new Application($this->config, $this->input, $this->output);
+        return $this->getService('dotfiles.app');
     }
 }

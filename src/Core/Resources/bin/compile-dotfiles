@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 # Helper script to compile dotfiles in bin directory
-DOTFILES_ENV=dev /app/bin/tools compile /app/build
+DOTFILES_ENV=dev /home/dotfiles/bin/tools compile /app/build
 rm -Rvf /home/backup/var/cache/*

@@ -18,13 +18,10 @@ use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Processor\Patcher;
 use Dotfiles\Core\Tests\BaseTestCase;
-use Dotfiles\Core\Tests\Helper\LoggerOutputTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class PatcherTest extends BaseTestCase
 {
-    use LoggerOutputTrait;
-
     /**
      * @var MockObject
      */
@@ -33,7 +30,6 @@ class PatcherTest extends BaseTestCase
     public function setUp(): void
     {
         $this->dispatcher = $this->createMock(Dispatcher::class);
-        $this->setUpLogger();
     }
 
     public function testPatch(): void
@@ -61,7 +57,8 @@ class PatcherTest extends BaseTestCase
     private function getPatcherObject()
     {
         $this->getParameters()->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
+        $logger = $this->getService('dotfiles.logger');
 
-        return new Patcher($this->getParameters(), $this->logger, $this->dispatcher);
+        return new Patcher($this->getParameters(), $logger, $this->dispatcher);
     }
 }

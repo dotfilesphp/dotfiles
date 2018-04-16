@@ -16,10 +16,8 @@ namespace Dotfiles\Core\Processor;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\Process\Process;
 
 class Hooks
 {
@@ -43,14 +41,21 @@ class Hooks
      */
     private $logger;
 
+    /**
+     * @var ProcessRunner
+     */
+    private $runner;
+
     public function __construct(
         Parameters $config,
         Dispatcher $dispatcher,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ProcessRunner $runner
     ) {
         $this->config = $config;
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
+        $this->runner = $runner;
     }
 
     public function run(): void
@@ -86,19 +91,8 @@ class Hooks
 
     private function doProcessHooks($relPath, $realPath): void
     {
-        $helper = new DebugFormatterHelper();
-        $logger = $this->logger;
-        $logger->debug("Executing <comment>$relPath</comment>");
-        $process = new Process($realPath);
-        $process->run(function ($type, $buffer) use ($relPath,$logger,$helper,$process): void {
-            $buffer = trim($buffer);
-            $contents = $helper->start(
-                spl_object_hash($process),
-                $buffer,
-                Process::ERR === $type
-            );
-            $logger->debug('<comment>[hooks] </comment>'.$contents);
-        });
+        $runner = $this->runner;
+        $runner->run($realPath);
     }
 
     private function registerHooks(): void
@@ -134,15 +128,11 @@ class Hooks
         foreach ($finder->files() as $file) {
             $relPath = $file->getRelativePathname();
             $realPath = $file->getRealPath();
-
-            $this->debug($file->getRealPath());
             $baseName = basename($file->getRealPath());
             if (false !== ($tlength = strpos($baseName, '.'))) {
                 $baseName = substr($baseName, 0, $tlength);
             }
             $exp = explode('-', $baseName);
-
-            $this->debug($file->getRealPath());
             if (!is_executable($realPath)) {
                 $this->debug('-hooks not executable: '.$relPath);
 

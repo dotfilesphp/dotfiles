@@ -16,9 +16,13 @@ namespace Dotfiles\Core\Processor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
+/**
+ * ProcessRunner help to create Process so it can be easily
+ * mock later in testing environment.
+ * This class also have a predefined DebugFormatterHelper.
+ */
 class ProcessRunner
 {
     /**
@@ -32,10 +36,11 @@ class ProcessRunner
     private $output;
 
     /**
-     * @var float
+     * ProcessRunner constructor.
+     *
+     * @param LoggerInterface $logger
+     * @param OutputInterface $output
      */
-    private $timeout = 60;
-
     public function __construct(
         LoggerInterface $logger,
         OutputInterface $output
@@ -45,26 +50,19 @@ class ProcessRunner
     }
 
     /**
-     * @param string|array   $commandline The command line to run
-     * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
-     * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
-     * @param mixed|null     $input       The input as stream resource, scalar or \Traversable, or null for no input
+     * Creates process and run with predefined DebugFormatterHelper.
+     *
+     * @param string         $commandline
+     * @param callable|null  $callback
+     * @param string|null    $cwd
+     * @param array|null     $env
+     * @param null           $input
      * @param int|float|null $timeout     The timeout in seconds or null to disable
      *
-     * @throws RuntimeException When proc_open is not installed
-     *
-     * @deprecated use run method
+     * @see     Process
      *
      * @return Process
      */
-    public function create($commandline, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
-    {
-        $process = new Process($commandline, $cwd, $env, $input, $timeout);
-        $this->debug($commandline);
-
-        return $process;
-    }
-
     public function run($commandline, callable $callback = null, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
     {
         $process = new Process(
@@ -77,7 +75,11 @@ class ProcessRunner
 
         $helper = new DebugFormatterHelper();
         $output = $this->output;
-
+        $output->writeln($helper->start(
+            spl_object_hash($process),
+            'Executing: '.$commandline,
+            'STARTED'
+        ));
         $process->run(function ($type, $buffer) use ($helper,$output,$process,$callback) {
             if (is_callable($callback)) {
                 call_user_func($callback, $type, $buffer);
@@ -87,23 +89,9 @@ class ProcessRunner
                 $buffer,
                 Process::ERR === $type
             );
-            $output->writeln($contents);
+            $output->write($contents);
         });
 
         return $process;
-    }
-
-    /**
-     * @param float $timeout
-     */
-    public function setTimeout(float $timeout): void
-    {
-        $this->timeout = $timeout;
-    }
-
-    private function debug($message, $context = array()): void
-    {
-        $message = '<comment>[command]</comment> '.$message;
-        $this->logger->debug($message, $context);
     }
 }

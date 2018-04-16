@@ -10,7 +10,9 @@ services:
     Dotfiles\Core\Command\InitCommand: ~
     Dotfiles\Core\Command\RestoreCommand: ~
     Dotfiles\Core\Command\ConfigCommand: ~
+    Dotfiles\Core\Command\ShellCommand: ~
     Dotfiles\Core\Console\Application: ~
+    Dotfiles\Core\Console\Shell: ~
     Dotfiles\Core\Processor\ProcessRunner: ~
     Dotfiles\Core\Util\Filesystem: ~
     Dotfiles\Core\ApplicationFactory: ~
@@ -29,8 +31,7 @@ services:
     dotfiles.output:
         class: Dotfiles\Core\Console\Output
     dotfiles.logger:
-        class: Symfony\Component\Console\Logger\ConsoleLogger
-        arguments: ['@dotfiles.output']
+        class: Dotfiles\Core\Console\ConsoleLogger
     dotfiles.parameters:
         class: Dotfiles\Core\DI\Parameters
         synthetic: true

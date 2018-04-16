@@ -41,11 +41,11 @@ class InitCommandTest extends CommandTestCase
     /**
      * @var MockObject
      */
-    private $processor;
+    private $runner;
 
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
-        $this->processor = $this->createMock(ProcessRunner::class);
+        $this->runner = $this->createMock(ProcessRunner::class);
         $this->process = $this->createMock(Process::class);
         $this->parameters = $this->createMock(Parameters::class);
         static::cleanupTempDir();
@@ -93,11 +93,7 @@ class InitCommandTest extends CommandTestCase
 
     protected function configureCommand(): void
     {
-        $this->processor->expects($this->any())
-            ->method('create')
-            ->willReturn($this->process)
-        ;
         $this->createHomeDirMock(__DIR__.'/fixtures/home');
-        $this->command = new InitCommand(null, $this->processor, $this->getParameters());
+        $this->command = new InitCommand(null, $this->runner, $this->getParameters());
     }
 }

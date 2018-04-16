@@ -106,23 +106,9 @@ class ApplicationFactory
         return array_key_exists($name, $this->plugins);
     }
 
-    private function addAutoload(): void
-    {
-        $baseDir = getenv('DOTFILES_BACKUP_DIR');
-        $autoloadFile = $baseDir.'/vendor/autoload.php';
-
-        // ignore if files is already loaded in phar file
-        if (
-            is_file($autoloadFile)
-        ) {
-            include_once $autoloadFile;
-        }
-    }
-
-    private function compileContainer(): void
+    protected function compileContainer(): void
     {
         $configs = $this->getConfiguration();
-        //$paramaterBag = new ParameterBag();
         $builder = new ContainerBuilder();
         $this->processCoreConfig($configs, $builder);
         // processing core configuration
@@ -136,7 +122,9 @@ class ApplicationFactory
 
         $cachePath = $this->getCachePathPrefix().'/container.php';
         $cache = new ConfigCache($cachePath, $this->debug);
-        if (!$cache->isFresh() || 'dev' == $this->env) {
+
+        // always compile container in dev environment
+        if (!$cache->isFresh() || 'dev' === $this->env) {
             $builder->addCompilerPass(new CommandPass());
             $builder->addCompilerPass(new ListenerPass());
             $builder->compile(true);
@@ -159,6 +147,19 @@ class ApplicationFactory
         $this->container = $container;
     }
 
+    private function addAutoload(): void
+    {
+        $baseDir = getenv('DOTFILES_BACKUP_DIR');
+        $autoloadFile = $baseDir.'/vendor/autoload.php';
+
+        // ignore if files is already loaded in phar file
+        if (
+            is_file($autoloadFile)
+        ) {
+            include_once $autoloadFile;
+        }
+    }
+
     private function ensureDir(): void
     {
         /* @var Parameters $parameters */
@@ -174,8 +175,9 @@ class ApplicationFactory
         global $argv;
         $command = $argv[0];
         $cacheDir = getenv('DOTFILES_CACHE_DIR');
+        $env = getenv('DOTFILES_ENV');
 
-        return $cacheDir.DIRECTORY_SEPARATOR.crc32($command);
+        return $cacheDir.DIRECTORY_SEPARATOR.crc32($command).DIRECTORY_SEPARATOR.$env;
     }
 
     private function getConfiguration()

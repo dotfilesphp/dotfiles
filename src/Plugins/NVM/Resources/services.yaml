@@ -5,3 +5,4 @@ services:
         public: true
     Dotfiles\Plugins\NVM\Installer: ~
     Dotfiles\Plugins\EventSubscriber: ~
+    Dotfiles\Plugins\NVM\Command\InstallCommand: ~

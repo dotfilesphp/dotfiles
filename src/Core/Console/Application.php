@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Console;
 
-use Dotfiles\Core\Command\ShellCommand;
 use Dotfiles\Core\DI\Parameters;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,11 +43,6 @@ class Application extends BaseApplication
     private $parameters;
 
     /**
-     * @var bool
-     */
-    private $shellIsRunning = false;
-
-    /**
      * {@inheritdoc}
      */
     public function __construct(
@@ -65,7 +59,6 @@ class Application extends BaseApplication
         $this->getDefinition()->addOption(
             new InputOption('dry-run', '-d', InputOption::VALUE_NONE, 'Only show which files would have been modified')
         );
-        $this->add(new ShellCommand());
     }
 
     /**
@@ -82,15 +75,27 @@ class Application extends BaseApplication
 
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
+        if (null === $input) {
+            $input = $this->input;
+        }
+
+        if (null === $output) {
+            $output = $this->output;
+        }
+
+        /* @codeCoverageIgnoreStart */
         if (
             !getenv('DOTFILES_BACKUP_DIR')
             && ('dev' !== getenv('DOTFILES_ENV'))
         ) {
             return $this->find('init')->run($input, $output);
         }
+        /* @codeCoverageIgnoreEnd */
         $this->setDefaultCommand('shell');
 
         return parent::run($input, $output);

@@ -18,7 +18,6 @@ use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\NVM\Installer;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 class InstallerTest extends BaseTestCase
@@ -27,11 +26,6 @@ class InstallerTest extends BaseTestCase
      * @var MockObject
      */
     private $downloader;
-
-    /**
-     * @var MockObject
-     */
-    private $output;
 
     /**
      * @var MockObject
@@ -54,7 +48,6 @@ class InstallerTest extends BaseTestCase
         $this->patcher = $this->createMock(Patcher::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->runner = $this->createMock(ProcessRunner::class);
-        $this->output = $this->createMock(OutputInterface::class);
     }
 
     public function testGetBashPatch()
@@ -66,19 +59,14 @@ class InstallerTest extends BaseTestCase
     public function testInstallSuccessfully()
     {
         // tests download installer script
-        $lsRemote = file_get_contents(__DIR__.'/fixtures/git-ls-remote.txt');
-        $this->process->expects($this->at(0))
-            ->method('getOutput')
-            ->willReturn($lsRemote)
-        ;
-
+        $contents = file_get_contents(__DIR__.'/fixtures/git-ls-remote.txt');
+        $target = $this->getParameters()->get('nvm.temp_dir').'/versions.txt';
+        $callback = function () use ($contents,$target) {
+            file_put_contents($target, $contents, LOCK_EX);
+        };
         $this->runner->expects($this->at(0))
             ->method('run')
-            ->with(
-                $this->stringContains('git ls-remote --tags')
-            )
-            ->willReturn($this->process)
-        ;
+            ->willReturnCallback($callback);
 
         $this->downloader->expects($this->at(0))
             ->method('run')
@@ -108,15 +96,15 @@ class InstallerTest extends BaseTestCase
 
     public function testWhenDownloadInstallScriptFailed()
     {
-        $lsRemote = file_get_contents(__DIR__.'/fixtures/git-ls-remote.txt');
-        $this->process->expects($this->at(0))
-            ->method('getOutput')
-            ->willReturn($lsRemote)
-        ;
+        $contents = file_get_contents(__DIR__.'/fixtures/git-ls-remote.txt');
+        $target = $this->getParameters()->get('nvm.temp_dir').'/versions.txt';
+        $callback = function () use ($contents,$target) {
+            file_put_contents($target, $contents, LOCK_EX);
+        };
         $this->runner->expects($this->any())
             ->method('run')
-            ->willReturn($this->process)
-        ;
+            ->willReturnCallback($callback);
+
         $this->downloader->expects($this->once())
             ->method('run')
             ->willThrowException(new \RuntimeException('some exception messages'))
@@ -130,6 +118,6 @@ class InstallerTest extends BaseTestCase
     {
         $parameters = $this->getService('dotfiles.parameters');
 
-        return new Installer($parameters, $this->patcher, $this->downloader, $this->runner, $this->output);
+        return new Installer($parameters, $this->patcher, $this->downloader, $this->runner, $this->getService('dotfiles.output'));
     }
 }

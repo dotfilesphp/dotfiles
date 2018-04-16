@@ -75,7 +75,7 @@ class ClearCacheCommand extends Command implements CommandInterface
         $fs = new Filesystem();
         $fs->removeDir($cacheDir, function ($directory) use ($logger): void {
             $message = "-removed <comment>$directory</comment>";
-            $this->logger->debug($message);
+            $this->logger->info($message);
         });
         $this->factory->boot();
     }

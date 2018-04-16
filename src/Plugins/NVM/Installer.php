@@ -15,6 +15,7 @@ use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Processor\Patcher;
 use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Downloader;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -50,7 +51,7 @@ class Installer
     /**
      * @var ProcessRunner
      */
-    private $processor;
+    private $runner;
 
     public function __construct(
         Parameters $parameters,
@@ -62,7 +63,7 @@ class Installer
         $this->parameters = $parameters;
         $this->patcher = $patcher;
         $this->downloader = $downloader;
-        $this->processor = $processor;
+        $this->runner = $processor;
         $this->output = $output;
         $this->installScript = $parameters->get('dotfiles.temp_dir').'/nvm/installer.sh';
     }
@@ -88,6 +89,7 @@ EOC;
 
     private function doInstall()
     {
+        $installDir = $this->parameters->get('nvm.install_dir');
         $temp = $this->parameters->get('dotfiles.temp_dir');
         $home = $temp.'/nvm';
         $env = array(
@@ -95,10 +97,12 @@ EOC;
             'HOME' => $home,
 
             // nvm install location
-            'NVM_DIR' => $this->parameters->get('nvm.install_dir'),
+            'NVM_DIR' => $installDir,
         );
-
-        $runner = $this->processor;
+        // create fake .bashrc file to disable error
+        touch($home.'/.bashrc');
+        Toolkit::ensureDir($installDir);
+        $runner = $this->runner;
         $runner->run(
             'bash '.$this->installScript,
             null,//callback
@@ -130,17 +134,21 @@ EOC;
 
     private function getInstallScriptUrl()
     {
+        $tempFile = $this->parameters->get('nvm.temp_dir').'/versions.txt';
+        Toolkit::ensureFileDir($tempFile);
         $installUrl = 'https://raw.githubusercontent.com/creationix/nvm/{VERSION}/install.sh';
-        $command = 'git ls-remote --tags git://github.com/creationix/nvm.git | sort -t \'/\' -k 3 -V';
+        $command = 'git ls-remote --tags git://github.com/creationix/nvm.git > '.$tempFile;
 
-        $process = $this
-            ->processor
+        $this
+            ->runner
             ->run($command)
         ;
-        $output = $process->getOutput();
+        $output = file_get_contents($tempFile);
         $pattern = '/v[0-9\.]+/im';
         preg_match_all($pattern, $output, $matches);
         $versions = $matches[0];
+        sort($versions, SORT_NATURAL);
+
         $current = $versions[count($versions) - 1];
         $url = str_replace('{VERSION}', $current, $installUrl);
 

@@ -11,6 +11,7 @@
 
 namespace Dotfiles\Core\Console;
 
+use Dotfiles\Core\DI\Parameters;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -37,7 +38,14 @@ class Shell
 
     private $history;
 
+    private $isRunning = false;
+
     private $output;
+
+    /**
+     * @var Parameters
+     */
+    private $parameters;
 
     private $processIsolation = false;
 
@@ -45,12 +53,13 @@ class Shell
      * If there is no readline support for the current PHP executable
      * a \RuntimeException exception is thrown.
      */
-    public function __construct(Application $application)
+    public function __construct(Application $application, Parameters $parameters)
     {
         $this->hasReadline = function_exists('readline');
         $this->application = $application;
         $this->history = getenv('HOME').'/.history_'.$application->getName();
         $this->output = new ConsoleOutput();
+        $this->parameters = $parameters;
     }
 
     public function getProcessIsolation()
@@ -58,10 +67,107 @@ class Shell
         return $this->processIsolation;
     }
 
+    public function run()
+    {
+        if (!$this->isRunning) {
+            $this->isRunning = true;
+            $this->doRun();
+        } else {
+            $input = new StringInput('list');
+            $this->getApplication()->run($input);
+        }
+    }
+
+    public function setProcessIsolation($processIsolation)
+    {
+        $this->processIsolation = (bool) $processIsolation;
+
+        if ($this->processIsolation && !class_exists('Symfony\\Component\\Process\\Process')) {
+            throw new RuntimeException('Unable to isolate processes as the Symfony Process Component is not installed.');
+        }
+    }
+
+    protected function getApplication()
+    {
+        return $this->application;
+    }
+
+    /**
+     * Returns the shell header.
+     *
+     * @return string The header string
+     */
+    protected function getHeader()
+    {
+        return <<<EOF
+
+Welcome to the <info>{$this->application->getName()}</info> (<comment>{$this->application->getVersion()}</comment>).
+
+At the prompt, type <comment>help</comment> for some help,
+or <comment>list</comment> to get a list of available commands.
+
+To exit the shell, type <comment>^D</comment>.
+
+EOF;
+    }
+
+    protected function getOutput()
+    {
+        return $this->output;
+    }
+
+    /**
+     * Renders a prompt.
+     *
+     * @return string The prompt
+     */
+    protected function getPrompt()
+    {
+        $prompt = $this->application->getName().'>> ';
+
+        return $this->output->getFormatter()->format($prompt);
+    }
+
+    /**
+     * Tries to return autocompletion for the current entered text.
+     *
+     * @param string $text The last segment of the entered text
+     *
+     * @return bool|array A list of guessed strings or true
+     */
+    private function autocompleter($text)
+    {
+        $info = readline_info();
+        $text = substr($info['line_buffer'], 0, $info['end']);
+
+        if ($info['point'] !== $info['end']) {
+            return true;
+        }
+
+        // task name?
+        if (false === strpos($text, ' ') || !$text) {
+            return array_keys($this->application->all());
+        }
+
+        // options and arguments?
+        try {
+            $command = $this->application->find(substr($text, 0, strpos($text, ' ')));
+        } catch (\Exception $e) {
+            return true;
+        }
+
+        $list = array('--help');
+        foreach ($command->getDefinition()->getOptions() as $option) {
+            $list[] = '--'.$option->getName();
+        }
+
+        return $list;
+    }
+
     /**
      * Runs the shell.
      */
-    public function run()
+    private function doRun()
     {
         $this->application->setAutoExit(false);
         $this->application->setCatchExceptions(true);
@@ -126,91 +232,6 @@ EOF
                 $this->output->writeln(sprintf('<error>The command terminated with an error status (%s)</error>', $ret));
             }
         }
-    }
-
-    public function setProcessIsolation($processIsolation)
-    {
-        $this->processIsolation = (bool) $processIsolation;
-
-        if ($this->processIsolation && !class_exists('Symfony\\Component\\Process\\Process')) {
-            throw new RuntimeException('Unable to isolate processes as the Symfony Process Component is not installed.');
-        }
-    }
-
-    protected function getApplication()
-    {
-        return $this->application;
-    }
-
-    /**
-     * Returns the shell header.
-     *
-     * @return string The header string
-     */
-    protected function getHeader()
-    {
-        return <<<EOF
-
-Welcome to the <info>{$this->application->getName()}</info> shell (<comment>{$this->application->getVersion()}</comment>).
-
-At the prompt, type <comment>help</comment> for some help,
-or <comment>list</comment> to get a list of available commands.
-
-To exit the shell, type <comment>^D</comment>.
-
-EOF;
-    }
-
-    protected function getOutput()
-    {
-        return $this->output;
-    }
-
-    /**
-     * Renders a prompt.
-     *
-     * @return string The prompt
-     */
-    protected function getPrompt()
-    {
-        // using the formatter here is required when using readline
-        return $this->output->getFormatter()->format($this->application->getName().'>> ');
-    }
-
-    /**
-     * Tries to return autocompletion for the current entered text.
-     *
-     * @param string $text The last segment of the entered text
-     *
-     * @return bool|array A list of guessed strings or true
-     */
-    private function autocompleter($text)
-    {
-        $info = readline_info();
-        $text = substr($info['line_buffer'], 0, $info['end']);
-
-        if ($info['point'] !== $info['end']) {
-            return true;
-        }
-
-        // task name?
-        if (false === strpos($text, ' ') || !$text) {
-            return array_keys($this->application->all());
-        }
-
-        // options and arguments?
-        try {
-            $command = $this->application->find(substr($text, 0, strpos($text, ' ')));
-        } catch (\Exception $e) {
-            return true;
-        }
-
-        $list = array('--help');
-        foreach ($command->getDefinition()->getOptions() as $option) {
-            $list[] = '--'.$option->getName();
-        }
-
-        return $list;
     }
 
     /**

@@ -41,16 +41,23 @@ abstract class Plugin extends Extension
     {
         $r = new \ReflectionClass(get_class($this));
         $resourceDir = dirname($r->getFileName()).'/Resources';
+        $serviceConfig = $resourceDir.DIRECTORY_SEPARATOR.'services.yaml';
 
-        if (is_file($serviceConfig = $resourceDir.DIRECTORY_SEPARATOR.'services.yaml')) {
+        if (is_file($serviceConfig)) {
             $locator = new FileLocator($resourceDir);
-            $loader = new YamlFileLoader($locator, $container);
+            $loader = new YamlFileLoader($container, $locator);
             $loader->load($serviceConfig);
         }
 
         $configuration = $this->getConfiguration($config, $container);
         $configs = $this->processConfiguration($configuration, $config);
         Toolkit::flattenArray($configs, $this->getName());
+        $configs = $this->configure($configs);
         $container->getParameterBag()->add($configs);
+    }
+
+    protected function configure($configs)
+    {
+        return $configs;
     }
 }

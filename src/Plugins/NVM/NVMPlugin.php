@@ -20,4 +20,10 @@ use Dotfiles\Core\Plugin;
  */
 class NVMPlugin extends Plugin
 {
+    protected function configure($configs)
+    {
+        $configs['nvm.temp_dir'] = '%dotfiles.temp_dir%/nvm';
+
+        return $configs;
+    }
 }
