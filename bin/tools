@@ -4,7 +4,6 @@
 umask(0022);
 require __DIR__.'/../vendor/autoload.php';
 use Dotfiles\Core\ApplicationFactory;
-use Dotfiles\Core\Util\Toolkit;
 
 try {
     if (!defined('DOTFILES_PHAR_MODE')) {
@@ -16,10 +15,10 @@ try {
 
     /* @var \Dotfiles\Core\Console\Application $app */
     $app = $container->get('dotfiles.app');
-    $app->addCommands([
+    $app->addCommands(array(
         new \Dotfiles\Core\Command\SubsplitCommand(),
-        new \Dotfiles\Core\Command\CompileCommand()
-    ]);
+        new \Dotfiles\Core\Command\CompileCommand(),
+    ));
     exit($app->run());
 } catch (\Exception $e) {
     echo $e->getMessage()."\n";

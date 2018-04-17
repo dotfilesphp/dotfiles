@@ -28,6 +28,7 @@ class InstallCommand extends Command implements CommandInterface
      * @var Dispatcher
      */
     private $dispatcher;
+
     /**
      * @var Installer
      */

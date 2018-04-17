@@ -29,6 +29,7 @@ class Installer
      * @var Dispatcher
      */
     private $dispatcher;
+
     /**
      * @var Downloader
      */
