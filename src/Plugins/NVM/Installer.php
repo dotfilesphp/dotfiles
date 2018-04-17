@@ -14,7 +14,6 @@ namespace Dotfiles\Plugins\NVM;
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
-use Dotfiles\Core\Processor\Patcher;
 use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
