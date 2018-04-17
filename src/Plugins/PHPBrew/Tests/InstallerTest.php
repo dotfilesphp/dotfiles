@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
-use Dotfiles\Core\DI\Parameters;
+use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
@@ -50,11 +50,9 @@ class InstallerTest extends BaseTestCase
 
     public function setUp(): void
     {
-        $this->config = $this->createMock(Parameters::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->tempDir = sys_get_temp_dir().'/dotfiles';
-        static::cleanupTempDir();
+        $this->tempDir = $this->getParameters()->get('dotfiles.temp_dir');
     }
 
     public function testRun(): void
@@ -63,9 +61,9 @@ class InstallerTest extends BaseTestCase
         $tempDir = $this->tempDir;
         $this->downloader->expects($this->once())
             ->method('run')
-            ->with(Installer::DOWNLOAD_URL, $tempDir.'/temp/phpbrew')
-            ->will($this->returnCallback(function () use ($tempDir): void {
-                touch($tempDir.'/temp/phpbrew');
+            ->with(Installer::DOWNLOAD_URL, $tempDir.'/phpbrew')
+            ->will($this->returnCallback(function ($url, $target): void {
+                touch($target);
             }))
         ;
         $installer->run();
@@ -73,23 +71,12 @@ class InstallerTest extends BaseTestCase
 
     public function testRunOnAlreadyInstalled(): void
     {
-        Toolkit::ensureFileDir($file = $this->tempDir.'/bin/phpbrew');
+        $installDir = $this->getParameters()->get('dotfiles.install_dir');
+        Toolkit::ensureFileDir($file = $installDir.'/bin/phpbrew');
         touch($file);
         $installer = $this->getSUT();
         $installer->run();
         $this->assertContains('already installed', $this->getDisplay());
-    }
-
-    public function testRunWhenFileDownloaded(): void
-    {
-        Toolkit::ensureFileDir($file = $this->tempDir.'/temp/phpbrew');
-        touch($file);
-        $this->logger->expects($this->once())
-            ->method('debug')
-            ->with($this->stringContains('file already downloaded'))
-        ;
-        $installer = $this->getSUT();
-        $installer->run();
     }
 
     /**
@@ -99,25 +86,16 @@ class InstallerTest extends BaseTestCase
      *
      * @throws \ReflectionException
      */
-    private function getSUT(
-        $config = array()
-    ) {
-        $tempDir = $this->tempDir;
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap(array(
-                array('dotfiles.dry_run', false),
-                array('dotfiles.install_dir', $tempDir.'/install'),
-                array('dotfiles.temp_dir', $tempDir.'/temp'),
-                array('dotfiles.bin_dir', $tempDir.'/bin'),
-            ))
-        ;
+    private function getSUT()
+    {
+        static::cleanupTempDir();
 
         return new Installer(
-            $this->config,
+            $this->getParameters(),
             $this->downloader,
             $this->logger,
-            $this->getService('dotfiles.output')
+            $this->getService('dotfiles.output'),
+            $this->getService(ProcessRunner::class)
         );
     }
 }

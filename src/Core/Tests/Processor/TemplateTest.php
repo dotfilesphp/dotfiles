@@ -56,12 +56,12 @@ class TemplateTest extends BaseTestCase
         static $hasRun = false, $output;
         if (!$hasRun) {
             $restore = $this->getTemplateObject('restore');
-            $restore->run();
+            $restore->onRestore();
             $hasRun = true;
             $output = $this->getDisplay();
         }
         $restore = $this->getTemplateObject('restore');
-        $restore->run();
+        $restore->onRestore();
         $this->assertContains($file, $output);
 
         $tempDir = $this->getParameters()->get('dotfiles.home_dir');

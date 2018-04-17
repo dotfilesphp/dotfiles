@@ -11,7 +11,9 @@
 
 namespace Dotfiles\Plugins\NVM;
 
+use Dotfiles\Core\Constant;
 use Dotfiles\Core\DI\Parameters;
+use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\Patcher;
 use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Downloader;
@@ -23,6 +25,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Installer
 {
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
     /**
      * @var Downloader
      */
@@ -44,24 +50,19 @@ class Installer
     private $parameters;
 
     /**
-     * @var Patcher
-     */
-    private $patcher;
-
-    /**
      * @var ProcessRunner
      */
     private $runner;
 
     public function __construct(
         Parameters $parameters,
-        Patcher $patcher,
+        Dispatcher $dispatcher,
         Downloader $downloader,
         ProcessRunner $processor,
         OutputInterface $output
     ) {
         $this->parameters = $parameters;
-        $this->patcher = $patcher;
+        $this->dispatcher = $dispatcher;
         $this->downloader = $downloader;
         $this->runner = $processor;
         $this->output = $output;
@@ -111,7 +112,7 @@ EOC;
         );
 
         // ask patcher to run, to add nvm bash config
-        $this->patcher->run();
+        $this->dispatcher->dispatch(Constant::EVENT_PATCH);
     }
 
     private function downloadInstallScript()

@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\PHPBrew;
 
 use Dotfiles\Core\DI\Parameters;
+use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class Installer
 {
@@ -46,23 +46,31 @@ class Installer
     private $output;
 
     /**
+     * @var ProcessRunner
+     */
+    private $runner;
+
+    /**
      * Installer constructor.
      *
      * @param \Dotfiles\Core\DI\Parameters $config
      * @param Downloader                   $downloader
      * @param LoggerInterface              $logger
      * @param OutputInterface              $output
+     * @param ProcessRunner                $runner
      */
     public function __construct(
         Parameters $config,
         Downloader $downloader,
         LoggerInterface $logger,
-        OutputInterface $output
+        OutputInterface $output,
+        ProcessRunner $runner
     ) {
         $this->config = $config;
         $this->downloader = $downloader;
         $this->logger = $logger;
         $this->output = $output;
+        $this->runner = $runner;
     }
 
     /**
@@ -71,7 +79,7 @@ class Installer
      */
     public function debug($message, array $context = array()): void
     {
-        $this->logger->debug('phpbrew: '.$message, $context);
+        $this->logger->info($message, $context);
     }
 
     /**
@@ -92,7 +100,7 @@ class Installer
             return;
         }
 
-        if (!is_file($toFile)) {
+        if (!file_exists($toFile)) {
             $downloader = $this->downloader;
             $downloader->run(static::DOWNLOAD_URL, $toFile);
         } else {
@@ -108,16 +116,8 @@ class Installer
                 $installToFile,
                 'init',
             );
-            $process = new Process($cmd);
-            $process->run(function ($type, $buffer): void {
-                //@codeCoverageIgnoreStart
-                if (Process::ERR === $type) {
-                    $this->logger->error('phpbrew: '.$buffer);
-                } else {
-                    $this->debug($buffer);
-                }
-                //@codeCoverageIgnoreEnd
-            });
+            $cmd = implode(' ', $cmd);
+            $this->runner->run($cmd);
         }
     }
 }

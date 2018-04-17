@@ -18,7 +18,6 @@ use Dotfiles\Core\Command\ClearCacheCommand;
 use Dotfiles\Core\Tests\CommandTestCase;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -57,7 +56,7 @@ class ClearCacheCommandTest extends CommandTestCase
         $this->command = new ClearCacheCommand(
             null,
             $this->getParameters(),
-            $this->getService(LoggerInterface::class),
+            $this->getService('dotfiles.logger'),
             $this->factory
         );
     }

@@ -20,7 +20,6 @@ services:
         class: Dotfiles\Core\Console\ConsoleLogger
     dotfiles.parameters:
         class: Dotfiles\Core\DI\Parameters
-        synthetic: true
     dotfiles.runner:
         class: Dotfiles\Core\Processor\ProcessRunner
     dotfiles.shell:

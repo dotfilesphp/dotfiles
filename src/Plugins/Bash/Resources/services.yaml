@@ -1,13 +1,2 @@
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: true
-    Dotfiles\Plugins\Bash\EventSubscriber:
-        tags:
-            - { name: "event_subscriber" }
-
-    #bash.listeners.install:
-    #    class: Dotfiles\Plugins\Bash\Listeners
-    #    #event_name: 'dotfiles.install'
-
+    Dotfiles\Plugins\Bash\EventSubscriber: ~

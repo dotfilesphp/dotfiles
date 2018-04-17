@@ -20,10 +20,11 @@ use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
-class Patcher
+class Patcher implements EventSubscriberInterface
 {
     /**
      * @var Dispatcher
@@ -55,19 +56,29 @@ class Patcher
         $this->dispatcher = $dispatcher;
     }
 
-    public function run(): void
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Constant::EVENT_PRE_RESTORE => array('onPreRestore'),
+            Constant::EVENT_POST_RESTORE => array('onPostRestore'),
+            Constant::EVENT_PATCH => array('onPatchEvent'),
+        );
+    }
+
+    public function onPatchEvent()
     {
         $this->registerPatch();
-        $dispatcher = $this->dispatcher;
-        $patchEvent = new PatchEvent($this->patches);
+        $this->run();
+    }
 
-        // begin to writting patch
-        $this->debug('dispatching '.Constant::EVENT_PRE_PATCH);
-        $dispatcher->dispatch(Constant::EVENT_PRE_PATCH, $patchEvent);
-        $patches = $patchEvent->getPatches();
-        $this->applyPatch($patches);
-        $this->debug('dispatching '.Constant::EVENT_POST_PATCH);
-        $dispatcher->dispatch(Constant::EVENT_POST_PATCH, $patchEvent);
+    public function onPostRestore(): void
+    {
+        $this->run();
+    }
+
+    public function onPreRestore()
+    {
+        $this->registerPatch();
     }
 
     /**
@@ -129,5 +140,19 @@ class Patcher
             $this->patches[$relPath][] = $patch;
             $this->debug('+patch '.$relPath);
         }
+    }
+
+    private function run()
+    {
+        $dispatcher = $this->dispatcher;
+        $patchEvent = new PatchEvent($this->patches);
+
+        // begin to writting patch
+        $this->debug('dispatching '.Constant::EVENT_PRE_PATCH);
+        $dispatcher->dispatch(Constant::EVENT_PRE_PATCH, $patchEvent);
+        $patches = $patchEvent->getPatches();
+        $this->applyPatch($patches);
+        $this->debug('dispatching '.Constant::EVENT_POST_PATCH);
+        $dispatcher->dispatch(Constant::EVENT_POST_PATCH, $patchEvent);
     }
 }

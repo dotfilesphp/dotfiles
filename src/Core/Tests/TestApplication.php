@@ -23,6 +23,7 @@ class TestApplication extends BaseApplication
      * @var OutputInterface
      */
     private $output;
+
     /**
      * @var resource
      */

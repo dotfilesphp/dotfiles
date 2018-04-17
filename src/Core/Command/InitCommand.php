@@ -49,6 +49,7 @@ class InitCommand extends Command
      * @var Parameters
      */
     private $parameters;
+
     /**
      * @var ProcessRunner
      */

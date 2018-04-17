@@ -45,7 +45,8 @@ class HooksTest extends BaseTestCase
     public function testHook(string $expected): void
     {
         $hooks = $this->getHookObject();
-        $hooks->run();
+        $hooks->onPreRestore();
+        $hooks->onPostRestore();
         $output = $this->getDisplay();
 
         $this->assertContains($expected, $output);

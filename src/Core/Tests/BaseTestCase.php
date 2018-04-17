@@ -33,6 +33,7 @@ abstract class BaseTestCase extends TestCase
      * @var resource
      */
     protected $stream;
+
     /**
      * @var ContainerInterface
      */

@@ -13,24 +13,21 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
+use Dotfiles\Core\Constant;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Finder;
 
-class Template
+class Template implements EventSubscriberInterface
 {
     /**
      * @var Parameters
      */
     private $config;
-
-    /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
 
     /**
      * @var LoggerInterface
@@ -49,10 +46,16 @@ class Template
     ) {
         $this->config = $config;
         $this->logger = $logger;
-        $this->dispatcher = $dispatcher;
     }
 
-    public function run(): void
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Constant::EVENT_RESTORE => array('onRestore', 255),
+        );
+    }
+
+    public function onRestore(): void
     {
         $machine = getenv('DOTFILES_MACHINE_NAME');
         $config = $this->config;
@@ -66,9 +69,6 @@ class Template
             $this->debug('');
             $this->debug('');
         }
-
-        $this->section = 'patch';
-        $this->debug('applying patch');
     }
 
     private function debug($message, array $context = array()): void

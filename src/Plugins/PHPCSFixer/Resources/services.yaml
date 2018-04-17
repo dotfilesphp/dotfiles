@@ -5,4 +5,3 @@ services:
         public: true
     phpcs.event_subscriber:
         class: Dotfiles\Plugins\PHPCSFixer\EventSubscriber
-        tags: { name: "event_subscriber" }

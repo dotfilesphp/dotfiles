@@ -14,8 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core;
 
 use Composer\Autoload\ClassLoader;
-use Dotfiles\Core\DI\Compiler\CommandPass;
-use Dotfiles\Core\DI\Compiler\ListenerPass;
+use Dotfiles\Core\DI\Compiler\DefaultPass;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\ConfigCache;
@@ -124,9 +123,8 @@ class ApplicationFactory
         $cache = new ConfigCache($cachePath, $this->debug);
 
         // always compile container in dev environment
-        if (!$cache->isFresh() || 'dev' === $this->env) {
-            $builder->addCompilerPass(new CommandPass());
-            $builder->addCompilerPass(new ListenerPass());
+        if (!$cache->isFresh() || 'prod' !== $this->env) {
+            $builder->addCompilerPass(new DefaultPass());
             $builder->compile(true);
             $dumper = new PhpDumper($builder);
             $resources = $this->envFiles;

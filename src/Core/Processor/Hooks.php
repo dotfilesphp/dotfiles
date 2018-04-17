@@ -13,13 +13,18 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
+use Dotfiles\Core\Constant;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
-class Hooks
+/**
+ * Class Hooks.
+ */
+class Hooks implements EventSubscriberInterface
 {
     /**
      * @var \Dotfiles\Core\DI\Parameters
@@ -58,12 +63,23 @@ class Hooks
         $this->runner = $runner;
     }
 
-    public function run(): void
+    public static function getSubscribedEvents()
     {
-        $this->hooks = array();
+        return array(
+            Constant::EVENT_PRE_RESTORE => 'onPreRestore',
+            Constant::EVENT_POST_RESTORE => array('onPostRestore', -1),
+        );
+    }
+
+    public function onPostRestore()
+    {
+        $this->doPostRestoreHooks();
+    }
+
+    public function onPreRestore()
+    {
         $this->registerHooks();
         $this->doPreRestoreHooks();
-        $this->doPostRestoreHooks();
     }
 
     private function debug($messages, $context = array()): void

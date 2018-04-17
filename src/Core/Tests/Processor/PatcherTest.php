@@ -42,7 +42,8 @@ class PatcherTest extends BaseTestCase
             )
         ;
         $patch = $this->getPatcherObject();
-        $patch->run();
+        $patch->onPreRestore();
+        $patch->onPostRestore();
         $output = $this->getDisplay();
 
         $this->assertContains('applying patch', $output);

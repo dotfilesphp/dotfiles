@@ -11,7 +11,8 @@
 
 namespace Dotfiles\Plugins\NVM\Tests;
 
-use Dotfiles\Core\Processor\Patcher;
+use Dotfiles\Core\Constant;
+use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
@@ -25,12 +26,11 @@ class InstallerTest extends BaseTestCase
     /**
      * @var MockObject
      */
-    private $downloader;
-
+    private $dispatcher;
     /**
      * @var MockObject
      */
-    private $patcher;
+    private $downloader;
 
     /**
      * @var MockObject
@@ -45,7 +45,7 @@ class InstallerTest extends BaseTestCase
     public function setUp()
     {
         $this->process = $this->createMock(Process::class);
-        $this->patcher = $this->createMock(Patcher::class);
+        $this->dispatcher = $this->createMock(Dispatcher::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->runner = $this->createMock(ProcessRunner::class);
     }
@@ -86,8 +86,9 @@ class InstallerTest extends BaseTestCase
             ->willReturn($this->process)
         ;
 
-        $this->patcher->expects($this->once())
-            ->method('run')
+        $this->dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with(Constant::EVENT_PATCH)
         ;
 
         $installer = $this->getInstallerObject();
@@ -118,6 +119,6 @@ class InstallerTest extends BaseTestCase
     {
         $parameters = $this->getService('dotfiles.parameters');
 
-        return new Installer($parameters, $this->patcher, $this->downloader, $this->runner, $this->getService('dotfiles.output'));
+        return new Installer($parameters, $this->dispatcher, $this->downloader, $this->runner, $this->getService('dotfiles.output'));
     }
 }

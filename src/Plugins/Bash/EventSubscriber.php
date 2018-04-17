@@ -49,9 +49,6 @@ class EventSubscriber implements EventSubscriberInterface
             Constant::EVENT_PRE_PATCH => array(
                 array('onPrePatchEvent', -999),
             ),
-            Constant::EVENT_POST_RESTORE => array(
-                array('onPostRestore', -999),
-            ),
         );
     }
 
