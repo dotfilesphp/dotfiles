@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
 use Dotfiles\Core\Processor\ProcessRunner;
-use Dotfiles\Core\Tests\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\PHPBrew\Installer;
@@ -26,7 +25,7 @@ use Psr\Log\LoggerInterface;
  *
  * @covers \Dotfiles\Plugins\PHPBrew\Installer
  */
-class InstallerTest extends BaseTestCase
+class InstallerTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
 {
     /**
      * @var MockObject

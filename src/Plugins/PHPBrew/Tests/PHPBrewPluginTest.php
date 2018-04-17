@@ -21,6 +21,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * Class PHPBrewPluginTest.
+ *
+ * @covers \Dotfiles\Plugins\PHPBrew\PHPBrewPlugin
  */
 class PHPBrewPluginTest extends TestCase
 {

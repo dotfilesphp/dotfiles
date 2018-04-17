@@ -16,7 +16,7 @@ namespace Dotfiles\Core\Tests\Command;
 use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Command\ClearCacheCommand;
 use Dotfiles\Core\Command\SelfUpdateCommand;
-use Dotfiles\Core\Tests\CommandTestCase;
+use Dotfiles\Core\Tests\Helper\CommandTestCase;
 use Dotfiles\Core\Util\Downloader;
 use PHPUnit\Framework\MockObject\MockObject;
 

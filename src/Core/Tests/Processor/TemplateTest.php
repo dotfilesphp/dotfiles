@@ -15,7 +15,7 @@ namespace Dotfiles\Core\Tests\Processor;
 
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\Template;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**

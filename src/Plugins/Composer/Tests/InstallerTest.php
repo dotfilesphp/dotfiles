@@ -15,7 +15,7 @@ namespace Dotfiles\Plugins\Composer\Tests;
 
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Processor\ProcessRunner;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;

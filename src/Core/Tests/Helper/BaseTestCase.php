@@ -11,11 +11,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Tests;
+namespace Dotfiles\Core\Tests\Helper;
 
 use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Console\Application;
 use Dotfiles\Core\DI\Parameters;
+use Dotfiles\Core\Helper\Tests\TestApplication;
 use Dotfiles\Core\Util\Filesystem;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;

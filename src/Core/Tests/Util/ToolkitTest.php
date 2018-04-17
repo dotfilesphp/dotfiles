@@ -13,9 +13,14 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Tests\Util;
 
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Core\Util\Toolkit;
 
+/**
+ * Class ToolkitTest.
+ *
+ * @covers \Dotfiles\Core\Util\Toolkit
+ */
 class ToolkitTest extends BaseTestCase
 {
     public function testGetCachePathPrefix(): void

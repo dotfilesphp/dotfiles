@@ -15,7 +15,7 @@ namespace Dotfiles\Plugins\PHPBrew\Tests\Command;
 
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Plugins\PHPBrew\Command\InstallCommand;
 use Dotfiles\Plugins\PHPBrew\Installer;
 use Symfony\Component\Console\Input\InputInterface;

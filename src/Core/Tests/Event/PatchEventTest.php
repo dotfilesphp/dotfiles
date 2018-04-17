@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Event;
 
 use Dotfiles\Core\Event\PatchEvent;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 
 /**
  * Class PatchEventTest.

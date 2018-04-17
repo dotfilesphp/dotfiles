@@ -75,6 +75,7 @@ class ApplicationFactory
 
     /**
      * @return $this
+     * @codeCoverageIgnore
      */
     public function boot(): self
     {
@@ -121,6 +122,7 @@ class ApplicationFactory
 
         $cachePath = $this->getCachePathPrefix().'/container.php';
         $cache = new ConfigCache($cachePath, $this->debug);
+        $className = 'CachedContainer'.$this->getContainerId();
 
         // always compile container in dev environment
         if (!$cache->isFresh() || 'prod' !== $this->env) {
@@ -132,17 +134,36 @@ class ApplicationFactory
                 $item = new FileResource($item);
             });
             $resources = array_merge($resources, $builder->getResources());
-            $cache->write($dumper->dump(array('class' => 'CachedContainer')), $resources);
+            $cache->write($dumper->dump(array('class' => $className)), $resources);
         }
-        if (!class_exists('CachedContainer')) {
-            include_once $cachePath;
+        if (!class_exists($className)) {
+            include $cachePath;
         }
-        $container = new \CachedContainer();
+        $container = new $className();
 
         $parameters = new Parameters();
         $parameters->setConfigs($container->getParameterBag()->all());
         $container->set('dotfiles.parameters', $parameters);
         $this->container = $container;
+    }
+
+    protected function getCachePathPrefix()
+    {
+        // using argv command to differ each dotfiles executable file
+        global $argv;
+        $command = $argv[0];
+        $cacheDir = getenv('DOTFILES_CACHE_DIR');
+        $env = getenv('DOTFILES_ENV');
+
+        return $cacheDir.DIRECTORY_SEPARATOR.$this->getContainerId().DIRECTORY_SEPARATOR.$env;
+    }
+
+    protected function getContainerId()
+    {
+        global $argv;
+        $command = $argv[0];
+
+        return crc32($command);
     }
 
     private function addAutoload(): void
@@ -165,17 +186,6 @@ class ApplicationFactory
         Toolkit::ensureDir($parameters->get('dotfiles.install_dir'));
         Toolkit::ensureDir($parameters->get('dotfiles.bin_dir'));
         Toolkit::ensureDir($parameters->get('dotfiles.vendor_dir'));
-    }
-
-    private function getCachePathPrefix()
-    {
-        // using argv command to differ each dotfiles executable file
-        global $argv;
-        $command = $argv[0];
-        $cacheDir = getenv('DOTFILES_CACHE_DIR');
-        $env = getenv('DOTFILES_ENV');
-
-        return $cacheDir.DIRECTORY_SEPARATOR.crc32($command).DIRECTORY_SEPARATOR.$env;
     }
 
     private function getConfiguration()

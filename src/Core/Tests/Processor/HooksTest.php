@@ -16,8 +16,13 @@ namespace Dotfiles\Core\Tests\Processor;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\Hooks;
 use Dotfiles\Core\Processor\ProcessRunner;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 
+/**
+ * Class HooksTest.
+ *
+ * @covers \Dotfiles\Core\Processor\Hooks
+ */
 class HooksTest extends BaseTestCase
 {
     private $dispatcher;

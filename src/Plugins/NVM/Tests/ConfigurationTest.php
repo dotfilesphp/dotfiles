@@ -11,14 +11,12 @@
 
 namespace Dotfiles\Plugins\NVM\Tests;
 
-use Dotfiles\Core\Tests\BaseTestCase;
-
 /**
  * Class ConfigurationTest.
  *
  * @covers \Dotfiles\Plugins\NVM\Configuration
  */
-class ConfigurationTest extends BaseTestCase
+class ConfigurationTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
 {
     public function testDefaultValues()
     {

@@ -14,16 +14,13 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\RestoreCommand;
-use Dotfiles\Core\Tests\CommandTestCase;
+use Dotfiles\Core\Tests\Helper\CommandTestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class RestoreCommandTest.
  *
  * @covers \Dotfiles\Core\Command\RestoreCommand
- * @covers \Dotfiles\Core\Processor\Template
- * @covers \Dotfiles\Core\Processor\Hooks
- * @covers \Dotfiles\Core\Processor\Patcher
  */
 class RestoreCommandTest extends CommandTestCase
 {

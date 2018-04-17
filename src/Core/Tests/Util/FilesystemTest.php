@@ -17,6 +17,11 @@ use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class FilesystemTest.
+ *
+ * @covers \Dotfiles\Core\Util\Filesystem
+ */
 class FilesystemTest extends TestCase
 {
     public function testPatch(): void

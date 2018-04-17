@@ -14,7 +14,7 @@ namespace Dotfiles\Plugins\NVM\Tests;
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Plugins\NVM\EventSubscriber;
 use Dotfiles\Plugins\NVM\Installer;
 use PHPUnit\Framework\MockObject\MockObject;

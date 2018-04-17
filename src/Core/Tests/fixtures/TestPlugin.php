@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the dotfiles project.
  *
@@ -11,14 +9,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Plugins\Foo;
+namespace Dotfiles\Core\Tests\fixtures;
 
 use Dotfiles\Core\Plugin;
 
-class FooPlugin extends Plugin
+class TestPlugin extends Plugin
 {
-    public function getName(): string
-    {
-        return 'test';
-    }
 }

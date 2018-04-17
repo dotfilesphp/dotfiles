@@ -15,13 +15,18 @@ namespace Dotfiles\Plugins\PHPCSFixer\Tests;
 
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\PatchEvent;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\PHPCSFixer\EventSubscriber;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class EventSubscriberTest.
+ *
+ * @covers \Dotfiles\Plugins\PHPCSFixer\EventSubscriber
+ */
 class EventSubscriberTest extends BaseTestCase
 {
     public function testOnPatchEvent(): void

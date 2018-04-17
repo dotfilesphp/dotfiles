@@ -15,7 +15,7 @@ namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Command\ClearCacheCommand;
-use Dotfiles\Core\Tests\CommandTestCase;
+use Dotfiles\Core\Tests\Helper\CommandTestCase;
 use Dotfiles\Core\Util\Toolkit;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Output\OutputInterface;

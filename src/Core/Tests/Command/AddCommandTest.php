@@ -15,7 +15,7 @@ namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\AddCommand;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
-use Dotfiles\Core\Tests\CommandTestCase;
+use Dotfiles\Core\Tests\Helper\CommandTestCase;
 
 /**
  * Class AddCommandTest.

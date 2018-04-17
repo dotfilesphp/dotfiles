@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Console;
 
 use Dotfiles\Core\Console\Application;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Symfony\Component\Console\Input\StringInput;
 
 /**

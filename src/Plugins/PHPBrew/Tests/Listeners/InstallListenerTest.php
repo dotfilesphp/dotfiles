@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests\Listeners;
 
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Plugins\PHPBrew\Installer;
 use Dotfiles\Plugins\PHPBrew\Listeners\InstallListener;
 

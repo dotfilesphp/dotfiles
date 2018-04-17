@@ -20,8 +20,6 @@ matrix:
   allow_failures:
   - php: '7.2'
     env: COVERAGE=yes
-  - php: '7.2'
-    env: DOTFILES_SUITE=BEHAT
   fast_finish: true
 
 before_install:
@@ -38,7 +36,7 @@ install:
     cp docker/custom.ini.dist docker/custom.ini;
     docker-compose build;
     docker-compose up -d;
-    sleep 5;
+    sleep 10;
   fi;
 
 script:

@@ -14,13 +14,18 @@ namespace Dotfiles\Plugins\NVM\Tests;
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\ProcessRunner;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\NVM\Installer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class InstallerTest.
+ *
+ * @covers \Dotfiles\Plugins\NVM\Installer
+ */
 class InstallerTest extends BaseTestCase
 {
     /**

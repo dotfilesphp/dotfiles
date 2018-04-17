@@ -68,13 +68,6 @@ class Parameters implements \ArrayAccess
         unset($this->configs[$offset]);
     }
 
-    public function set($name, $value): self
-    {
-        $this->configs[$name] = $value;
-
-        return $this;
-    }
-
     /**
      * @param array $configs
      */

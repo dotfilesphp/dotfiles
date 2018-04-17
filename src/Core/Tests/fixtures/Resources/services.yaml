@@ -1,0 +1,5 @@
+services:
+    _defaults:
+        public: true
+    test.plugin:
+        class: Dotfiles\Core\Tests\fixtures\TestPlugin

@@ -11,9 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Tests;
+namespace Dotfiles\Core\Tests\Helper;
 
 use Dotfiles\Core\Command\Command;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\CommandTester;
 
 abstract class CommandTestCase extends BaseTestCase
 {

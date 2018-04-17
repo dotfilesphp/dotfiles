@@ -18,7 +18,6 @@ use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Toolkit;
-use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -67,11 +66,7 @@ class EventSubscriber implements EventSubscriberInterface
         if (array_key_exists('.bashrc', $currentPatches)) {
             $bashPatch = $currentPatches['.bashrc'];
         }
-        $reloadEvent = new ReloadBashConfigEvent($this->logger);
-        $reloadEvent->addFooterConfig(implode("\n", $bashPatch));
-
-        $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME, $reloadEvent);
-        $this->generateDotfilesConfig($reloadEvent->getBashConfig());
+        $this->generateDotfilesConfig($bashPatch);
 
         $installDir = $this->parameters->get('dotfiles.install_dir');
         $target = '.bashrc';
@@ -81,6 +76,7 @@ class EventSubscriber implements EventSubscriberInterface
 
     private function generateDotfilesConfig($bashConfig): void
     {
+        $bashConfig = implode("\n", $bashConfig);
         $installDir = $this->parameters->get('dotfiles.install_dir');
 
         $uname = php_uname();

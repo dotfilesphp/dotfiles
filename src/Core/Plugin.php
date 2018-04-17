@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core;
 
 use Dotfiles\Core\Util\Toolkit;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -50,10 +51,12 @@ abstract class Plugin extends Extension
         }
 
         $configuration = $this->getConfiguration($config, $container);
-        $configs = $this->processConfiguration($configuration, $config);
-        Toolkit::flattenArray($configs, $this->getName());
-        $configs = $this->configure($configs);
-        $container->getParameterBag()->add($configs);
+        if ($configuration instanceof ConfigurationInterface) {
+            $configs = $this->processConfiguration($configuration, $config);
+            Toolkit::flattenArray($configs, $this->getName());
+            $configs = $this->configure($configs);
+            $container->getParameterBag()->add($configs);
+        }
     }
 
     protected function configure($configs)

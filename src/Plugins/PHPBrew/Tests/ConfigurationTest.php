@@ -13,14 +13,12 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
-use Dotfiles\Core\Tests\BaseTestCase;
-
 /**
  * Class ConfigurationTest.
  *
  * @covers \Dotfiles\Plugins\PHPBrew\Configuration
  */
-class ConfigurationTest extends BaseTestCase
+class ConfigurationTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
 {
     public function testProcess(): void
     {

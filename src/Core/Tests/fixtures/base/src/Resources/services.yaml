@@ -1,0 +1,5 @@
+services:
+    _defaults:
+        public: true
+    foo.hello:
+        class: Dotfiles\Plugins\Foo\Hello 

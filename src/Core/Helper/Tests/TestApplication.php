@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Dotfiles\Core\Tests;
+namespace Dotfiles\Core\Helper\Tests;
 
 use Dotfiles\Core\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
