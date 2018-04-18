@@ -29,6 +29,7 @@ use Symfony\Component\Process\ProcessBuilder;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Martin Hasoň <martin.hason@gmail.com>
  * @author Anthonius Munthi <me@itstoni.com>
+ * @codeCoverageIgnore
  */
 class Shell
 {
@@ -67,6 +68,9 @@ class Shell
         return $this->processIsolation;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function run()
     {
         if (!$this->isRunning) {

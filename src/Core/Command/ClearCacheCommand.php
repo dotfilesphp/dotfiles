@@ -66,10 +66,6 @@ class ClearCacheCommand extends Command implements CommandInterface
         $config = $this->parameters;
         $cacheDir = $config->get('dotfiles.cache_dir');
 
-        if (!is_dir($cacheDir)) {
-            return;
-        }
-
         $output->writeln("Cleaning cache in <comment>$cacheDir</comment>");
         $logger = $this->logger;
         $fs = new Filesystem();

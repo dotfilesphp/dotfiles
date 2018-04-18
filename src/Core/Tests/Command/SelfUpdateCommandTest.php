@@ -16,6 +16,7 @@ namespace Dotfiles\Core\Tests\Command;
 use Dotfiles\Core\ApplicationFactory;
 use Dotfiles\Core\Command\ClearCacheCommand;
 use Dotfiles\Core\Command\SelfUpdateCommand;
+use Dotfiles\Core\Exceptions\InstallFailedException;
 use Dotfiles\Core\Tests\Helper\CommandTestCase;
 use Dotfiles\Core\Util\Downloader;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -60,6 +61,40 @@ class SelfUpdateCommandTest extends CommandTestCase
         $output = $tester->getDisplay(true);
 
         $this->assertContains('Begin update into test', $output);
+    }
+
+    public function testExecuteWhenInstalled()
+    {
+        $tempDir = $this->getParameters()->get('dotfiles.temp_dir');
+        $this->downloader->expects($this->at(0))
+            ->method('run')
+            ->will($this->returnCallback(function ($url, $target) use ($tempDir): void {
+                copy(__DIR__.'/fixtures/dotfiles.latest.json', $target);
+            }))
+        ;
+
+        $tester = $this->getTester('selfupdate');
+        $tester->execute(array());
+
+        $output = $tester->getDisplay(true);
+
+        $this->assertContains('You already have latest', $output);
+    }
+
+    public function testExecuteWithInvalidVersionFile()
+    {
+        $tempDir = $this->getParameters()->get('dotfiles.temp_dir');
+        $this->downloader->expects($this->at(0))
+            ->method('run')
+            ->will($this->returnCallback(function ($url, $target) use ($tempDir): void {
+                $target = $tempDir.'/update/dotfiles.phar.json';
+                file_put_contents($target, "\n", LOCK_EX);
+            }))
+        ;
+
+        $this->expectException(InstallFailedException::class);
+        $tester = $this->getTester('selfupdate');
+        $tester->execute(array());
     }
 
     protected function configureCommand(): void

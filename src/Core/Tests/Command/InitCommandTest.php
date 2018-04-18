@@ -68,6 +68,17 @@ class InitCommandTest extends CommandTestCase
         $this->assertContains('local backup dir', $output);
         $this->assertContains('your machine name', $output);
         $this->assertContains('installation directory', $output);
+
+        $tester->setInputs(array(
+            '/foo/bar',
+            null,
+            null,
+            null,
+            null,
+        ));
+        $tester->execute(array());
+        $display = $tester->getDisplay();
+        $this->assertContains('Can not find parent directory', $display);
     }
 
     public function testInitSuccessfully(): void

@@ -34,6 +34,7 @@
                 <directory>./src/*/Tests</directory>
                 <directory>./src/*/*/Resources</directory>
                 <directory>./src/*/*/Tests</directory>
+                <file>./src/Core/Command/CompileCommand.php</file>
             </exclude>
         </whitelist>
     </filter>

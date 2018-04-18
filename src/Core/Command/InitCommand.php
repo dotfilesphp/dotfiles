@@ -87,7 +87,7 @@ class InitCommand extends Command
         $this->output = $output;
 
         if (null === ($backupDir = $input->getArgument('backup-dir'))) {
-            $backupDir = $this->doBackupRepoDir();
+            $backupDir = $this->doAskBackupDir();
         }
 
         if (null === ($machine = $input->getOption('machine'))) {
@@ -99,6 +99,29 @@ class InitCommand extends Command
         }
 
         $this->initDotfilesProfile($backupDir, $machine, $installDir);
+    }
+
+    private function doAskBackupDir()
+    {
+        $input = $this->input;
+        $output = $this->output;
+        $helper = $this->getHelper('question');
+        $default = getenv('DOTFILES_BACKUP_DIR');
+        $question = new Question("Please enter local backup dir (<comment>$default</comment>): ", $default);
+        $question->setValidator(function ($answer) {
+            $parent = dirname($answer);
+            if (!is_dir($parent) || !is_writable($parent)) {
+                throw new InvalidOperationException(
+                    "Can not find parent directory, please ensure that $parent is exists and writable"
+                );
+            }
+
+            return $answer;
+        });
+
+        $question->setMaxAttempts(3);
+
+        return $helper->ask($input, $output, $question);
     }
 
     private function doAskInstallDir()
@@ -119,32 +142,6 @@ class InitCommand extends Command
         $helper = $this->getHelper('question');
         $default = getenv('DOTFILES_MACHINE_NAME');
         $question = new Question(sprintf('Please enter your machine name (<comment>%s</comment>):', $default), $default);
-
-        return $helper->ask($input, $output, $question);
-    }
-
-    private function doBackupRepoDir()
-    {
-        $input = $this->input;
-        $output = $this->output;
-        $helper = $this->getHelper('question');
-        $default = getenv('DOTFILES_BACKUP_DIR');
-        $question = new Question("Please enter local backup dir (<comment>$default</comment>): ", $default);
-        $question->setValidator(function ($answer) {
-            if (null === $answer) {
-                throw new InvalidOperationException('You have to define local backup directory');
-            }
-            $parent = dirname($answer);
-            if (!is_dir($parent) || !is_writable($parent)) {
-                throw new InvalidOperationException(
-                    "Can not find parent directory, please ensure that $parent is exists and writable"
-                );
-            }
-
-            return $answer;
-        });
-
-        $question->setMaxAttempts(3);
 
         return $helper->ask($input, $output, $question);
     }

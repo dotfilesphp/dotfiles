@@ -13,10 +13,13 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Util;
 
-use Symfony\Component\Finder\SplFileInfo;
-
 class Toolkit
 {
+    /**
+     * Ensure that directory exists.
+     *
+     * @param string $dir
+     */
     public static function ensureDir(string $dir): void
     {
         if (!is_dir($dir)) {
@@ -34,7 +37,7 @@ class Toolkit
     }
 
     /**
-     * Ensure that directory exists.
+     * Ensure that directory for file exists.
      *
      * @param string $file
      */
@@ -51,6 +54,10 @@ class Toolkit
         static::doFlattenArray($values);
     }
 
+    /**
+     * @return mixed|string
+     * @codeCoverageIgnore Can't tests phar mode
+     */
     public static function getBaseDir()
     {
         $baseDir = getcwd();
@@ -59,39 +66,6 @@ class Toolkit
         }
 
         return $baseDir;
-    }
-
-    public static function getCachePathPrefix()
-    {
-        // using argv command to differ each dotfiles executable file
-        global $argv;
-        $command = $argv[0];
-        $cacheDir = getenv('DOTFILES_CACHE_DIR');
-
-        return $cacheDir.DIRECTORY_SEPARATOR.crc32($command);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return SplFileInfo
-     */
-    public static function getFileInfo(string $path)
-    {
-        $homeDir = getenv('HOME');
-        $repoDir = getenv('REPO_DIR');
-        $cwd = getcwd();
-        if (false !== strpos($path, $homeDir)) {
-            $relativePath = $homeDir;
-        } elseif (false !== strpos($path, $repoDir)) {
-            $relativePath = $repoDir;
-        } elseif (false !== strpos($path, $cwd)) {
-            $relativePath = $cwd;
-        } else {
-            $relativePath = dirname($path);
-        }
-
-        return new SplFileInfo($path, $relativePath, $relativePath.DIRECTORY_SEPARATOR.basename($path));
     }
 
     public static function getRelativePath(string $file): string
@@ -108,48 +82,6 @@ class Toolkit
         }
 
         return $file;
-    }
-
-    public static function normalizeValue($value)
-    {
-        // replace environment variables
-        $pattern = '/%%([A-Z]*)%%/i';
-        preg_match($pattern, $value, $match);
-        if (isset($match[1])) {
-            $value = str_replace($match[0], getenv($match[1]), $value);
-        }
-
-        return $value;
-    }
-
-    public static function normalizeValues($values)
-    {
-        foreach ($values as $section => $contents) {
-            foreach ($contents as $key => $value) {
-                $values[$section][$key] = static::normalizeValue($value);
-            }
-        }
-
-        return $values;
-    }
-
-    /**
-     * @param string $path
-     * @param array  $additionalPath
-     *
-     * @return string
-     *
-     * @deprecated Will be automatically strip by Output
-     */
-    public static function stripPath(string $path, $additionalPath = array())
-    {
-        $defaults = array(
-            getenv('HOME') => '',
-            getcwd() => '',
-        );
-        $path = strtr($path, array_merge($defaults, $additionalPath));
-
-        return $path;
     }
 
     /**

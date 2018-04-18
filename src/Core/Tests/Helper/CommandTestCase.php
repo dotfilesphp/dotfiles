@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Helper;
 
 use Dotfiles\Core\Command\Command;
-use Dotfiles\Core\Tests\Helper\BaseTestCase;
-use Dotfiles\Core\Tests\Helper\CommandTester;
 
 abstract class CommandTestCase extends BaseTestCase
 {

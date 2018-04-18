@@ -62,7 +62,6 @@ class PatcherTest extends BaseTestCase
 
     private function getPatcherObject()
     {
-        //$this->getParameters()->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
         $logger = $this->getService('dotfiles.logger');
 
         return new Patcher($this->getParameters(), $logger, $this->dispatcher);

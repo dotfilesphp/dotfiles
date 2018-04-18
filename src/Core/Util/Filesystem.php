@@ -39,7 +39,13 @@ class Filesystem extends BaseFileSystem
         }
     }
 
-    public function removeDir($dir, callable $onRemoveCallback = null): void
+    /**
+     * Remove directory recursively.
+     *
+     * @param $dir
+     * @param callable|null $onRemoveCallback
+     */
+    public function removeDir($dir, ?callable $onRemoveCallback = null): void
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
@@ -49,13 +55,17 @@ class Filesystem extends BaseFileSystem
                         $this->removeDir($dir.DIRECTORY_SEPARATOR.$object, $onRemoveCallback);
                     } else {
                         unlink($pathName = $dir.DIRECTORY_SEPARATOR.$object);
-                        call_user_func($onRemoveCallback, $pathName);
+                        if (null !== $onRemoveCallback) {
+                            call_user_func($onRemoveCallback, $pathName);
+                        }
                     }
                 }
             }
             reset($objects);
             rmdir($dir);
-            call_user_func($onRemoveCallback, $dir);
+            if (null !== $onRemoveCallback) {
+                call_user_func($onRemoveCallback, $dir);
+            }
         }
     }
 }
