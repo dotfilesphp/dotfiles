@@ -27,11 +27,6 @@ class Installer
     public const SIG_URL = 'https://composer.github.io/installer.sig';
 
     /**
-     * @var \Dotfiles\Core\DI\Parameters
-     */
-    private $config;
-
-    /**
      * @var Downloader
      */
     private $downloader;
@@ -47,6 +42,11 @@ class Installer
     private $output;
 
     /**
+     * @var Parameters
+     */
+    private $parameters;
+
+    /**
      * @var ProcessRunner
      */
     private $runner;
@@ -54,11 +54,11 @@ class Installer
     public function __construct(
         OutputInterface $output,
         LoggerInterface $logger,
-        Parameters $config,
+        Parameters $parameters,
         Downloader $downloader,
         ProcessRunner $runner
     ) {
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
         $this->output = $output;
         $this->downloader = $downloader;
@@ -70,7 +70,7 @@ class Installer
      */
     public function run($force = false): void
     {
-        $config = $this->config;
+        $config = $this->parameters;
         $targetDir = $config->get('dotfiles.bin_dir');
         $targetFile = $targetDir.DIRECTORY_SEPARATOR.$config->get('composer.file_name');
         $this->debug('begin installation');

@@ -88,6 +88,15 @@ class ApplicationFactory
         return $this;
     }
 
+    public function ensureDir(): void
+    {
+        /* @var Parameters $parameters */
+        $parameters = $this->container->get('dotfiles.parameters');
+        Toolkit::ensureDir($parameters->get('dotfiles.install_dir'));
+        Toolkit::ensureDir($parameters->get('dotfiles.bin_dir'));
+        Toolkit::ensureDir($parameters->get('dotfiles.vendor_dir'));
+    }
+
     /**
      * @return Container
      */
@@ -177,15 +186,6 @@ class ApplicationFactory
         ) {
             include_once $autoloadFile;
         }
-    }
-
-    private function ensureDir(): void
-    {
-        /* @var Parameters $parameters */
-        $parameters = $this->container->get('dotfiles.parameters');
-        Toolkit::ensureDir($parameters->get('dotfiles.install_dir'));
-        Toolkit::ensureDir($parameters->get('dotfiles.bin_dir'));
-        Toolkit::ensureDir($parameters->get('dotfiles.vendor_dir'));
     }
 
     private function getConfiguration()

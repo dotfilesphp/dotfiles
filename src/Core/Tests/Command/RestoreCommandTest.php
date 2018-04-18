@@ -15,6 +15,7 @@ namespace Dotfiles\Core\Tests\Command;
 
 use Dotfiles\Core\Command\RestoreCommand;
 use Dotfiles\Core\Tests\Helper\CommandTestCase;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -46,8 +47,8 @@ class RestoreCommandTest extends CommandTestCase
         static $hasExecuted = false;
         $homeDir = $this->getParameters()->get('dotfiles.home_dir');
         if (!$hasExecuted) {
-            static::cleanupTempDir();
-            touch($homeDir.'/.bashrc');
+            Toolkit::ensureFileDir($touchFile = $homeDir.'/.bashrc');
+            touch($touchFile);
             $tester = $this->getTester('restore');
             $tester->execute(array(), array('verbosity' => OutputInterface::VERBOSITY_DEBUG));
             $hasExecuted = true;

@@ -47,6 +47,9 @@ class PatcherTest extends BaseTestCase
                 array(Constant::EVENT_POST_PATCH, $this->isInstanceOf(PatchEvent::class))
             )
         ;
+        $homeDir = $this->getParameters()->get('dotfiles.home_dir');
+        $file = $homeDir.'/.bashrc';
+        touch($file);
         $event = new RestoreEvent();
         $patch = $this->getPatcherObject();
         $patch->onPreRestore($event);
@@ -54,9 +57,8 @@ class PatcherTest extends BaseTestCase
         $output = $this->getDisplay();
 
         $this->assertContains('applying patch', $output);
-        $homeDir = $this->getParameters()->get('dotfiles.home_dir');
 
-        $this->assertFileExists($file = $homeDir.'/.bashrc');
+        $this->assertFileExists($file);
         $contents = file_get_contents($file);
         $this->assertContains('#patch defaults', $contents);
         $this->assertContains('#patch machine', $contents);
@@ -64,6 +66,7 @@ class PatcherTest extends BaseTestCase
 
     private function getPatcherObject()
     {
+        $this->createBackupDirMock(__DIR__.'/fixtures/backup');
         $logger = $this->getService('dotfiles.logger');
 
         return new Patcher($this->getParameters(), $logger, $this->dispatcher);

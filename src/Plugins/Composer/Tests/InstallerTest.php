@@ -58,31 +58,31 @@ class InstallerTest extends BaseTestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->runner = $this->createMock(ProcessRunner::class);
-        $this->tempDir = sys_get_temp_dir().'/dotfiles/tests/composer';
         static::cleanupTempDir();
     }
 
     public function testRunOnInstalled(): void
     {
-        $file = $this->tempDir.'/bin/composer.phar';
+        $binDir = $this->getParameters()->get('dotfiles.bin_dir');
+        $file = $binDir.'/composer';
         Toolkit::ensureFileDir($file);
         touch($file);
         $installer = $this->getSUT();
         $installer->run();
         $display = $this->getDisplay();
 
-        $this->assertContains('Composer already installed', $this->getDisplay());
+        $this->assertContains('Composer already installed', $display);
     }
 
     public function testRunSuccessfully(): void
     {
-        $installFile = $this->tempDir.'/bin/composer.phar';
+        $installFile = $this->getParameters()->get('dotfiles.bin_dir').'/composer';
         if (is_file($installFile)) {
             unlink($installFile);
         }
         $this->runner->expects($this->once())
             ->method('run')
-            ->with($this->stringContains('composer.phar'))
+            ->with($this->stringContains('composer'))
             ->will($this->returnCallback(function () use ($installFile) {
                 Toolkit::ensureFileDir($installFile);
                 touch($installFile);
@@ -94,6 +94,7 @@ class InstallerTest extends BaseTestCase
 
     public function testRunWithFailedSignature(): void
     {
+        static::cleanupTempDir();
         $installer = $this->getSUT(array(
             'installer.php' => __DIR__.'/fixtures/empty.php',
         ));
@@ -108,17 +109,6 @@ class InstallerTest extends BaseTestCase
             'installer.php' => __DIR__.'/fixtures/installer.php',
         );
         $config = array_merge($defaults, $config);
-
-        $tempDir = $this->tempDir;
-
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap(array(
-                array('dotfiles.temp_dir', $tempDir.'/temp'),
-                array('dotfiles.bin_dir', $tempDir.'/bin'),
-                array('composer.file_name', 'composer.phar'),
-            ))
-        ;
 
         $this->downloader->expects($this->any())
             ->method('run')
@@ -135,8 +125,8 @@ class InstallerTest extends BaseTestCase
 
         return new Installer(
             $this->getService('dotfiles.output'),
-            $this->logger,
-            $this->config,
+            $this->getService('dotfiles.logger'),
+            $this->getParameters(),
             $this->downloader,
             $this->runner
         );

@@ -78,7 +78,7 @@ abstract class BaseTestCase extends TestCase
 
     public static function cleanupTempDir(): void
     {
-        $dir = getenv('DOTFILES_TEMP_DIR');
+        $dir = getcwd().'/var/temp';
         if ($dir && is_dir($dir)) {
             $finder = Finder::create()
                 ->in($dir)

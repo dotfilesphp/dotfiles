@@ -72,10 +72,10 @@ class InstallerTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
 
     public function testRunOnAlreadyInstalled(): void
     {
-        $installDir = $this->getParameters()->get('dotfiles.install_dir');
-        Toolkit::ensureFileDir($file = $installDir.'/bin/phpbrew');
-        touch($file);
         $installer = $this->getSUT();
+        $binDir = $this->getParameters()->get('dotfiles.bin_dir');
+        Toolkit::ensureFileDir($file = $binDir.'/phpbrew');
+        touch($file);
         $installer->run();
         $this->assertContains('already installed', $this->getDisplay());
     }
