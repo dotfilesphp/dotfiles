@@ -107,7 +107,7 @@ abstract class BaseTestCase extends TestCase
             ->in($fromFixturesDir)
         ;
         $fs = new Filesystem();
-        $fs->mirror($fromFixturesDir, $this->getParameters()->get('dotfiles.backup_dir'), $files);
+        $fs->mirror($fromFixturesDir, $this->getParameters()->get('dotfiles.backup_dir'), $files, array('override' => true));
     }
 
     protected function createHomeDirMock(string $fromFixturesDir): void

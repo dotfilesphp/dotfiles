@@ -16,6 +16,7 @@ namespace Dotfiles\Core\Tests\Processor;
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
+use Dotfiles\Core\Event\RestoreEvent;
 use Dotfiles\Core\Processor\Patcher;
 use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -46,8 +47,9 @@ class PatcherTest extends BaseTestCase
                 array(Constant::EVENT_POST_PATCH, $this->isInstanceOf(PatchEvent::class))
             )
         ;
+        $event = new RestoreEvent();
         $patch = $this->getPatcherObject();
-        $patch->onPreRestore();
+        $patch->onPreRestore($event);
         $patch->onPostRestore();
         $output = $this->getDisplay();
 

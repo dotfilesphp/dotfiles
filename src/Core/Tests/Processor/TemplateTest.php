@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests\Processor;
 
 use Dotfiles\Core\Event\Dispatcher;
+use Dotfiles\Core\Event\RestoreEvent;
 use Dotfiles\Core\Processor\Template;
 use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,38 +37,22 @@ class TemplateTest extends BaseTestCase
         static::cleanupTempDir();
     }
 
-    public function getTestExecuteSuccessfully()
+    public function testRestore()
     {
-        return array(
-            array('.ssh/id_rsa', true),
-            array('.ssh/id_rsa.pub', true),
-            array('.bashrc', true),
-            array('.no-dot-prefix', true),
-        );
-    }
+        $event = new RestoreEvent();
+        $template = $this->getTemplateObject();
 
-    /**
-     * @param string $file
-     * @param string $type
-     * @dataProvider getTestExecuteSuccessfully
-     */
-    public function testExecuteSuccessfully(string $file, $ensureFile = false): void
-    {
-        static $hasRun = false, $output;
-        if (!$hasRun) {
-            $restore = $this->getTemplateObject('restore');
-            $restore->onRestore();
-            $hasRun = true;
-            $output = $this->getDisplay();
-        }
-        $restore = $this->getTemplateObject('restore');
-        $restore->onRestore();
-        $this->assertContains($file, $output);
+        $template->onPreRestore($event);
+        $template->onRestore($event);
 
-        $tempDir = $this->getParameters()->get('dotfiles.home_dir');
-        if ($ensureFile) {
-            $this->assertFileExists($tempDir.DIRECTORY_SEPARATOR.$file);
-        }
+        $files = $event->getFiles();
+        $this->assertArrayHasKey('.bashrc', $files);
+        $this->assertArrayHasKey('.override', $files);
+
+        $home = $this->getParameters()->get('dotfiles.home_dir');
+        $contents = file_get_contents($home.'/.override');
+        $this->assertNotContains('should not displayed', $contents);
+        $this->assertContains('override', $contents);
     }
 
     /**

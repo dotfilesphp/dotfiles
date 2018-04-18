@@ -15,6 +15,7 @@ namespace Dotfiles\Core\Command;
 
 use Dotfiles\Core\Constant;
 use Dotfiles\Core\Event\Dispatcher;
+use Dotfiles\Core\Event\RestoreEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -46,9 +47,11 @@ class RestoreCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        $event = new RestoreEvent();
         $dispatcher = $this->dispatcher;
-        $dispatcher->dispatch(Constant::EVENT_PRE_RESTORE);
-        $dispatcher->dispatch(Constant::EVENT_RESTORE);
-        $dispatcher->dispatch(Constant::EVENT_POST_RESTORE);
+        $dispatcher->dispatch(Constant::EVENT_PRE_RESTORE, $event);
+        $dispatcher->dispatch(Constant::EVENT_BACKUP, $event);
+        $dispatcher->dispatch(Constant::EVENT_RESTORE, $event);
+        $dispatcher->dispatch(Constant::EVENT_POST_RESTORE, $event);
     }
 }

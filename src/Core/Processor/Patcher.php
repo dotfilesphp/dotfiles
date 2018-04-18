@@ -17,6 +17,7 @@ use Dotfiles\Core\Constant;
 use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
+use Dotfiles\Core\Event\RestoreEvent;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
@@ -76,9 +77,10 @@ class Patcher implements EventSubscriberInterface
         $this->run();
     }
 
-    public function onPreRestore()
+    public function onPreRestore(RestoreEvent $event)
     {
         $this->registerPatch();
+        $event->setPatches($this->patches);
     }
 
     /**

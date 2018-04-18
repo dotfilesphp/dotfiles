@@ -30,11 +30,6 @@ class InstallerTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
     /**
      * @var MockObject
      */
-    private $config;
-
-    /**
-     * @var MockObject
-     */
     private $downloader;
 
     /**
@@ -57,7 +52,14 @@ class InstallerTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
     public function testRun(): void
     {
         $installer = $this->getSUT();
+        $params = $this->getParameters();
         $tempDir = $this->tempDir;
+        if (is_file($file = $tempDir.'/phpbrew')) {
+            unlink($file);
+        }
+        if (is_file($file = $params->get('dotfiles.bin_dir').'/phpbrew')) {
+            unlink($file);
+        }
         $this->downloader->expects($this->once())
             ->method('run')
             ->with(Installer::DOWNLOAD_URL, $tempDir.'/phpbrew')
@@ -88,6 +90,7 @@ class InstallerTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
     private function getSUT()
     {
         static::cleanupTempDir();
+        $this->boot();
 
         return new Installer(
             $this->getParameters(),

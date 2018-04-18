@@ -33,7 +33,7 @@ class RestoreCommandTest extends CommandTestCase
             array('.ssh/id_rsa'),
             array('.ssh/id_rsa.pub'),
             array('.bashrc'),
-            array('.no-dot-prefix', true),
+            array('.no-dot-prefix'),
         );
     }
 
@@ -41,22 +41,18 @@ class RestoreCommandTest extends CommandTestCase
      * @param string $file
      * @dataProvider getTestExecute
      */
-    public function testExecute(string $file, $assertNot = false): void
+    public function testExecute(string $file): void
     {
         static $hasExecuted = false;
+        $homeDir = $this->getParameters()->get('dotfiles.home_dir');
         if (!$hasExecuted) {
             static::cleanupTempDir();
+            touch($homeDir.'/.bashrc');
             $tester = $this->getTester('restore');
             $tester->execute(array(), array('verbosity' => OutputInterface::VERBOSITY_DEBUG));
             $hasExecuted = true;
         }
-
-        $homeDir = $this->getParameters()->get('dotfiles.home_dir');
-        if (!$assertNot) {
-            $this->assertFileExists($homeDir.DIRECTORY_SEPARATOR.$file);
-        } else {
-            $this->assertFileNotExists($homeDir.DIRECTORY_SEPARATOR.$file);
-        }
+        $this->assertFileExists($homeDir.DIRECTORY_SEPARATOR.$file);
     }
 
     protected function configureCommand(): void

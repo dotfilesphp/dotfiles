@@ -37,6 +37,8 @@ services:
         class: Dotfiles\Core\Processor\Template
     dotfiles.patcher:
         class: Dotfiles\Core\Processor\Patcher
+    dotfiles.backup:
+        class: Dotfiles\Core\Processor\Backup
         
     Dotfiles\Core\Command\SelfUpdateCommand: ~
     Dotfiles\Core\Command\ClearCacheCommand: ~
