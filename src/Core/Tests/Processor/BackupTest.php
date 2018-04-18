@@ -29,12 +29,8 @@ class BackupTest extends BaseTestCase
         $this->assertArrayHasKey(Constant::EVENT_PRE_RESTORE, $events);
     }
 
-    /**
-     * @depends testOnPreRestore
-     */
     public function testInfo()
     {
-        static::cleanupTempDir();
         $this->createBackupDirMock(__DIR__.'/fixtures/backup-manifest');
         $backup = new Backup(
             $this->getParameters(),
@@ -57,7 +53,6 @@ class BackupTest extends BaseTestCase
 
     public function testOnPreRestore()
     {
-        static::cleanupTempDir();
         $backup = $this->getBackup();
 
         $event = new RestoreEvent();

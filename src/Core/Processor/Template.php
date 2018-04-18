@@ -29,6 +29,7 @@ class Template implements EventSubscriberInterface
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * @var Parameters
      */

@@ -55,6 +55,7 @@ class Backup implements EventSubscriberInterface
      * @var OutputInterface
      */
     private $output;
+
     /**
      * @var Parameters
      */
