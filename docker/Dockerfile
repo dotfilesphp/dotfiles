@@ -10,8 +10,8 @@ RUN set -xe \
 	$PHPIZE_DEPS
 
 RUN pecl install xdebug
-
-#RUN apk del .build-deps
+RUN apk add --no-cache --virtual zlib-dev && docker-php-ext-install zip
+RUN apk del .build-deps
 
 COPY custom.ini /usr/local/etc/php/conf.d/99-custom.ini
 

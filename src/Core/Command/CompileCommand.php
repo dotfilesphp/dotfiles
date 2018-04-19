@@ -186,7 +186,6 @@ class CompileCommand extends Command
             ->in($this->baseDir.'/vendor/myclabs')
             ->in($this->baseDir.'/vendor/psr')
             ->in($this->baseDir.'/vendor/monolog')
-            ->in($this->baseDir.'/vendor/psy')
             ->sort($finderSort)
         ;
         $this->registerFiles($finder);
