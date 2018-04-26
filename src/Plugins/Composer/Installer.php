@@ -13,24 +13,18 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Composer;
 
-use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Util\CommandProcessor;
+use Dotfiles\Core\DI\Parameters;
+use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class Installer
 {
     public const SCRIPT_URL = 'https://getcomposer.org/installer';
 
     public const SIG_URL = 'https://composer.github.io/installer.sig';
-
-    /**
-     * @var Config
-     */
-    private $config;
 
     /**
      * @var Downloader
@@ -48,22 +42,27 @@ class Installer
     private $output;
 
     /**
-     * @var CommandProcessor
+     * @var Parameters
      */
-    private $processor;
+    private $parameters;
+
+    /**
+     * @var ProcessRunner
+     */
+    private $runner;
 
     public function __construct(
         OutputInterface $output,
         LoggerInterface $logger,
-        Config $config,
+        Parameters $parameters,
         Downloader $downloader,
-        CommandProcessor $processor
+        ProcessRunner $runner
     ) {
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
         $this->output = $output;
         $this->downloader = $downloader;
-        $this->processor = $processor;
+        $this->runner = $runner;
     }
 
     /**
@@ -71,7 +70,7 @@ class Installer
      */
     public function run($force = false): void
     {
-        $config = $this->config;
+        $config = $this->parameters;
         $targetDir = $config->get('dotfiles.bin_dir');
         $targetFile = $targetDir.DIRECTORY_SEPARATOR.$config->get('composer.file_name');
         $this->debug('begin installation');
@@ -134,6 +133,11 @@ class Installer
         $this->logger->debug($message, $context);
     }
 
+    /**
+     * @param $scriptFile
+     * @param $installDir
+     * @param $fileName
+     */
     private function executeInstallScript($scriptFile, $installDir, $fileName): void
     {
         $cmd = array(
@@ -145,17 +149,13 @@ class Installer
         );
         $cmd = implode(' ', $cmd);
 
-        $process = $this->processor->create($cmd);
-        $process->setTimeout(3600);
-        $process->setIdleTimeout(60);
-        $process->run(function ($type, $buffer): void {
-            //@codeCoverageIgnoreStart
-            if (Process::ERR === $type) {
-                $this->logger->error($buffer);
-            } else {
-                $this->debug($buffer);
-            }
-            //@codeCoverageIgnoreEnd
-        });
+        $this->runner->run(
+            $cmd,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
     }
 }

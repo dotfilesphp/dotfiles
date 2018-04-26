@@ -15,19 +15,20 @@ namespace Dotfiles\Core\Tests\Processor;
 
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Processor\Hooks;
-use Dotfiles\Core\Tests\BaseTestCase;
-use Dotfiles\Core\Tests\Helper\LoggerOutputTrait;
+use Dotfiles\Core\Processor\ProcessRunner;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 
+/**
+ * Class HooksTest.
+ *
+ * @covers \Dotfiles\Core\Processor\Hooks
+ */
 class HooksTest extends BaseTestCase
 {
-    use LoggerOutputTrait;
-
     private $dispatcher;
 
     public function setUp(): void/* The :void return type declaration that should be here would cause a BC issue */
     {
-        $this->setUpLogger();
-
         $this->dispatcher = $this->createMock(Dispatcher::class);
     }
 
@@ -36,9 +37,7 @@ class HooksTest extends BaseTestCase
         return array(
             array('-hooks not executable: defaults/hooks/pre-restore.bash'),
             array('defaults pre-restore bash hooks'),
-            array('defaults pre-restore php hooks'),
             array('machine pre-restore bash hooks'),
-            array('machine pre-restore php hooks'),
             array('defaults post-restore bash'),
             array('machine post-restore bash'),
         );
@@ -51,7 +50,8 @@ class HooksTest extends BaseTestCase
     public function testHook(string $expected): void
     {
         $hooks = $this->getHookObject();
-        $hooks->run();
+        $hooks->onPreRestore();
+        $hooks->onPostRestore();
         $output = $this->getDisplay();
 
         $this->assertContains($expected, $output);
@@ -62,9 +62,11 @@ class HooksTest extends BaseTestCase
      */
     private function getHookObject()
     {
-        $config = $this->getConfig();
-        $config->set('dotfiles.backup_dir', __DIR__.'/fixtures/backup');
+        $config = $this->getParameters();
+        $this->createBackupDirMock(__DIR__.'/fixtures/backup');
+        $logger = $this->getService('dotfiles.logger');
+        $runner = $this->getService(ProcessRunner::class);
 
-        return new Hooks($config, $this->dispatcher, $this->logger);
+        return new Hooks($config, $this->dispatcher, $logger, $runner);
     }
 }

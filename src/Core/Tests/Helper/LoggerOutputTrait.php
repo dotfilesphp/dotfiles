@@ -17,6 +17,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\StreamOutput;
 
+/**
+ * Trait LoggerOutputTrait.
+ *
+ * @deprecated use built in display in BaseTestCase
+ */
 trait LoggerOutputTrait
 {
     /**
@@ -27,25 +32,30 @@ trait LoggerOutputTrait
     /**
      * @var StreamOutput
      */
-    private $output;
+    private $loggerOutput;
 
     /**
      * @var resource
      */
-    private $stream;
+    private $loggerStream;
+
+    public function getLoggerOutput()
+    {
+        return $this->loggerOutput;
+    }
 
     public function setUpLogger(): void
     {
-        $this->stream = fopen('php://memory', 'w');
-        $this->output = new StreamOutput($this->stream);
-        $this->output->setVerbosity(StreamOutput::VERBOSITY_DEBUG);
-        $this->logger = new ConsoleLogger($this->output);
+        $this->loggerStream = fopen('php://memory', 'w');
+        $this->loggerOutput = new StreamOutput($this->loggerStream);
+        $this->loggerOutput->setVerbosity(StreamOutput::VERBOSITY_DEBUG);
+        $this->logger = new ConsoleLogger($this->loggerOutput);
     }
 
-    private function getDisplay()
+    private function getLoggerDisplay()
     {
-        rewind($this->output->getStream());
-        $display = stream_get_contents($this->output->getStream());
+        rewind($this->loggerOutput->getStream());
+        $display = stream_get_contents($this->loggerOutput->getStream());
 
         $display = str_replace(PHP_EOL, "\n", $display);
 

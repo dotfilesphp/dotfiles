@@ -1,0 +1,29 @@
+{
+    "name": "dotfiles/behat-extension",
+    "description": "Dotfiles Behat Extension",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anthonius Munthi",
+            "email": "me@itstoni.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+	"behat/behat": "^3.4"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dotfiles\\Behat\\": ""
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "bin": [
+        "Resources/bin/run-behat"
+    ]
+}

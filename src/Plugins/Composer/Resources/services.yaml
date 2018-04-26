@@ -1,14 +1,5 @@
 services:
-    _defaults:
-        autoconfigure: true
-        autowire: true
-        public: true
-    
     Dotfiles\Plugins\Composer\Command\InstallCommand: ~
-    Dotfiles\Plugins\Composer\EventSubscriber:
-        tags: [{name: event_subscriber}]
-    Dotfiles\Plugins\Composer\Installer:
-        alias: composer.installer
-    
+    Dotfiles\Plugins\Composer\EventSubscriber: ~
     composer.installer:
         class: Dotfiles\Plugins\Composer\Installer

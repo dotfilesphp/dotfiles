@@ -5,16 +5,21 @@
          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
          backupGlobals="false"
          colors="true"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="./vendor/autoload.php"
+         convertDeprecationsToExceptions="true"
+         convertErrorsToExceptions="true"
 >
     <php>
         <ini name="error_reporting" value="-1" />
         <env name="DOTFILES_MACHINE_NAME" value="dotfiles"/>
         <env name="DOTFILES_ENV" value="dev"/>
+        <env name="DOTFILES_INSTALL_DIR" value="./var/temp/home/.dotfiles"/>
+        <env name="DOTFILES_TEMP_DIR" value="./var/temp"/>
+        <env name="DOTFILES_HOME_DIR" value="./var/temp/home"/>
     </php>
 
     <testsuites>
-        <testsuite name="Paroki Test Suite">
+        <testsuite name="Dotfiles Test Suite">
             <directory>src/*/Tests</directory>
             <directory>src/*/*/Tests</directory>
         </testsuite>
@@ -29,6 +34,7 @@
                 <directory>./src/*/Tests</directory>
                 <directory>./src/*/*/Resources</directory>
                 <directory>./src/*/*/Tests</directory>
+                <file>./src/Core/Command/CompileCommand.php</file>
             </exclude>
         </whitelist>
     </filter>

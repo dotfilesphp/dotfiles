@@ -13,27 +13,20 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPBrew\Tests;
 
-use Dotfiles\Core\Config\Config;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Processor\ProcessRunner;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\PHPBrew\Installer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class InstallerTest.
  *
  * @covers \Dotfiles\Plugins\PHPBrew\Installer
  */
-class InstallerTest extends BaseTestCase
+class InstallerTest extends \Dotfiles\Core\Tests\Helper\BaseTestCase
 {
-    /**
-     * @var MockObject
-     */
-    private $config;
-
     /**
      * @var MockObject
      */
@@ -45,31 +38,33 @@ class InstallerTest extends BaseTestCase
     private $logger;
 
     /**
-     * @var MockObject
+     * @var string
      */
-    private $output;
-
     private $tempDir;
 
     public function setUp(): void
     {
-        $this->config = $this->createMock(Config::class);
         $this->downloader = $this->createMock(Downloader::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->output = $this->createMock(OutputInterface::class);
-        $this->tempDir = sys_get_temp_dir().'/dotfiles';
-        static::cleanupTempDir();
+        $this->tempDir = $this->getParameters()->get('dotfiles.temp_dir');
     }
 
     public function testRun(): void
     {
         $installer = $this->getSUT();
+        $params = $this->getParameters();
         $tempDir = $this->tempDir;
+        if (is_file($file = $tempDir.'/phpbrew')) {
+            unlink($file);
+        }
+        if (is_file($file = $params->get('dotfiles.bin_dir').'/phpbrew')) {
+            unlink($file);
+        }
         $this->downloader->expects($this->once())
             ->method('run')
-            ->with(Installer::DOWNLOAD_URL, $tempDir.'/temp/phpbrew')
-            ->will($this->returnCallback(function () use ($tempDir): void {
-                touch($tempDir.'/temp/phpbrew');
+            ->with(Installer::DOWNLOAD_URL, $tempDir.'/phpbrew')
+            ->will($this->returnCallback(function ($url, $target): void {
+                touch($target);
             }))
         ;
         $installer->run();
@@ -77,26 +72,12 @@ class InstallerTest extends BaseTestCase
 
     public function testRunOnAlreadyInstalled(): void
     {
-        Toolkit::ensureFileDir($file = $this->tempDir.'/bin/phpbrew');
-        touch($file);
-        $this->output->expects($this->once())
-            ->method('writeln')
-            ->with($this->stringContains('already installed'))
-        ;
         $installer = $this->getSUT();
-        $installer->run();
-    }
-
-    public function testRunWhenFileDownloaded(): void
-    {
-        Toolkit::ensureFileDir($file = $this->tempDir.'/temp/phpbrew');
+        $binDir = $this->getParameters()->get('dotfiles.bin_dir');
+        Toolkit::ensureFileDir($file = $binDir.'/phpbrew');
         touch($file);
-        $this->logger->expects($this->once())
-            ->method('debug')
-            ->with($this->stringContains('file already downloaded'))
-        ;
-        $installer = $this->getSUT();
         $installer->run();
+        $this->assertContains('already installed', $this->getDisplay());
     }
 
     /**
@@ -106,25 +87,17 @@ class InstallerTest extends BaseTestCase
      *
      * @throws \ReflectionException
      */
-    private function getSUT(
-        $config = array()
-    ) {
-        $tempDir = $this->tempDir;
-        $this->config->expects($this->any())
-            ->method('get')
-            ->willReturnMap(array(
-                array('dotfiles.dry_run', false),
-                array('dotfiles.install_dir', $tempDir.'/install'),
-                array('dotfiles.temp_dir', $tempDir.'/temp'),
-                array('dotfiles.bin_dir', $tempDir.'/bin'),
-            ))
-        ;
+    private function getSUT()
+    {
+        static::cleanupTempDir();
+        $this->boot();
 
         return new Installer(
-            $this->config,
+            $this->getParameters(),
             $this->downloader,
             $this->logger,
-            $this->output
+            $this->getService('dotfiles.output'),
+            $this->getService(ProcessRunner::class)
         );
     }
 }

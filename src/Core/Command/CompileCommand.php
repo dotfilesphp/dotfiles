@@ -165,9 +165,9 @@ class CompileCommand extends Command
             ->exclude(array(
                 'Tests',
             ))
-            ->notName('Compiler.php')
-            ->notName('SubsplitCommand.php')
-            ->notName('CompilerCommand.php')
+            //->notName('Compiler.php')
+            //->notName('SubsplitCommand.php')
+            //->notName('CompilerCommand.php')
             ->in($this->baseDir.'/src/Core')
             ->sort($finderSort)
         ;
@@ -283,7 +283,7 @@ if (extension_loaded('apc') && ini_get('apc.enable_cli') && ini_get('apc.cache_b
     }
 }
 
-define('DOTFILES_PHAR_MODE', true);
+putenv('DOTFILES_PHAR_MODE=1');
 
 Phar::mapPhar('dotfiles.phar');
 

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Command;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Exceptions\InvalidOperationException;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
@@ -27,11 +27,6 @@ use Symfony\Component\Finder\Finder;
 class AddCommand extends Command implements CommandInterface
 {
     /**
-     * @var Config
-     */
-    private $config;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -41,13 +36,18 @@ class AddCommand extends Command implements CommandInterface
      */
     private $output;
 
+    /**
+     * @var Parameters
+     */
+    private $parameters;
+
     public function __construct(
         ?string $name = null,
-        Config $config,
+        Parameters $parameters,
         LoggerInterface $logger
     ) {
         parent::__construct($name);
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
     }
 
@@ -57,7 +57,7 @@ class AddCommand extends Command implements CommandInterface
             ->setName('add')
             ->setDescription('Add new file into dotfiles manager')
             ->addArgument('path', InputArgument::REQUIRED, 'A file or directory name to add. This file must be exists in $HOME directory')
-            ->addOption('machine', '-m', InputOption::VALUE_OPTIONAL, 'Add this file/directory into machine registry', 'defaults')
+            ->addOption('machine', '-m', InputOption::VALUE_NONE, 'Add this file/directory into machine registry')
             ->addOption('recursive', '-r', InputOption::VALUE_NONE, 'Import all directory contents recursively')
         ;
     }
@@ -73,17 +73,20 @@ class AddCommand extends Command implements CommandInterface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output = $output;
-        $config = $this->config;
+        $config = $this->parameters;
         $recursive = $input->getOption('recursive');
-        $machine = $input->getOption('machine');
+        $machine = $input->getOption('machine') ? $config->get('dotfiles.machine_name') : 'defaults';
         $backupDir = $config->get('dotfiles.backup_dir')."/src/$machine/home";
         $sourcePath = $input->getArgument('path');
-        $homeDir = $config->get('dotfiles.home_dir');
 
         // detect source path
         $originPath = $this->detectPath($sourcePath);
-        $targetPath = $backupDir.'/'.str_replace('.', '', $sourcePath);
-        $targetPath = str_replace($homeDir.DIRECTORY_SEPARATOR, '', $targetPath);
+        $relativePath = Toolkit::getRelativePath($originPath);
+        if (0 === strpos($relativePath, '.')) {
+            $relativePath = substr($relativePath, 1);
+        }
+        $relativePath = str_replace('.'.$sourcePath, $sourcePath, $relativePath);
+        $targetPath = $backupDir.'/'.$relativePath;
 
         Toolkit::ensureDir($backupDir);
 
@@ -105,7 +108,7 @@ class AddCommand extends Command implements CommandInterface
             return $path;
         }
 
-        $homeDir = $this->config->get('dotfiles.home_dir');
+        $homeDir = $this->parameters->get('dotfiles.home_dir');
         $test = $homeDir.DIRECTORY_SEPARATOR.$path;
         if ($this->ensureDirOrFile($test)) {
             return $test;

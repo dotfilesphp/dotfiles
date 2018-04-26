@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Util;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,11 +24,6 @@ class Downloader
      * @var int
      */
     private $bytesMax;
-
-    /**
-     * @var Config
-     */
-    private $config;
 
     /**
      * @var string
@@ -51,16 +46,21 @@ class Downloader
     private $output;
 
     /**
+     * @var Parameters
+     */
+    private $parameters;
+
+    /**
      * @var ProgressBar
      */
     private $progressBar;
 
-    public function __construct(OutputInterface $output, LoggerInterface $logger, Config $config)
+    public function __construct(OutputInterface $output, LoggerInterface $logger, Parameters $parameters)
     {
         $this->output = $output;
         $this->logger = $logger;
         $this->progressBar = new ProgressBar($output);
-        $this->config = $config;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -87,6 +87,8 @@ class Downloader
                 // handle error here
                 break;
             case STREAM_NOTIFY_REDIRECTED:
+                $this->logger->info('');
+                $this->logger->info('Download redirected!');
                 $this->progressBar->clear();
 
                 break;
@@ -101,15 +103,19 @@ class Downloader
                 break;
             case STREAM_NOTIFY_COMPLETED:
                 $this->progressBar->setProgress($bytesMax);
-                $this->progressBar->clear();
 
                 break;
         }
     }
 
-    public function run($url, $targetFile): void
+    /**
+     * @param string $url
+     * @param string $targetFile
+     * @codeCoverageIgnore
+     */
+    public function run(string $url, string $targetFile): void
     {
-        $dryRun = $this->config->get('dotfiles.dry_run');
+        $dryRun = $this->parameters->get('dotfiles.dry_run');
         $fullName = basename($targetFile);
         $this->progressBar->setFormat("Download <comment>$fullName</comment>: <comment>%percent:3s%%</comment> <info>%estimated:-6s%</info>");
 

@@ -5,5 +5,11 @@ services:
         build:
             context: docker
         volumes:
-            - ./:/app:rw
+            - ./.git:/app/.git:ro
+            - ./bin:/app/bin:ro
+            - ./features:/app/features:ro
+            - ./src:/app/src:ro
+            - ./vendor:/app/vendor:ro
             - /app/build
+            - /app/var
+            - ./:/home/dotfiles:ro

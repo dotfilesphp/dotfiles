@@ -1,17 +1,5 @@
 services:
-    _defaults:
-        autoconfigure: true
-        autowire: true
-        public: true
-
     Dotfiles\Plugins\PHPBrew\Command\InstallCommand: ~
-
-    Dotfiles\Plugins\PHPBrew\EventSubscriber:
-        tags:
-            - { name: "event_subscriber" }
-            
+    Dotfiles\Plugins\PHPBrew\EventSubscriber: ~
     phpbrew.installer:
         class: Dotfiles\Plugins\PHPBrew\Installer
-        
-    Dotfiles\Plugins\PHPBrew\Installer:
-        alias: phpbrew.installer

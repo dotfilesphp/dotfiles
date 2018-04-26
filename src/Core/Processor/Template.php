@@ -13,29 +13,27 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Constant;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
+use Dotfiles\Core\Event\RestoreEvent;
 use Dotfiles\Core\Util\Filesystem;
 use Dotfiles\Core\Util\Toolkit;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Finder;
 
-class Template
+class Template implements EventSubscriberInterface
 {
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
-
     /**
      * @var LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var Parameters
+     */
+    private $parameters;
 
     /**
      * @var string
@@ -43,62 +41,74 @@ class Template
     private $section;
 
     public function __construct(
-        Config $config,
+        Parameters $parameters,
         Dispatcher $dispatcher,
         LoggerInterface $logger
     ) {
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
-        $this->dispatcher = $dispatcher;
     }
 
-    public function run(): void
+    public static function getSubscribedEvents()
     {
-        $machine = getenv('DOTFILES_MACHINE_NAME');
-        $config = $this->config;
-        $sections = array('defaults', $machine);
-
-        foreach ($sections as $name) {
-            $this->section = $name;
-            $this->debug("Processing <comment>$name</comment> section.");
-            $backupDir = $config->get('dotfiles.backup_dir')."/src/{$name}";
-            $this->processHomeDir($backupDir.'/home');
-            $this->debug('');
-            $this->debug('');
-        }
-
-        $this->section = 'patch';
-        $this->debug('applying patch');
+        return array(
+            Constant::EVENT_PRE_RESTORE => array('onPreRestore', 255),
+            Constant::EVENT_RESTORE => array('onRestore', 255),
+        );
     }
 
-    private function debug($message, array $context = array()): void
+    public function onPreRestore(RestoreEvent $event)
     {
-        $message = sprintf('[%s] %s', $this->section, $message);
-        $this->logger->info($message, $context);
+        $files = $this->registerFiles();
+        $event->setFiles($files);
     }
 
-    private function processHomeDir($homeDir): void
+    public function onRestore(RestoreEvent $event): void
     {
-        $targetDir = $this->config->get('dotfiles.home_dir');
-        if (!is_dir($homeDir)) {
-            $this->debug("Home directory <comment>$homeDir</comment> not found");
+        $this->restore($event->getFiles());
+    }
 
-            return;
-        }
-
-        $files = Finder::create()
-            ->in($homeDir)
-            ->ignoreDotFiles(false)
+    private function findBackupFiles($dir)
+    {
+        $finder = Finder::create()
             ->ignoreVCS(true)
-            ->files()
+            ->ignoreDotFiles(false)
+            ->in($dir)
         ;
+        $files = array();
+        foreach ($finder->files() as $file) {
+            $dotFile = Toolkit::ensureDotPath($file->getRelativePathName());
+            $files[$dotFile] = $file->getRealpath();
+        }
 
+        return $files;
+    }
+
+    private function registerFiles()
+    {
+        $params = $this->parameters;
+        $sources = $params->get('dotfiles.backup_dir').'/src';
+        $machineName = $params->get('dotfiles.machine_name');
+
+        $defaults = $machine = array();
+        if (is_dir($dir = $sources.'/defaults/home')) {
+            $defaults = $this->findBackupFiles($dir);
+        }
+        if (is_dir($dir = $sources.'/'.$machineName.'/home')) {
+            $machine = $this->findBackupFiles($dir);
+        }
+        $files = array_merge($defaults, $machine);
+
+        return $files;
+    }
+
+    private function restore($files)
+    {
+        $homeDir = $this->parameters->get('dotfiles.home_dir');
         $fs = new Filesystem();
-        /* @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($files as $file) {
-            $target = Toolkit::ensureDotPath($file->getRelativePathname());
-            $fs->copy($file->getRealPath(), $targetDir.DIRECTORY_SEPARATOR.$target);
-            $this->debug('+restore: <comment>'.$target.'</comment>');
+        foreach ($files as $relativePath => $source) {
+            $target = $homeDir.DIRECTORY_SEPARATOR.$relativePath;
+            $fs->copy($source, $target);
         }
     }
 }

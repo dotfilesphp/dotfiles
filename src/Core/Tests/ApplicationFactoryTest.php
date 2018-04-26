@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the dotfiles project.
  *
@@ -14,35 +12,54 @@ declare(strict_types=1);
 namespace Dotfiles\Core\Tests;
 
 use Dotfiles\Core\ApplicationFactory;
-use PHPUnit\Framework\TestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
+
+class TestApplicationFactory extends ApplicationFactory
+{
+    protected function getContainerId()
+    {
+        return crc32(__FILE__);
+    }
+}
 
 /**
  * Class ApplicationFactoryTest.
  *
  * @covers \Dotfiles\Core\ApplicationFactory
  */
-class ApplicationFactoryTest extends TestCase
+class ApplicationFactoryTest extends BaseTestCase
 {
-    public static $cwd;
-
-    public static function setUpBeforeClass(): void/* The :void return type declaration that should be here would cause a BC issue */
+    public function testConfiguration()
     {
-        parent::setUpBeforeClass();
-        static::$cwd = getcwd();
-        chdir(__DIR__.'/fixtures/base');
+        $factory = $this->getFactory();
+        $container = $factory->getContainer();
+
+        $this->assertTrue($container->hasParameter('test.foo'));
+        $this->assertEquals('bar', $container->getParameter('test.foo'));
+        $this->assertEquals('world', $container->getParameter('test.hello'));
+        $this->assertEquals('hello world', $container->getParameter('test.some_key'));
     }
 
-    public static function tearDownAfterClass(): void/* The :void return type declaration that should be here would cause a BC issue */
+    public function testLoadPlugin()
     {
-        parent::tearDownAfterClass();
-        chdir(static::$cwd);
+        $factory = $this->getFactory();
+
+        $container = $factory->getContainer();
+        $this->assertTrue($container->has('dotfiles.app'));
+        $this->assertTrue($container->has('foo.hello'));
+        $this->assertTrue($factory->hasPlugin('test'));
     }
 
-    public function testCreateApplication(): void
+    private function getFactory()
     {
-        $factory = new ApplicationFactory();
-        $factory->boot();
-        $this->assertTrue(class_exists('Dotfiles\Plugins\Foo\FooPlugin', true));
-        $this->assertTrue($factory->hasPlugin('foo'));
+        static $factory;
+        if (null === $factory) {
+            $this->boot();
+            $this->createBackupDirMock(__DIR__.'/fixtures/base');
+            $factory = new TestApplicationFactory();
+            $factory->boot();
+        }
+
+        return $factory;
     }
 }

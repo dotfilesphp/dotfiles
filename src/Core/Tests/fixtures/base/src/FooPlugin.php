@@ -13,19 +13,12 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Foo;
 
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Plugin;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class FooPlugin extends Plugin
 {
-    public function setupConfiguration(Config $config): void
+    public function getName(): string
     {
-        // TODO: Implement setupConfiguration() method.
-    }
-
-    public function load(array $configs, ContainerBuilder $container): void
-    {
-        // TODO: Implement load() method.
+        return 'test';
     }
 }

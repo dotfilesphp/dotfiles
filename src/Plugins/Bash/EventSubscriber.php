@@ -13,22 +13,16 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\Bash;
 
-use Dotfiles\Core\Config\Config;
 use Dotfiles\Core\Constant;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Dotfiles\Core\Event\PatchEvent;
 use Dotfiles\Core\Util\Toolkit;
-use Dotfiles\Plugins\Bash\Event\ReloadBashConfigEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EventSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var Config
-     */
-    private $config;
-
     /**
      * @var Dispatcher
      */
@@ -36,10 +30,15 @@ class EventSubscriber implements EventSubscriberInterface
 
     private $logger;
 
-    public function __construct(Dispatcher $dispatcher, Config $config, LoggerInterface $logger)
+    /**
+     * @var Parameters
+     */
+    private $parameters;
+
+    public function __construct(Dispatcher $dispatcher, Parameters $parameters, LoggerInterface $logger)
     {
         $this->dispatcher = $dispatcher;
-        $this->config = $config;
+        $this->parameters = $parameters;
         $this->logger = $logger;
     }
 
@@ -48,9 +47,6 @@ class EventSubscriber implements EventSubscriberInterface
         return array(
             Constant::EVENT_PRE_PATCH => array(
                 array('onPrePatchEvent', -999),
-            ),
-            Constant::EVENT_POST_RESTORE => array(
-                array('onPostRestore', -999),
             ),
         );
     }
@@ -70,13 +66,9 @@ class EventSubscriber implements EventSubscriberInterface
         if (array_key_exists('.bashrc', $currentPatches)) {
             $bashPatch = $currentPatches['.bashrc'];
         }
-        $reloadEvent = new ReloadBashConfigEvent($this->logger);
-        $reloadEvent->addFooterConfig(implode("\n", $bashPatch));
+        $this->generateDotfilesConfig($bashPatch);
 
-        $this->dispatcher->dispatch(ReloadBashConfigEvent::NAME, $reloadEvent);
-        $this->generateDotfilesConfig($reloadEvent->getBashConfig());
-
-        $installDir = $this->config->get('dotfiles.install_dir');
+        $installDir = $this->parameters->get('dotfiles.install_dir');
         $target = '.bashrc';
 
         $event->setPatch($target, array("source \"${installDir}/bashrc\""));
@@ -84,7 +76,8 @@ class EventSubscriber implements EventSubscriberInterface
 
     private function generateDotfilesConfig($bashConfig): void
     {
-        $installDir = $this->config->get('dotfiles.install_dir');
+        $bashConfig = implode("\n", $bashConfig);
+        $installDir = $this->parameters->get('dotfiles.install_dir');
 
         $uname = php_uname();
         if (false !== strpos('darwin', $uname)) {
@@ -106,7 +99,9 @@ $bashConfig
 # END DOTFILES CONFIG
 
 EOC;
-        Toolkit::ensureFileDir($file = $installDir.DIRECTORY_SEPARATOR.$fileName);
+
+        $file = $installDir.DIRECTORY_SEPARATOR.$fileName;
+        Toolkit::ensureDir($installDir);
         file_put_contents($file, $contents, LOCK_EX);
     }
 }

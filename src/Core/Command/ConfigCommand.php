@@ -13,21 +13,21 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Command;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ConfigCommand extends Command
 {
     /**
-     * @var Config
+     * @var Parameters
      */
-    private $config;
+    private $parameters;
 
-    public function __construct(?string $name = null, Config $config)
+    public function __construct(?string $name = null, Parameters $parameters)
     {
         parent::__construct($name);
-        $this->config = $config;
+        $this->parameters = $parameters;
     }
 
     protected function configure(): void
@@ -39,9 +39,9 @@ class ConfigCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $config = $this->config;
+        $config = $this->parameters;
 
-        $params = $config->getAll(true);
+        $params = $config->all(true);
 
         foreach ($params as $name => $value) {
             $output->writeln(sprintf(

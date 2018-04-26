@@ -13,15 +13,20 @@ declare(strict_types=1);
 
 namespace Dotfiles\Plugins\PHPCSFixer\Tests;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\PatchEvent;
-use Dotfiles\Core\Tests\BaseTestCase;
+use Dotfiles\Core\Tests\Helper\BaseTestCase;
 use Dotfiles\Core\Util\Downloader;
 use Dotfiles\Core\Util\Toolkit;
 use Dotfiles\Plugins\PHPCSFixer\EventSubscriber;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class EventSubscriberTest.
+ *
+ * @covers \Dotfiles\Plugins\PHPCSFixer\EventSubscriber
+ */
 class EventSubscriberTest extends BaseTestCase
 {
     public function testOnPatchEvent(): void
@@ -32,7 +37,7 @@ class EventSubscriberTest extends BaseTestCase
 
         Toolkit::ensureDir($installDir);
 
-        $config = $this->createMock(Config::class);
+        $config = $this->createMock(Parameters::class);
         $downloader = $this->createMock(Downloader::class);
         $event = $this->createMock(PatchEvent::class);
         $logger = $this->createMock(LoggerInterface::class);

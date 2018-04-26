@@ -1,0 +1,46 @@
+services:
+    Symfony\Component\Console\Input\InputInterface:
+        alias: dotfiles.input
+    Symfony\Component\Console\Output\OutputInterface:
+        alias: dotfiles.output
+    Psr\Log\LoggerInterface:
+        alias: dotfiles.logger
+
+    dotfiles.factory:
+        class: Dotfiles\Core\ApplicationFactory
+    dotfiles.app:
+        class: Dotfiles\Core\Console\Application
+    dotfiles.dispatcher:
+        class: Dotfiles\Core\Event\Dispatcher
+    dotfiles.input:
+        class: Dotfiles\Core\Console\Input
+    dotfiles.output:
+        class: Dotfiles\Core\Console\Output
+    dotfiles.logger:
+        class: Dotfiles\Core\Console\ConsoleLogger
+    dotfiles.parameters:
+        class: Dotfiles\Core\DI\Parameters
+    dotfiles.runner:
+        class: Dotfiles\Core\Processor\ProcessRunner
+    dotfiles.shell:
+        class: Dotfiles\Core\Console\Shell
+        
+    dotfiles.downloader:
+        class: Dotfiles\Core\Util\Downloader
+        arguments: ['@dotfiles.output','@dotfiles.logger']
+        
+    # processor service
+    dotfiles.hooks:
+        class: Dotfiles\Core\Processor\Hooks
+    dotfiles.template:
+        class: Dotfiles\Core\Processor\Template
+    dotfiles.patcher:
+        class: Dotfiles\Core\Processor\Patcher
+        
+    Dotfiles\Core\Command\SelfUpdateCommand: ~
+    Dotfiles\Core\Command\ClearCacheCommand: ~
+    Dotfiles\Core\Command\AddCommand: ~
+    Dotfiles\Core\Command\InitCommand: ~
+    Dotfiles\Core\Command\RestoreCommand: ~
+    Dotfiles\Core\Command\ConfigCommand: ~
+    Dotfiles\Core\Command\ShellCommand: ~

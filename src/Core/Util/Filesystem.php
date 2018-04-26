@@ -38,4 +38,34 @@ class Filesystem extends BaseFileSystem
             $this->appendToFile($file, $patch);
         }
     }
+
+    /**
+     * Remove directory recursively.
+     *
+     * @param $dir
+     * @param callable|null $onRemoveCallback
+     */
+    public function removeDir($dir, ?callable $onRemoveCallback = null): void
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ('.' != $object && '..' != $object) {
+                    if ('dir' == filetype($dir.DIRECTORY_SEPARATOR.$object)) {
+                        $this->removeDir($dir.DIRECTORY_SEPARATOR.$object, $onRemoveCallback);
+                    } else {
+                        unlink($pathName = $dir.DIRECTORY_SEPARATOR.$object);
+                        if (null !== $onRemoveCallback) {
+                            call_user_func($onRemoveCallback, $pathName);
+                        }
+                    }
+                }
+            }
+            reset($objects);
+            rmdir($dir);
+            if (null !== $onRemoveCallback) {
+                call_user_func($onRemoveCallback, $dir);
+            }
+        }
+    }
 }

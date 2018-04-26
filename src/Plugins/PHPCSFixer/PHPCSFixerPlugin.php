@@ -14,16 +14,27 @@ declare(strict_types=1);
 namespace Dotfiles\Plugins\PHPCSFixer;
 
 use Dotfiles\Core\Plugin;
+use Dotfiles\Core\Util\Toolkit;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class PHPCSFixerPlugin extends Plugin
 {
+    public function getName(): string
+    {
+        return 'phpcs';
+    }
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         $locator = new FileLocator(__DIR__.'/Resources');
         $loader = new YamlFileLoader($container, $locator);
         $loader->load('services.yaml');
+
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
+        Toolkit::flattenArray($config, 'phpcs');
+        $container->getParameterBag()->add($config);
     }
 }

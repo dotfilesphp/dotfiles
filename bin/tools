@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+
+umask(0022);
+require __DIR__.'/../vendor/autoload.php';
+use Dotfiles\Core\ApplicationFactory;
+
+try {
+    if (!defined('DOTFILES_PHAR_MODE')) {
+        define('DOTFILES_PHAR_MODE', false);
+    }
+    $factory = new ApplicationFactory();
+    $factory->boot();
+    $container = $factory->getContainer();
+
+    /* @var \Dotfiles\Core\Console\Application $app */
+    $app = $container->get('dotfiles.app');
+    $app->addCommands(array(
+        new \Dotfiles\Core\Command\SubsplitCommand(),
+        new \Dotfiles\Core\Command\CompileCommand(),
+    ));
+    exit($app->run());
+} catch (\Exception $e) {
+    echo $e->getMessage()."\n";
+    exit(1);
+}

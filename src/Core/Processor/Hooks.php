@@ -13,17 +13,21 @@ declare(strict_types=1);
 
 namespace Dotfiles\Core\Processor;
 
-use Dotfiles\Core\Config\Config;
+use Dotfiles\Core\Constant;
+use Dotfiles\Core\DI\Parameters;
 use Dotfiles\Core\Event\Dispatcher;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Helper\DebugFormatterHelper;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
+use Symfony\Component\Finder\SplFileInfo;
 
-class Hooks
+/**
+ * Class Hooks.
+ */
+class Hooks implements EventSubscriberInterface
 {
     /**
-     * @var Config
+     * @var \Dotfiles\Core\DI\Parameters
      */
     private $config;
 
@@ -42,22 +46,40 @@ class Hooks
      */
     private $logger;
 
+    /**
+     * @var ProcessRunner
+     */
+    private $runner;
+
     public function __construct(
-        Config $config,
+        Parameters $config,
         Dispatcher $dispatcher,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ProcessRunner $runner
     ) {
         $this->config = $config;
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
+        $this->runner = $runner;
     }
 
-    public function run(): void
+    public static function getSubscribedEvents()
     {
-        $this->hooks = array();
+        return array(
+            Constant::EVENT_PRE_RESTORE => 'onPreRestore',
+            Constant::EVENT_POST_RESTORE => array('onPostRestore', -1),
+        );
+    }
+
+    public function onPostRestore()
+    {
+        $this->doPostRestoreHooks();
+    }
+
+    public function onPreRestore()
+    {
         $this->registerHooks();
         $this->doPreRestoreHooks();
-        $this->doPostRestoreHooks();
     }
 
     private function debug($messages, $context = array()): void
@@ -85,18 +107,8 @@ class Hooks
 
     private function doProcessHooks($relPath, $realPath): void
     {
-        $helper = new DebugFormatterHelper();
-        $logger = $this->logger;
-        $logger->debug("Executing <comment>$relPath</comment>");
-        $process = new Process($realPath);
-        $process->run(function ($type, $buffer) use ($relPath,$logger,$helper,$process): void {
-            $contents = $helper->start(
-                spl_object_hash($process),
-                $buffer,
-                Process::ERR === $type
-            );
-            $logger->debug('OUTPUT >>'.$contents);
-        });
+        $runner = $this->runner;
+        $runner->run($realPath);
     }
 
     private function registerHooks(): void
@@ -104,25 +116,39 @@ class Hooks
         $this->hooks['pre']['restore'] = array();
         $this->hooks['post']['restore'] = array();
 
-        $backupPath = $this->config->get('dotfiles.backup_dir');
+        $backupPath = $this->config->get('dotfiles.backup_dir').'/src';
+        $machine = $this->config->get('dotfiles.machine_name');
+        $dirs = array();
+        if (is_dir($dir = $backupPath.'/defaults/hooks')) {
+            $dirs[] = $dir;
+        }
+        if (is_dir($dir = $backupPath.'/'.$machine.'/hooks')) {
+            $dirs[] = $dir;
+        }
+
+        if (!count($dirs) > 0) {
+            $this->debug('+hooks no available hooks found');
+
+            return;
+        }
+
         $finder = Finder::create()
-            ->in($backupPath.'/src')
-            ->path('hooks')
+            ->in($backupPath)
             ->name('pre-*')
             ->name('post-*')
+            ->path('defaults/hooks')
+            ->path($machine.'/hooks')
         ;
 
-        /* @var \SplFileInfo $file */
+        /* @var SplFileInfo $file */
         foreach ($finder->files() as $file) {
             $relPath = $file->getRelativePathname();
             $realPath = $file->getRealPath();
-
             $baseName = basename($file->getRealPath());
             if (false !== ($tlength = strpos($baseName, '.'))) {
                 $baseName = substr($baseName, 0, $tlength);
             }
             $exp = explode('-', $baseName);
-
             if (!is_executable($realPath)) {
                 $this->debug('-hooks not executable: '.$relPath);
 

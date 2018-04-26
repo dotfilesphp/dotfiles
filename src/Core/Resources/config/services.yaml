@@ -1,49 +1,34 @@
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: true
-                    
-    
-    Dotfiles\Core\Event\Dispatcher: ~
-    Dotfiles\Core\Config\Config:
-        synthetic: true
-        calls:
-            - [setCachePath, ['%dotfiles.cache_dir%']]
-    Dotfiles\Core\Command\SelfUpdateCommand: ~
-    Dotfiles\Core\Command\ClearCacheCommand: ~
-    Dotfiles\Core\Command\AddCommand: ~
-    Dotfiles\Core\Command\InitCommand: ~
-    Dotfiles\Core\Command\RestoreCommand: ~
-    Dotfiles\Core\Command\ConfigCommand: ~
-    Dotfiles\Core\Application: ~
-    Dotfiles\Core\Util\CommandProcessor: ~
-    Dotfiles\Core\Util\Filesystem: ~
-
-    # aliasses
+    Symfony\Component\Console\Input\InputInterface:
+        alias: dotfiles.input
+    Symfony\Component\Console\Output\OutputInterface:
+        alias: dotfiles.output
     Psr\Log\LoggerInterface:
         alias: dotfiles.logger
-    Dotfiles\Core\Util\Downloader:
-        alias: dotfiles.downloader
+
+    dotfiles.factory:
+        class: Dotfiles\Core\ApplicationFactory
     dotfiles.app:
-        alias: Dotfiles\Core\Application
-    dotfiles.config:
-        alias: Dotfiles\Core\Config\Config
+        class: Dotfiles\Core\Console\Application
+    dotfiles.dispatcher:
+        class: Dotfiles\Core\Event\Dispatcher
     dotfiles.input:
         class: Dotfiles\Core\Console\Input
     dotfiles.output:
         class: Dotfiles\Core\Console\Output
     dotfiles.logger:
-        class: Symfony\Component\Console\Logger\ConsoleLogger
-        arguments: ['@dotfiles.output']
+        class: Dotfiles\Core\Console\ConsoleLogger
+    dotfiles.parameters:
+        class: Dotfiles\Core\DI\Parameters
+        synthetic: true
+    dotfiles.runner:
+        class: Dotfiles\Core\Processor\ProcessRunner
+    dotfiles.shell:
+        class: Dotfiles\Core\Console\Shell
+        
     dotfiles.downloader:
         class: Dotfiles\Core\Util\Downloader
         arguments: ['@dotfiles.output','@dotfiles.logger']
-
-    Symfony\Component\Console\Input\InputInterface:
-        alias: dotfiles.input
-    Symfony\Component\Console\Output\OutputInterface:
-        alias: dotfiles.output
         
     # processor service
     dotfiles.hooks:
@@ -52,9 +37,13 @@ services:
         class: Dotfiles\Core\Processor\Template
     dotfiles.patcher:
         class: Dotfiles\Core\Processor\Patcher
-    Dotfiles\Core\Processor\Patcher:
-        alias: dotfiles.patcher
-    Dotfiles\Core\Processor\Hooks:
-        alias: dotfiles.hooks
-    Dotfiles\Core\Processor\Template:
-        alias: dotfiles.template
+    dotfiles.backup:
+        class: Dotfiles\Core\Processor\Backup
+        
+    Dotfiles\Core\Command\SelfUpdateCommand: ~
+    Dotfiles\Core\Command\ClearCacheCommand: ~
+    Dotfiles\Core\Command\AddCommand: ~
+    Dotfiles\Core\Command\InitCommand: ~
+    Dotfiles\Core\Command\RestoreCommand: ~
+    Dotfiles\Core\Command\ConfigCommand: ~
+    Dotfiles\Core\Command\ShellCommand: ~
