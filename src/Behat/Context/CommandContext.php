@@ -62,6 +62,17 @@ class CommandContext implements Context
     }
 
     /**
+     * @Given I execute :command
+     *
+     * @param string $command
+     */
+    public function iExecuteCommand(string $command): void
+    {
+        $this->resetStream();
+        $this->runCommand($command);
+    }
+
+    /**
      * @Given I execute restore command
      */
     public function iExecuteRestoreCommand(): void

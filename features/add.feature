@@ -33,6 +33,15 @@ Feature: Add dotfiles to backup list
         And Dotfile ".bashrc" should contain "> dotfiles-patch"
         And Dotfile ".bashrc" should contain "< dotfiles-patch"
 
+    Scenario: Add files for machine only
+        Given I have dotfile ".bashrc" with:
+        """
+        source /etc/skel/bashrc
+        """
+        When I execute "add -m bashrc"
+        Then I should see "copy"
+        And I should see "docker/home/bashrc"
+
     Scenario: Multiple bashrc files patch
         Given I have dotfile ".bashrc" with:
         """
